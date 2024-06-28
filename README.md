@@ -3,7 +3,7 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Geuthur/aa-killstats/master.svg)](https://results.pre-commit.ci/latest/github/Geuthur/aa-killstats/master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Tests](https://github.com/Geuthur/aa-killstats/actions/workflows/autotester.yml/badge.svg)](https://github.com/Geuthur/aa-killstats/actions/workflows/autotester.yml)
-[![codecov](https://codecov.io/gh/Geuthur/aa-killstats/graph/badge.svg?token=5CWREOQKGZ)](https://codecov.io/gh/Geuthur/aa-killstats)
+[![codecov](https://codecov.io/gh/Geuthur/aa-killstats/graph/badge.svg?token=jRicu5enZF)](https://codecov.io/gh/Geuthur/aa-killstats)
 
 - [AA Killstats](#aa-killstats)
   - [Features](#features)
