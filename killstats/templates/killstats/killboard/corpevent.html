@@ -1,0 +1,22 @@
+{% if corpevent %}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="panel-title">Corpevent - February</div>
+    </div>
+    <div class="panel-body">
+        <div class="dashboard-panels">
+            {% for data in corpevent %}
+                <div class="panel panel-default dashboard-item-event">
+                    <div class="panel-body">
+                        <span class="dashboard-item-wrapper">
+                            <span class="dashboard-item-event">
+                                {{ data.0 }}: {{ data.1.0 }} {% if data.1.1 > 0 %} - (<span title="Esoteria or Paragon Soul">{{ data.1.1 }}</span>) {% endif %}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}

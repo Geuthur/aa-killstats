@@ -1,0 +1,43 @@
+{% extends 'allianceauth/base-bs5.html' %}
+{% load i18n %}
+{% block main_css %}
+{% endblock main_css %}
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block page_title %} Killstats {% endblock %}
+
+{% block header_nav_brand %}
+    Killstats
+{% endblock header_nav_brand %}
+
+{% block header_nav_collapse_left %}
+    {% block killstats_menu %}
+        {% include 'killstats/menu.html' %}
+    {% endblock %}
+{% endblock header_nav_collapse_left %}
+
+{% block content %}
+
+{% include 'killstats/bundles/killstats-css.html' %}
+{% include 'bundles/datatables-css-bs5.html' %}
+
+<div class="allianceauth-killstats-plugin">
+    {% block page_topic %}<h1 class="page-header text-center">{% translate "Killstats" %}</h1>{% endblock page_topic %}
+
+    <br>
+
+    <div class="container-fluid" id="killstats_block">
+    {% block killstats_block %}{% endblock %}
+    </div>
+
+    <br>
+</div>
+
+{% endblock content %}
+
+{% block extra_javascript %}
+{% endblock %}
+
+{% block extra_script %}
+{% endblock %}
