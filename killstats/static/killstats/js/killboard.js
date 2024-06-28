@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // URL für die Daten der ausgewählten Kombination von Jahr und Monat erstellen
         var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + currentYear + '/';
-        console.log(url);
+
         // DataTable neu laden mit den Daten des ausgewählten Monats
         var currentMonthTable = $.ajax({
             url: url,
