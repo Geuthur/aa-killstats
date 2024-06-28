@@ -27,7 +27,7 @@ def killmail_fetch_all(runs: int = 0):
     for corp in corps_query:
         killmail_update_corp.apply_async(args=[corp.corporation.corporation_id])
         runs = runs + 1
-        logger.info("Queued %s Killstats Audit Updates", runs)
+    logger.info("Queued %s Killstats Audit Updates", runs)
 
 
 # pylint: disable=unused-argument
