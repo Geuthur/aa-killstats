@@ -115,6 +115,8 @@ LOGGING["loggers"].update(LOGGING_KILLSTATS["loggers"])
 
 ## Highlights<a name="highlights"></a>
 
+![Screenshot 2024-06-26 144010](https://github.com/Geuthur/aa-killstats/assets/761682/edc23d4d-719a-4519-b96a-ffbb950d28ca)
+
 > \[!NOTE\]
 > Contributing
 > You want to improve the project?
