@@ -175,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (statsData) {
-            console.log(statsData);
             var statsContainer = $('.stats .row');
             var statsHtml = '';
 
