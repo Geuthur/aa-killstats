@@ -1,3 +1,5 @@
+var selectedMonth;
+
 document.addEventListener('DOMContentLoaded', function () {
     // Aktuelles Datumobjekt erstellen
     var currentDate = new Date();
@@ -6,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Aktuelles Jahr und Monat abrufen
     var currentYear = currentDate.getFullYear();
 
-    var selectedMonth = currentDate.getMonth() + 1; // +1, um 1-basierten Monat zu erhalten
+    selectedMonth = currentDate.getMonth() + 1; // +1, um 1-basierten Monat zu erhalten
 
     $('#monthDropdown').change(function() {
         selectedMonth = $(this).val(); // Ausgewählter Monat auslesen
@@ -200,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Erstelle das HTML für jede Statistik basierend auf dem Typ
                 statsHtml += `
-                    <div class="card mb-4 px-0" style="max-width: 440px; margin-right: 6px;">
+                    <div class="card mb-4 px-0">
                         <div class="row g-0">`;
 
                 // Füge den <a>-Tag hinzu, wenn character_id vorhanden ist
@@ -214,9 +216,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>`;
                     } else {
                         statsHtml += `
-                            <div class="col-md-4">
-                                <img class="card-img img-fluid rounded-start" style="width: 100%; height:100%" src="${imageUrl}">
-                            </div>`;
+                                <div class="col-md-4">
+                                    <img class="card-img img-fluid rounded-start" style="width: 100%; height:100%" src="${imageUrl}">
+                                </div>`;
                     }
                 } else {
                     statsHtml += `
@@ -337,8 +339,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         data: 'col-date',
                         render: function (data, type, row) {
-                            // eslint-disable-next-line no-undef
-                            var imageHTML = moment(row.date).format('YYYY-MM-DD HH:mm');
+                            var imageHTML = moment(row.date).format('YYYY-MM-DD HH:mm'); // eslint-disable-line no-undef
                             return imageHTML;
                         }
                     },
@@ -397,8 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         data: 'col-date',
                         render: function (data, type, row) {
-                            // eslint-disable-next-line no-undef
-                            var imageHTML = moment(row.date).format('YYYY-MM-DD HH:mm');
+                            var imageHTML = moment(row.date).format('YYYY-MM-DD HH:mm'); // eslint-disable-line no-undef
                             return imageHTML;
                         }
                     },

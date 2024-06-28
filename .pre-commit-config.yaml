@@ -133,7 +133,6 @@ repos:
             .min(.js|.js.map)|
             static/(.*)/libs/
           )
-
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.6.1
     hooks:
