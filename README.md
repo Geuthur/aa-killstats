@@ -58,7 +58,7 @@ To set up the Scheduled Tasks add following code to your `local.py`
 ```python
 CELERYBEAT_SCHEDULE["killstats_killmail_fetch"] = {
     "task": "killstats.tasks.killmail_fetch_all",
-    "schedule": crontab(hour="*/1"),
+    "schedule": crontab(minute=0, hour="*/1"),
 }
 ```
 
