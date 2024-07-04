@@ -1,10 +1,15 @@
-<div class="d-flex justify-content-center panel-heading">
-    <h4>
-        Killboard Stats
-    </h4>
+
+{% load static %}
+<!-- Ladebalken-Container -->
+<div id="loadingIndicator" class="d-flex justify-content-center align-items-center">
+    {% if NIGHT_MODE %}
+    <img src="{% static 'killstats/img/Spinner-1s-64px-dark.gif' %}">
+    {% else %}
+        <img src="{% static 'killstats/img/Spinner-1s-64px-light.gif' %}">
+    {% endif %}
 </div>
 <div class="stats d-flex justify-content-center">
-    <div class="row row-cols-4" style="width: 1600px;">
-    <!--Killboard Stats-->
+    <div id="stats" class="row row-cols-4" style="width: 1600px;">
+        <!--Killboard Stats-->
     </div>
 </div>

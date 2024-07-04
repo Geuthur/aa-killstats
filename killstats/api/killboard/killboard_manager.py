@@ -250,12 +250,12 @@ def _stats_killmail(
 
 
 def killboard_dashboard(
-    stats: list,
     killmail_year: Killmail,
     date,
     sorted_mains,
     all_chars,
 ):
+    stats = []
     stats_manager = KillboardStatsManager(date, stats)
 
     filtered_killmails = [

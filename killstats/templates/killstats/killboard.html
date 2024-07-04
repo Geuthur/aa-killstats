@@ -5,7 +5,7 @@
 {% load static %}
 
 {% block page_title %} Killstats - Killmail Index {% endblock %}
-{% block page_topic %}<h1 id="currentMonthLink" class="page-header text-center">Killstats - {{ value|current_month }} </h1>{% endblock page_topic %}
+
 
 {% block extra_css %}
 <link rel="stylesheet" type="text/css" href="/static/killstats/css/cards.css">
@@ -32,55 +32,60 @@
 {% endblock extra_css %}
 
 {% block killstats_block %}
-{% include 'killstats/killboard/dashboard.html' with stats=stats %}
-<br>
-<!--Hall-->
-{% include 'killstats/killboard/hall.html' with shame=shame fame=fame %}
-<br>
-<div class="card">
-	<div class="card-body">
-		<select class="form-select" style="width: 130px; display: none;" id="monthDropdown">
-			<option value="1">January</option>
-			<option value="2">February</option>
-			<option value="3">March</option>
-			<option value="4">April</option>
-			<option value="5">May</option>
-			<option value="6">June</option>
-			<option value="7">July</option>
-			<option value="8">August</option>
-			<option value="9">September</option>
-			<option value="10">October</option>
-			<option value="11">November</option>
-			<option value="12">Dezember</option>
-		</select>
+	<!--Killstats-->
+	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center">
+		<h3 id="currentMonthLink" class="page-header text-center">Killstats - {{ value|current_month }}</h3>
+		<div class="dropdown px-2">
+			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+			Month
+			</button>
+			<ul class="dropdown-menu" id="monthDropdown">
+				<li><a class="dropdown-item" data-bs-month-id="1" href="#">{% trans "January" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="2" href="#">{% trans "February" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="3" href="#">{% trans "March" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="4" href="#">{% trans "April" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="5" href="#">{% trans "May" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="6" href="#">{% trans "June" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="7" href="#">{% trans "July" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="8" href="#">{% trans "August" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="9" href="#">{% trans "September" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="10" href="#">{% trans "October" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="11" href="#">{% trans "November" %}</a></li>
+				<li><a class="dropdown-item" data-bs-month-id="12" href="#">{% trans "December" %}</a></li>
+			</ul>
+		</div>
 	</div>
 	<br>
-	<div class="rounded-top" style="--bs-bg-opacity: .5;">
-		<ul class="nav nav-tabs" style="--bs-bg-opacity: .5;" id="killstats-killmail">
-			<li class="nav-item">
-				<a class="nav-link active" href="#tab-kills" data-bs-toggle="tab" data-bs-target="#tab-kills" >
-					Kills
-				</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="#tab-losses" data-bs-toggle="tab" data-bs-target="#tab-losses">
-					Losses
-				</a>
-			</li>
-		</ul>
-	</div>
-	<div class="panel panel-default panel-tabs">
-		<div class="panel-body">
-			<div class="card-body bg-secondary tab-content">
-				{% include 'killstats/killboard/kills.html' %}
-				{% include 'killstats/killboard/losses.html' %}
+	<!--Dashboard-->
+	{% include 'killstats/killboard/dashboard.html' with stats=stats %}
+	<br>
+	<!--Hall-->
+	{% include 'killstats/killboard/hall.html' with shame=shame fame=fame %}
+	<br>
+	<div id="killboard" class="card" style="display: none;">
+		<div class="rounded-top" style="--bs-bg-opacity: .5;">
+			<ul class="nav nav-tabs" style="--bs-bg-opacity: .5;" id="killstats-killmail">
+				<li class="nav-item">
+					<a class="nav-link active" href="#tab-kills" data-bs-toggle="tab" data-bs-target="#tab-kills" >
+						Kills
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#tab-losses" data-bs-toggle="tab" data-bs-target="#tab-losses">
+						Losses
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="panel panel-default panel-tabs">
+			<div class="panel-body">
+				<div class="card-body bg-secondary tab-content">
+					{% include 'killstats/killboard/kills.html' %}
+					{% include 'killstats/killboard/losses.html' %}
+				</div>
 			</div>
 		</div>
 	</div>
-
-	<br>
-
-</div>
 {% endblock killstats_block %}
 
 {% block extra_javascript %}
