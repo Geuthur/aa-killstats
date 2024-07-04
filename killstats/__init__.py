@@ -1,6 +1,6 @@
 """Initialize the app"""
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __title__ = "Killstats"
 
 APP_NAME = "killstats"

@@ -43,7 +43,7 @@ class KillboardApiEndpoints:
         def get_killstats(request, month, year):
             # Killboard
             killmail_year = (
-                Killmail.objects.prefetch_related("victim", "victim_ship")
+                Killmail.objects.select_related("victim", "victim_ship")
                 .filter(killmail_date__year=year)
                 .order_by("-killmail_date")
             )
@@ -52,9 +52,6 @@ class KillboardApiEndpoints:
                 killmail_date__year=year,
                 killmail_date__month=month,
             )
-
-            mains = {}
-            stats = []
 
             corporations = get_corporations(request)
 
@@ -66,7 +63,7 @@ class KillboardApiEndpoints:
 
             date = KillboardDate(month, year)
 
-            killboard_dashboard(stats, killmail_year, date, mains, all_chars)
+            stats = killboard_dashboard(killmail_year, date, mains, all_chars)
 
             shame, fame = killboard_hall(killmail_month, mains)
 
