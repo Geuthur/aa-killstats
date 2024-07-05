@@ -12,7 +12,6 @@ from eveuniverse.models import EveType
 from allianceauth.eveonline.evelinks import eveimageserver
 
 # AA Killstats
-from killstats.app_settings import STRUCTURE
 from killstats.hooks import get_extension_logger
 from killstats.managers.killboard_manager import EveKillmailManager
 from killstats.models.general import EveEntity
@@ -64,7 +63,10 @@ class Killmail(models.Model):
         )
 
     def is_structure(self):
-        return self.victim_ship.id in STRUCTURE
+        return self.victim_ship.eve_group.eve_category_id == 65
+    
+    def is_mobile(self):
+        return self.victim_ship.eve_group.eve_category_id in (361, 1249, 1250, 1246, 1276, 4107)
 
     def is_capsule(self):
         return self.victim_ship.id in (670, 33328)

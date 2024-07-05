@@ -1,5 +1,26 @@
 # Changelog
 
+## \[0.1.5\] - 2024-07-04
+
+### Fixed
+
+- Worst Ship shows mobile structure losses
+
+### Added
+
+- is_mobile() to filter mobile structures
+
+### Changed
+
+- Refactor Killboard Manager
+- Killboard JS
+- Structure now be handled by group_id
+- Structure Kills count for Hall of Fame now
+
+### Removed
+
+- STRUCTURE Var
+
 ## \[0.1.4\] - 2024-07-04
 
 ### Added
