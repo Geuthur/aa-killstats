@@ -67,7 +67,7 @@ class Killmail(models.Model):
         return self.victim_ship.id in STRUCTURE
 
     def is_capsule(self):
-        return self.victim_ship.id == 670
+        return self.victim_ship.id in (670, 33328)
 
     def get_month(self, month):
         return self.killmail_date.month == month
