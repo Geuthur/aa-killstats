@@ -66,7 +66,7 @@ class Killmail(models.Model):
         return self.victim_ship.eve_group.eve_category_id == 65
     
     def is_mobile(self):
-        return self.victim_ship.eve_group.eve_category_id in (361, 1249, 1250, 1246, 1276, 4107)
+        return self.victim_ship.eve_group.eve_category_id == 22
 
     def is_capsule(self):
         return self.victim_ship.id in (670, 33328)
