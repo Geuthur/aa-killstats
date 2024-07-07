@@ -4,22 +4,23 @@
 
 ### Fixed
 
-- Worst Ship shows mobile structure losses
+- Worst Ship shows Deployable losses
 
 ### Added
 
-- is_mobile() to filter mobile structures
+- is_mobile() to filter Deployable
 
 ### Changed
 
 - Refactor Killboard Manager
 - Killboard JS
-- Structure now be handled by group_id
-- Structure Kills count for Hall of Fame now
+- Structures now be handled by category id
+- Structure Kills now also count for Hall of Fame
+- Image Handling
 
 ### Removed
 
-- STRUCTURE Var
+- STRUCTURE Var from app_settings
 
 ## \[0.1.4\] - 2024-07-04
 
