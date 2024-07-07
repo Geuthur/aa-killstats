@@ -64,7 +64,7 @@ class Killmail(models.Model):
 
     def is_structure(self):
         return self.victim_ship.eve_group.eve_category_id == 65
-    
+
     def is_mobile(self):
         return self.victim_ship.eve_group.eve_category_id == 22
 
