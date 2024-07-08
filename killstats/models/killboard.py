@@ -52,26 +52,33 @@ class Killmail(models.Model):
         )
 
     def is_kill(self, chars: list):
+        """Return True if any attacker is in the list of characters."""
         return any(attacker["character_id"] in chars for attacker in self.attackers)
 
     def is_loss(self, chars: list):
+        """Return True if the victim is in the list of characters."""
         return self.victim.eve_id in chars if self.victim else False
 
     def is_corp(self, corps: list):
+        """Return True if the victim corporation is in the list of corporations."""
         return self.victim_corporation_id in corps or any(
             attacker["corporation_id"] in corps for attacker in self.attackers
         )
 
     def is_structure(self):
+        """Return True if the victim is a structure."""
         return self.victim_ship.eve_group.eve_category_id == 65
 
     def is_mobile(self):
+        """Return True if the victim is a mobile structure."""
         return self.victim_ship.eve_group.eve_category_id == 22
 
     def is_capsule(self):
+        """Return True if the victim is a capsule."""
         return self.victim_ship.id in (670, 33328)
 
     def get_month(self, month):
+        """Get all killmails of a specific month."""
         return self.killmail_date.month == month
 
     def attackers_distinct_alliance_ids(self) -> Set[int]:
