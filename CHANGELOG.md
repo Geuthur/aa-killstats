@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Add Corp doesn't work for admin_access
+- Site Error on Char not exist
 - Worst Ship shows Deployable losses
 
 ### Added
