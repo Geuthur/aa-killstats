@@ -34,11 +34,13 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         cls.manage_api_endpoints = KillboardApiEndpoints(api=cls.api)
 
     def test_killstats_killboard_api(self):
+        self.maxDiff = None
         # given
         self.client.force_login(self.user)
         url = "/killstats/api/killboard/month/7/year/2024/"
         # when
         response = self.client.get(url)
+        print(response.json())
         # then
         expected_data = KillstatsMonth
         self.assertEqual(response.status_code, 200)
