@@ -11,5 +11,5 @@ def current_month(value):
     try:
         month_number = int(value)
         return calendar.month_name[month_number]
-    except (ValueError, IndexError):
+    except (ValueError, TypeError, IndexError):
         return datetime.now().strftime("%B")
