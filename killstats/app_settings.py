@@ -6,10 +6,6 @@ from app_utils.app_settings import clean_setting
 # Switch between AA-Corp Stats and CorpStats Two APP
 KILLSTATS_CORPSTATS_TWO = clean_setting("KILLSTATS_CORPSTATS_TWO", False)
 
-# TODO handle it in the model itself?
-# All EVE Online Structures (List)
-STRUCTURE = [35825, 35826, 35827, 35832, 35833, 35834, 35835, 35836]
-
 # Set Naming on Auth Hook
 KILLSTATS_APP_NAME = clean_setting("KILLSTATS_APP_NAME", "Killstats")
 

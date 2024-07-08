@@ -1,5 +1,29 @@
 # Changelog
 
+## \[0.1.5\] - 2024-07-04
+
+### Fixed
+
+- Add Corp doesn't work for admin_access
+- Site Error on Char not exist
+- Worst Ship shows Deployable losses
+
+### Added
+
+- is_mobile() to filter Deployable
+
+### Changed
+
+- Refactor Killboard Manager
+- Killboard JS
+- Structures now be handled by category id
+- Structure Kills now also count for Hall of Fame
+- Image Handling
+
+### Removed
+
+- STRUCTURE Var from app_settings
+
 ## \[0.1.4\] - 2024-07-04
 
 ### Added

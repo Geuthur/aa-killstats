@@ -7,7 +7,6 @@ from typing import Any, Tuple
 from django.db import models, transaction
 
 # AA Voices of War
-from killstats.app_settings import STRUCTURE
 from killstats.hooks import get_extension_logger
 from killstats.managers.killmail_core import KillmailManager
 
@@ -40,8 +39,8 @@ class KillmailQuerySet(models.QuerySet):
         QuerySet
         """
         if exclude:
-            return self.exclude(victim_ship__id__in=STRUCTURE)
-        return self.filter(victim_ship__id__in=STRUCTURE)
+            return self.exclude(victim_ship__eve_group__eve_category_id=65)
+        return self.filter(victim_ship__eve_group__eve_category_id=65)
 
     def filter_loss(self, chars, exclude=False):
         """

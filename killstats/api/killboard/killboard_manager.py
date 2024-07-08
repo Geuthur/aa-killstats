@@ -2,8 +2,10 @@
 from collections import Counter
 from heapq import nlargest
 
-# Alliance Auth (External Libs)
 from eveuniverse.models import EveType
+
+# Alliance Auth (External Libs)
+from allianceauth.eveonline.evelinks import eveimageserver
 
 # AA Killstats
 from killstats.hooks import get_extension_logger
@@ -60,21 +62,29 @@ class KillboardStatsManager:
     def _update_loss_stats(self, killmail: Killmail):
         victim_id = killmail.victim.eve_id
         if killmail.get_month(self.date.month):
-            if not killmail.is_capsule():
+            if not killmail.is_capsule() and not killmail.is_mobile():
                 self.worst_ship[killmail.victim_ship.id] += 1
             self.top_victim[victim_id] += 1
         self.alltime_loss[victim_id] += 1
 
     def _stats_count(self, title, model, count, char=False, loss=False):
         if model:
+            eve_id = model.eve_id if char else model.id
+
+            if char:
+                portrait = eveimageserver.character_portrait_url(eve_id, 256)
+            else:
+                portrait = eveimageserver.type_icon_url(eve_id, 256)
+
+            key_id = "character_id" if char else "ship"
+            key_name = "character_name" if char else "ship_name"
             self.stats.append(
                 {
                     "title": title,
                     "type": "count",
-                    "ship" if not char else "character_id": (
-                        model.eve_id if char else model.id
-                    ),
-                    "ship_name" if not char else "character_name": model.name,
+                    key_id: eve_id,
+                    key_name: model.name,
+                    "portrait": f"{portrait}",
                     "count": count,
                     "loss": loss,
                 }
@@ -172,81 +182,91 @@ def killboard_process_kills(killmail_data: Killmail, mains, all_chars):
     return kills, totalvalue, losses, totalvalue_loss
 
 
-# pylint: disable=too-many-arguments
+def _get_character_details(killmail, mains, stats_type, main_list):
+    if main_list:
+        return main_list
+
+    main = None
+    main_id = None
+    alt = None
+
+    # Check if Victim is Main or Alt and set main and alt accordingly
+    if killmail.victim.eve_id in mains:
+        main_data = mains[killmail.victim.eve_id]
+        main = main_data["main"]
+        main_id = killmail.victim.eve_id
+    else:
+        for main_data in mains.values():
+            alts = main_data.get("alts", [])
+            for alt_candidate in alts:
+                if killmail.victim.eve_id == alt_candidate.character_id:
+                    main = main_data["main"]
+                    alt = alt_candidate
+                    break
+            if alt:  # Break outer loop if alt is found
+                break
+
+    if stats_type == "attacker" and not main_list:
+        main, main_id, alt = killmail.attacker_main(mains, killmail.attackers)
+
+    return main, main_id, alt
+
+
+def _calculate_character_info(alt, main, main_id, stats_type, killmail, char_name):
+    if stats_type == "attacker":
+        if alt is None:
+            character_id = main_id
+            character_name = f"{main}"
+        else:
+            character_id = alt.character_id
+            character_name = f"{alt.character_name} ({main})" if alt else char_name
+    else:
+        character_id = (
+            killmail.victim.eve_id if killmail.victim.category == "character" else None
+        )
+        if main and str(char_name) != str(main):
+            character_name = f"{char_name} ({main})"
+        else:
+            character_name = char_name
+
+    return character_id, character_name
+
+
 def _stats_killmail(
     killmail: Killmail,
-    mains,
-    stats_list: list,
+    mains: dict,
+    stats: list,
     title=None,
     stats_type="killmail",
     count=0,
     main_list=None,
 ):
-    main = None
-    main_id = None
-    alt = None
-
-    # Check if Victim is Main
-    if killmail.victim.eve_id in mains:
-        main_data = mains[killmail.victim.eve_id]
-        main = main_data["main"]
-    else:
-        # Check if Victim is Alt Character
-        for main_data in mains.values():
-            if any(
-                killmail.victim.eve_id == alt.character_id for alt in main_data["alts"]
-            ):
-                main = main_data["main"]
-                break
-
-    if stats_type == "attacker":
-        main, main_id, alt = killmail.attacker_main(mains, killmail.attackers)
-
-    if main_list:
-        main, main_id, alt = main_list
-
+    main, main_id, alt = _get_character_details(killmail, mains, stats_type, main_list)
     char_name = killmail.victim.name
+    portrait = eveimageserver.type_icon_url(killmail.victim_ship.id, 64)
+    character_id, character_name = _calculate_character_info(
+        alt, main, main_id, stats_type, killmail, char_name
+    )
 
-    stats_list.append(
+    stats.append(
         {
             "title": f"{title}" if main is not None else title,
-            "type": stats_type,
             "killmail_id": killmail.killmail_id,
             "name": char_name,
-            "character_id": (
-                main_id
-                if alt is None and stats_type == "attacker"
-                else (
-                    alt.character_id
-                    if alt and stats_type == "attacker"
-                    else (
-                        killmail.victim.eve_id
-                        if killmail.victim.category == "character"
-                        else None
-                    )
-                )
-            ),
-            "character_name": (
-                f"{char_name} ({main})"
-                if main and str(char_name) != str(main) and stats_type != "attacker"
-                else (
-                    f"{main}"
-                    if alt is None
-                    else f"{alt.character_name} ({main})" if alt else char_name
-                )
-            ),
+            "character_id": character_id,
+            "character_name": character_name,
+            "portrait": portrait,
             "corporation_id": killmail.victim_corporation_id,
             "alliance_id": killmail.victim_alliance_id,
             "ship": killmail.victim_ship.id,
             "ship_name": killmail.victim_ship.name,
             "hash": killmail.hash,
-            "totalValue_blank": killmail.victim_total_value,
             "totalValue": killmail.victim_total_value,
             "date": killmail.killmail_date,
             "count": count,
         }
     )
-    return stats_list
+    return stats
 
 
 def killboard_dashboard(
@@ -311,7 +331,6 @@ def killboard_hall(killmail_month: Killmail, mains):
     topkiller = (
         killmail_month.filter_threshold(1_000_000)
         .filter_kills(all_chars)
-        .filter_structure(exclude=True)
         .filter_loss(all_chars, exclude=True)
         .filter_top_killer(mains)
     )

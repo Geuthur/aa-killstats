@@ -53,7 +53,7 @@ function updateShame(shameData) {
                                 </a>
                                 <span class="ship-logo">
                                     <a href="https://zkillboard.com/kill/${kill.killmail_id}" target="_blank">
-                                        <img class="card-img-zoom shop-logo" src="https://images.evetech.net/Render/${kill.ship}_64.png">
+                                        <img class="card-img-zoom shop-logo" src="${kill.portrait}">
                                     </a>
                                 </span>
                             </span>
@@ -136,25 +136,6 @@ function updateStats(statsData) {
 
         // Iterieren Sie über die Statistikdaten und erstellen Sie das HTML
         statsData.forEach(function (stat) {
-            var imageUrl = '';
-            if (stat.type === 'count') {
-                if (stat.character_id) {
-                    imageUrl = `https://images.evetech.net/characters/${stat.character_id}/portrait?size=256`;
-                } else {
-                    imageUrl = `https://imageserver.eveonline.com/Render/${stat.ship}_256.png`;
-                }
-            } else {
-                if (stat.type === 'ship') {
-                    imageUrl = `https://imageserver.eveonline.com/Render/${stat.ship}_256.png`;
-                } else {
-                    if (stat.character_id != stat.corporation_id) {
-                        imageUrl = `https://images.evetech.net/characters/${stat.character_id}/portrait?size=256`;
-                    } else {
-                        imageUrl = `https://imageserver.eveonline.com/Render/${stat.ship}_256.png`;
-                    }
-                }
-            }
-
             // Erstelle das HTML für jede Statistik basierend auf dem Typ
             statsHtml += `
                 <div class="card mb-4 px-0">
@@ -166,20 +147,20 @@ function updateStats(statsData) {
                     statsHtml += `
                             <div class="col-md-4">
                                 <a href="https://zkillboard.com/character/${stat.character_id}" target="_blank">
-                                    <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${imageUrl}">
+                                    <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
                                 </a>
                             </div>`;
                 } else {
                     statsHtml += `
                             <div class="col-md-4">
-                                <img class="card-img img-fluid rounded-start" style="width: 100%; height:100%" src="${imageUrl}">
+                                <img class="card-img img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
                             </div>`;
                 }
             } else {
                 statsHtml += `
                             <div class="col-md-4">
                                 <a href="https://zkillboard.com/kill/${stat.killmail_id}" target="_blank">
-                                    <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${imageUrl}">
+                                    <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
                                 </a>
                             </div>`;
             }
