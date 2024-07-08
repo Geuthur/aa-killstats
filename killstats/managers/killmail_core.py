@@ -365,7 +365,7 @@ class KillmailManager(_KillmailBase):
         # pylint: disable=import-outside-toplevel
         from killstats.models.general import EveEntity
 
-        entity, new_entry = EveEntity.objects.get_or_create_esi(entity_id=eve_id)
+        entity, new_entry = EveEntity.objects.get_or_create_esi(eve_id=eve_id)
         if new_entry:
             logger.debug("Kllboard Manager EveName: %s added", entity.name)
         return entity

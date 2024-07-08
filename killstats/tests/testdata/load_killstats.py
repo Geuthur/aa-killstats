@@ -1,12 +1,14 @@
 """Generate AllianceAuth test objects from JSON data."""
 
 import json
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 
 from eveuniverse.models import EveType
 
-from killstats.models import EveEntity, Killmail
+from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
+
+from killstats.models import EveEntity, Killmail, KillstatsAudit
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 
@@ -30,6 +32,7 @@ def load_killstats_all():
     load_eveentity()
     load_eveuniverse()
     load_killstats()
+    load_killstatsaudit()
 
 
 def load_eveentity():
@@ -40,6 +43,15 @@ def load_eveentity():
             name=character_info.get("name"),
             category=character_info.get("category"),
         )
+
+
+def load_killstatsaudit():
+    KillstatsAudit.objects.all().delete()
+    KillstatsAudit.objects.update_or_create(
+        id=1,
+        corporation=EveCorporationInfo.objects.get(corporation_id=2001),
+        owner=EveCharacter.objects.get(character_id=1001),
+    )
 
 
 def load_killstats():
