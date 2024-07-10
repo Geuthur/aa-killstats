@@ -25,6 +25,11 @@ def _load_killmail_data():
         return json.load(fp)
 
 
+def _load_get_bulk_data():
+    with open(Path(__file__).parent / "get_bulk.json", encoding="utf-8") as fp:
+        return json.load(fp)
+
+
 _killstats_data = _load_killmail_data()
 
 

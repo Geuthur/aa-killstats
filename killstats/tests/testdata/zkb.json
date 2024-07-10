@@ -1,0 +1,24 @@
+[
+    {
+      "killmail_id": 119324952,
+      "zkb": {
+        "locationID": 40165483,
+        "hash": "9ab5e26acfffb8baf534be9d832e51c65bd69ad9",
+        "fittedValue": 1018817626.04,
+        "droppedValue": 845710146.24,
+        "destroyedValue": 1018817626.04,
+        "totalValue": 1864527772.28,
+        "points": 1,
+        "npc": false,
+        "solo": false,
+        "awox": false,
+        "labels": [
+          "cat:65",
+          "#:50+",
+          "pvp",
+          "loc:nullsec",
+          "isk:1b+"
+        ]
+      }
+    }
+]

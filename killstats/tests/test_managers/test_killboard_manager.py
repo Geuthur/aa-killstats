@@ -1,6 +1,7 @@
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
+from django.urls import reverse
 
-from app_utils.testing import create_user_from_evecharacter
+from app_utils.testing import add_character_to_user, create_user_from_evecharacter
 
 from killstats.api.helpers import get_corporations, get_main_and_alts_all
 from killstats.models.killboard import Killmail
@@ -14,6 +15,7 @@ class KillstatManagerQuerySetTest(TestCase):
         super().setUpClass()
         load_allianceauth()
         load_killstats_all()
+        cls.factory = RequestFactory()
 
     def test_visible_to_superuser(self):
         # given
@@ -38,6 +40,17 @@ class KillstatManagerQuerySetTest(TestCase):
         )
         # when
         expected_result = Killmail.objects.all()
+        result = Killmail.objects.visible_to(self.user)
+        # then
+        self.assertEqual(list(result), list(expected_result))
+
+    def test_visible_to_no_access(self):
+        # given
+        self.user, self.character_ownership = create_user_from_evecharacter(
+            1001,
+        )
+        # when
+        expected_result = []
         result = Killmail.objects.visible_to(self.user)
         # then
         self.assertEqual(list(result), list(expected_result))
@@ -91,17 +104,52 @@ class KillstatManagerQuerySetTest(TestCase):
             )
 
     def test_filter_top_killer(self):
-        mains, _ = get_main_and_alts_all([1001], char_ids=True)
-        queryset = Killmail.objects.filter_top_killer(mains)
-        for km in queryset:
-            self.assertTrue(
-                any(attacker["character_id"] == 1001 for attacker in km.attackers)
-            )
+        self.user, self.character_ownership = create_user_from_evecharacter(
+            1001,
+        )
+        request = self.factory.get(reverse("killstats:index"))
+        request.user = self.user
+        corporations = get_corporations(request)
+        mains, _ = get_main_and_alts_all(corporations, char_ids=True)
+        killmails = Killmail.objects.all()
+        topkiller = killmails.filter_top_killer(mains)
+        for char in topkiller:
+            killmail_fame, _ = topkiller.get(char, (None, None))
+            self.assertIsInstance(killmail_fame, Killmail)
+
+    def test_filter_top_killer_alt(self):
+        self.user, self.character_ownership = create_user_from_evecharacter(
+            1001,
+        )
+        request = self.factory.get(reverse("killstats:index"))
+        request.user = self.user
+        corporations = get_corporations(request)
+        mains, _ = get_main_and_alts_all(corporations, char_ids=True)
+        killmails = Killmail.objects.all()
+        topkiller = killmails.filter_top_killer(mains)
+        for char in topkiller:
+            killmail_fame, _ = topkiller.get(char, (None, None))
+            self.assertIsInstance(killmail_fame, Killmail)
 
     def test_filter_top_killer_no_killer(self):
-        mains, _ = get_main_and_alts_all([1004], char_ids=True)
-        queryset = Killmail.objects.filter_top_killer(mains)
-        for km in queryset:
-            self.assertTrue(
-                any(attacker["character_id"] == 1004 for attacker in km.attackers)
-            )
+        self.user, self.character_ownership = create_user_from_evecharacter(
+            1004,
+        )
+        request = self.factory.get(reverse("killstats:index"))
+        request.user = self.user
+        corporations = get_corporations(request)
+        mains, _ = get_main_and_alts_all(corporations, char_ids=True)
+        killmails = Killmail.objects.all()
+        topkiller = killmails.filter_top_killer(mains)
+        for char in topkiller:
+            killmail_fame, _ = topkiller.get(char, (None, None))
+            self.assertIsNone(killmail_fame)
+
+
+class KillstatManagerTest(TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        load_allianceauth()
+        load_killstats_all()
+        cls.factory = RequestFactory()
