@@ -5,6 +5,12 @@
 [![Tests](https://github.com/Geuthur/aa-killstats/actions/workflows/autotester.yml/badge.svg)](https://github.com/Geuthur/aa-killstats/actions/workflows/autotester.yml)
 [![codecov](https://codecov.io/gh/Geuthur/aa-killstats/graph/badge.svg?token=jRicu5enZF)](https://codecov.io/gh/Geuthur/aa-killstats)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W810Q5J4)
+
+Killstats for Corporations, Hall of Fame, Hall of Shame, etc.
+
+## -
+
 - [AA Killstats](#aa-killstats)
   - [Features](#features)
   - [Upcoming](#upcoming)
