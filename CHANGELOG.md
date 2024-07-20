@@ -1,6 +1,20 @@
 # Changelog
 
-## \[0.1.5\] - 2024-07-04
+## \[0.1.6\] - 2024-07-20
+
+### Fixed
+
+- wrong id var in repr, icon_url
+
+### Added
+
+- Many Tests
+
+### Changed
+
+- EveEntity entity_id to eve_id
+
+## \[0.1.5\] - 2024-07-08
 
 ### Fixed
 

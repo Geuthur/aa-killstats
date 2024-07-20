@@ -94,7 +94,7 @@ class KillmailQuerySet(models.QuerySet):
         return self.filter(victim_total_value__gt=threshold)
 
     def filter_top_killer(self, mains):
-        """Returns Topkiller from Killmail."""
+        """Returns Topkiller from Killmail as dict."""
         topkiller = {}
         for killmail in self:
             for attacker in killmail.attackers:
