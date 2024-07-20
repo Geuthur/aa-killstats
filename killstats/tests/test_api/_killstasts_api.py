@@ -1,23 +1,6 @@
 KillstatsMonth = [
     {
-        "kills": [
-            {
-                "title": None,
-                "killmail_id": 119303075,
-                "name": "Garthd",
-                "character_id": 1004,
-                "character_name": "Garthd",
-                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
-                "corporation_id": 2001,
-                "alliance_id": 3001,
-                "ship": 29340,
-                "ship_name": "Osprey Navy Issue",
-                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
-                "totalValue": 1000,
-                "date": "2024-07-07T21:38:58Z",
-                "count": 0,
-            }
-        ],
+        "kills": [],
         "losses": [
             {
                 "title": "None",
@@ -34,10 +17,26 @@ KillstatsMonth = [
                 "totalValue": 76734851,
                 "date": "2024-07-07T21:38:59Z",
                 "count": 0,
-            }
+            },
+            {
+                "title": "None",
+                "killmail_id": 119303075,
+                "name": "Garthd",
+                "character_id": 1004,
+                "character_name": "Garthd",
+                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
+                "totalValue": 1000,
+                "date": "2024-07-07T21:38:58Z",
+                "count": 0,
+            },
         ],
-        "totalKills": 1000,
-        "totalLoss": 76734851,
+        "totalKills": 0,
+        "totalLoss": 76735851,
         "shame": [
             {
                 "title": "None",
@@ -54,7 +53,23 @@ KillstatsMonth = [
                 "totalValue": 76734851,
                 "date": "2024-07-07T21:38:59Z",
                 "count": 0,
-            }
+            },
+            {
+                "title": "None",
+                "killmail_id": 119303075,
+                "name": "Garthd",
+                "character_id": 1004,
+                "character_name": "Garthd",
+                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
+                "totalValue": 1000,
+                "date": "2024-07-07T21:38:58Z",
+                "count": 0,
+            },
         ],
         "fame": [],
         "stats": [
@@ -100,22 +115,6 @@ KillstatsMonth = [
                 "portrait": "https://images.evetech.net/characters/1001/portrait?size=256",
                 "count": 1,
                 "loss": True,
-            },
-            {
-                "title": "Top Kill:",
-                "killmail_id": 119303075,
-                "name": "Garthd",
-                "character_id": 1004,
-                "character_name": "Garthd",
-                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
-                "corporation_id": 2001,
-                "alliance_id": 3001,
-                "ship": 29340,
-                "ship_name": "Osprey Navy Issue",
-                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
-                "totalValue": 1000,
-                "date": "2024-07-07T21:38:58Z",
-                "count": 0,
             },
             {
                 "title": "Top Ship:",

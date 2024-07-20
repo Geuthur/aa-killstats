@@ -55,7 +55,7 @@ class KillboardApiEndpoints:
 
             corporations = get_corporations(request)
 
-            mains, all_chars = get_main_and_alts_all(corporations, char_ids=True)
+            mains, all_chars = get_main_and_alts_all(corporations)
 
             kills, totalvalue, losses, totalvalue_loss = killboard_process_kills(
                 killmail_month, mains, all_chars

@@ -110,7 +110,7 @@ class KillstatManagerQuerySetTest(TestCase):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
         corporations = get_corporations(request)
-        mains, _ = get_main_and_alts_all(corporations, char_ids=True)
+        mains, _ = get_main_and_alts_all(corporations)
         killmails = Killmail.objects.all()
         topkiller = killmails.filter_top_killer(mains)
         for char in topkiller:
@@ -124,7 +124,7 @@ class KillstatManagerQuerySetTest(TestCase):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
         corporations = get_corporations(request)
-        mains, _ = get_main_and_alts_all(corporations, char_ids=True)
+        mains, _ = get_main_and_alts_all(corporations)
         killmails = Killmail.objects.all()
         topkiller = killmails.filter_top_killer(mains)
         for char in topkiller:
@@ -133,12 +133,12 @@ class KillstatManagerQuerySetTest(TestCase):
 
     def test_filter_top_killer_no_killer(self):
         self.user, self.character_ownership = create_user_from_evecharacter(
-            1004,
+            1003,
         )
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
         corporations = get_corporations(request)
-        mains, _ = get_main_and_alts_all(corporations, char_ids=True)
+        mains, _ = get_main_and_alts_all(corporations)
         killmails = Killmail.objects.all()
         topkiller = killmails.filter_top_killer(mains)
         for char in topkiller:
