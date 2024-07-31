@@ -57,6 +57,11 @@ def load_killstatsaudit():
         corporation=EveCorporationInfo.objects.get(corporation_id=2001),
         owner=EveCharacter.objects.get(character_id=1001),
     )
+    KillstatsAudit.objects.update_or_create(
+        id=2,
+        corporation=EveCorporationInfo.objects.get(corporation_id=2002),
+        owner=EveCharacter.objects.get(character_id=1002),
+    )
 
 
 def load_killstats():

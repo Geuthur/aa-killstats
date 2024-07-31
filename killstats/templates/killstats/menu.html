@@ -1,7 +1,14 @@
 {% load i18n %}
 {% load navactive %}
 
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'killstats:corporation_admin' %}">Corporation Overview</a>
+</li>
+
 {% if perms.killstats.admin_access %}
+<li class="nav-item">
+    <span class="nav-link">|</span>
+</li>
 <li class="nav-item">
     <a class="nav-link" href="{% url 'killstats:add_corp' %}">Add Corporation</a>
 </li>

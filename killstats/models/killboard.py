@@ -105,13 +105,11 @@ class Killmail(models.Model):
             if "character_id" in attacker
         ]
 
-    @classmethod
-    def threshold(cls, threshold: int):
+    def threshold(self, threshold: int) -> bool:
         """Return True if the total value of the killmail is above the threshold."""
-        return cls.objects.filter(victim_total_value__gt=threshold)
+        return self.victim_total_value > threshold
 
-    @classmethod
-    def attacker_main(cls, mains, attackers):
+    def attacker_main(self, mains):
         """
         Get Attacker Main Data from Mains Dict
 
@@ -121,7 +119,7 @@ class Killmail(models.Model):
         - CharacterID: `int`
         - Alt Object: `object`
         """
-        for attacker in attackers:
+        for attacker in self.attackers:
             attacker_id = attacker["character_id"]
 
             if attacker_id in mains:

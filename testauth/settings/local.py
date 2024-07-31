@@ -55,6 +55,7 @@ DATABASES["default"] = {
 INSTALLED_APPS += [
     #'allianceauth.theme.bootstrap',
     "allianceauth.corputils",
+    "corpstats",
     PACKAGE,
     "eveuniverse",
 ]

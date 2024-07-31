@@ -89,7 +89,11 @@
 {% endblock killstats_block %}
 
 {% block extra_javascript %}
-
+<script type="application/javascript">
+    let corporationsettings = {
+        corporation_pk: {{ corporation_pk }},
+    };
+</script>
 {% include 'bundles/datatables-js-bs5.html' %}
 {% include "bundles/moment-js.html" with locale=True %}
 

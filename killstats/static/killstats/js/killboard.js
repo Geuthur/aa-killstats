@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-undef
+var corporationPk = corporationsettings.corporation_pk;
 var selectedMonth, selectedYear;
 var monthText;
 
@@ -30,9 +32,6 @@ function updateShame(shameData) {
     // Prüfe, ob shame Daten enthält und zeige den entsprechenden Container an oder aus
     if (shameData && shameData.length > 0) {
         $('#shame-nav').show(); // Container für Hall of Shame anzeigen
-        if (!$('#shame-nav').hasClass('active') && !$('#fame-nav').hasClass('active')) {
-            $('#shame-nav').addClass('active');
-        }
     } else {
         $('#shame-nav').hide(); // Container für Hall of Shame ausblenden
         $('#shame-nav').removeClass('active');
@@ -78,10 +77,6 @@ function updateFame(fameData) {
     // Prüfe, ob shame Daten enthält und zeige den entsprechenden Container an oder aus
     if (fameData && fameData.length > 0) {
         $('#fame-nav').show(); // Container für Hall of Shame anzeigen
-        if (!$('#fame-nav').hasClass('active') && !$('#shame-nav').hasClass('active')) {
-            $('#fame-nav').addClass('active');
-            $('#tab-fame').show(); // Container für Hall of Shame anzeigen
-        }
     } else {
         $('#fame-nav').hide(); // Container für Hall of Shame ausblenden
         $('#fame-nav').removeClass('active');
@@ -198,7 +193,7 @@ $('#monthDropdown li').click(function() {
     $('#loadingIndicator').removeClass('d-none');
 
     // URL für die Daten der ausgewählten Kombination von Jahr und Monat erstellen
-    var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/';
+    var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
 
     // DataTable neu laden mit den Daten des ausgewählten Monats
     var currentMonthTable = $.ajax({
@@ -236,7 +231,7 @@ $('#monthDropdown li').click(function() {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/';
+    var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
 
     // AJAX-Anfrage, um Daten für kills und losses abzurufen
     var currentMonthTable = $.ajax({

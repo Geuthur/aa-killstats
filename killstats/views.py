@@ -21,8 +21,11 @@ logger = get_extension_logger(__name__)
 
 @login_required
 @permission_required("killstats.basic_access")
-def killboard_index(request):
-    return render(request, "killstats/killboard.html")
+def killboard_index(request, corporation_pk):
+    context = {
+        "corporation_pk": corporation_pk,
+    }
+    return render(request, "killstats/killboard.html", context=context)
 
 
 @login_required
@@ -52,3 +55,13 @@ def add_corp(request, token):
     msg = "Failed to add Corporation to Killboard"
     messages.error(request, msg)
     return redirect("killstats:index")
+
+
+@login_required
+@permission_required("killstats.basic_access")
+def corporation_admin(request):
+    """
+    Corporation Admin
+    """
+    context = {}
+    return render(request, "killstats/admin/corporation_admin.html", context=context)

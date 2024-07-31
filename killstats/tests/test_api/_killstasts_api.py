@@ -146,3 +146,15 @@ KillstatsMonth = [
         ],
     }
 ]
+
+KillstatsEmpty = [
+    {
+        "kills": [],
+        "losses": [],
+        "totalKills": 0,
+        "totalLoss": 0,
+        "shame": [],
+        "fame": [],
+        "stats": [],
+    }
+]

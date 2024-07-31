@@ -24,3 +24,7 @@ class KillboardIndex(Schema):
     shame: Optional[list] = None
     fame: Optional[list] = None
     stats: Optional[list] = None
+
+
+class CorporationAdmin(Schema):
+    corporation: Optional[dict] = None
