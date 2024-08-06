@@ -1,6 +1,6 @@
 # Changelog
 
-## \[0.1.7\] - 2024-08-01
+## \[0.1.7\] - 2024-08-06
 
 ### Added
 
@@ -12,6 +12,7 @@
 
 - Hall of Fame/Shame Tab Display (in some cases it shows both)
 - Classmethod attackers_mains & threshold
+- Python 3.8, 3.8 Support
 
 ## \[0.1.6\] - 2024-07-20
 
