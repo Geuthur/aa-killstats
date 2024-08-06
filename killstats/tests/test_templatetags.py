@@ -1,4 +1,3 @@
-import calendar
 from datetime import datetime
 
 from django.test import TestCase
@@ -15,4 +14,4 @@ class CurrentMonthFilterTest(TestCase):
     def test_current_month_with_invalid_month(self):
         """Testet, ob ein ungültiger Monatswert den aktuellen Monat zurückgibt."""
         month = current_month(14)
-        self.assertEqual(month, "July")
+        self.assertEqual(month, datetime.now().strftime("%B"))
