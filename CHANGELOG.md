@@ -1,5 +1,19 @@
 # Changelog
 
+## \[0.1.7\] - 2024-08-06
+
+### Added
+
+- Corporation Killstats Overview
+- Single Lookup for each Corporation
+- Killmail Database Corporations Filter
+
+### Removed
+
+- Hall of Fame/Shame Tab Display (in some cases it shows both)
+- Classmethod attackers_mains & threshold
+- Python 3.8, 3.8 Support
+
 ## \[0.1.6\] - 2024-07-20
 
 ### Fixed

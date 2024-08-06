@@ -79,6 +79,29 @@ class KillmailQuerySet(models.QuerySet):
                 kms.append(killmail.killmail_id)
         return self.filter(killmail_id__in=kms)
 
+    def filter_corporations(self, corporations):
+        """
+        Filter Kills from Corporations List.
+
+        Parameters
+        ----------
+        corporations: `list`
+
+        Returns
+        ----------
+        QuerySet
+        """
+        kms = []
+        for killmail in self:
+            if any(
+                attacker["corporation_id"] in corporations
+                for attacker in killmail.attackers
+            ):
+                kms.append(killmail.killmail_id)
+            if killmail.victim_corporation_id in corporations:
+                kms.append(killmail.killmail_id)
+        return self.filter(killmail_id__in=kms)
+
     def filter_threshold(self, threshold: int):
         """
         Filter Killmails are in Threshold.

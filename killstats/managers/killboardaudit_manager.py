@@ -20,7 +20,17 @@ class KillsboardAuditQuerySet(models.QuerySet):
             logger.debug("Returning all corps for Admin %s.", user)
             return self
 
-        return self.none()
+        try:
+            char = user.profile.main_character
+            assert char
+            query = models.Q(corporation__corporation_id=char.corporation_id)
+
+            logger.debug("Returning Main Corporation for %s", user)
+
+            return self.filter(query)
+        except AssertionError:
+            logger.debug("User %s has no main character. Nothing visible.", user)
+            return self.none()
 
 
 class KillstatsAuditManager(models.Manager):

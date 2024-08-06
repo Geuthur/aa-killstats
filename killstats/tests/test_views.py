@@ -11,7 +11,7 @@ from app_utils.testing import create_user_from_evecharacter
 
 from killstats.models.killstatsaudit import KillstatsAudit
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.views import add_corp, killboard_index
+from killstats.views import add_corp, corporation_admin, killboard_index
 
 MODULE_PATH = "killstats.views"
 
@@ -34,7 +34,19 @@ class KillstatsAuditTest(TestCase):
     def test_view(self):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
-        response = killboard_index(request)
+        response = killboard_index(request, 0)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_view_single(self):
+        request = self.factory.get(reverse("killstats:index"))
+        request.user = self.user
+        response = killboard_index(request, 2001)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_view_admin(self):
+        request = self.factory.get(reverse("killstats:corporation_admin"))
+        request.user = self.user
+        response = corporation_admin(request)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     @patch(MODULE_PATH + ".messages")

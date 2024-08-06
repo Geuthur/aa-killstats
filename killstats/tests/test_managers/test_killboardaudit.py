@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from allianceauth.eveonline.models import EveCharacter
+from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
 from killstats.models.killstatsaudit import KillstatsAudit
@@ -42,13 +42,30 @@ class KillstatsAuditQuerySetTest(TestCase):
         # then
         self.assertEqual(list(result), list(expected_result))
 
-    def test_visible_to_no_access(self):
+    def test_visible_to(self):
         # given
         self.user, self.character_ownership = create_user_from_evecharacter(
             1001,
         )
         # when
-        expected_result = []
+        expected_result = KillstatsAudit.objects.filter(
+            corporation=EveCorporationInfo.objects.get(corporation_id=2001)
+        )
         result = KillstatsAudit.objects.visible_to(self.user)
         # then
         self.assertEqual(list(result), list(expected_result))
+
+    def test_visible_to_error(self):
+        # given
+        self.user, self.character_ownership = create_user_from_evecharacter(
+            1001,
+        )
+        self.user.profile.main_character = None
+        # when
+        result = list(
+            KillstatsAudit.objects.visible_to(self.user).values_list(
+                "corporation_id", flat=True
+            )
+        )
+        # then
+        self.assertEqual(result, [])
