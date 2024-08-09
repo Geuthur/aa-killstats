@@ -1,9 +1,10 @@
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from app_utils.testing import add_character_to_user, create_user_from_evecharacter
+from app_utils.testing import create_user_from_evecharacter
 
-from killstats.api.helpers import get_corporations, get_main_and_alts_all
+from killstats.api.account_manager import AccountManager
+from killstats.api.helpers import get_corporations
 from killstats.models.killboard import Killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
@@ -110,7 +111,8 @@ class KillstatManagerQuerySetTest(TestCase):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
         corporations = get_corporations(request)
-        mains, _ = get_main_and_alts_all(corporations)
+        account = AccountManager(corporations=corporations)
+        mains, _ = account.get_mains_alts()
         killmails = Killmail.objects.all()
         topkiller = killmails.filter_top_killer(mains)
         for char in topkiller:
@@ -124,7 +126,8 @@ class KillstatManagerQuerySetTest(TestCase):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
         corporations = get_corporations(request)
-        mains, _ = get_main_and_alts_all(corporations)
+        account = AccountManager(corporations=corporations)
+        mains, _ = account.get_mains_alts()
         killmails = Killmail.objects.all()
         topkiller = killmails.filter_top_killer(mains)
         for char in topkiller:
@@ -138,7 +141,8 @@ class KillstatManagerQuerySetTest(TestCase):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
         corporations = get_corporations(request)
-        mains, _ = get_main_and_alts_all(corporations)
+        account = AccountManager(corporations=corporations)
+        mains, _ = account.get_mains_alts()
         killmails = Killmail.objects.all()
         topkiller = killmails.filter_top_killer(mains)
         for char in topkiller:

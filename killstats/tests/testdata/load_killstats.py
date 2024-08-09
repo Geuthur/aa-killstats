@@ -6,9 +6,13 @@ from pathlib import Path
 
 from eveuniverse.models import EveType
 
-from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
+from allianceauth.eveonline.models import (
+    EveAllianceInfo,
+    EveCharacter,
+    EveCorporationInfo,
+)
 
-from killstats.models import EveEntity, Killmail, KillstatsAudit
+from killstats.models import AlliancesAudit, CorporationsAudit, EveEntity, Killmail
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 
@@ -37,7 +41,8 @@ def load_killstats_all():
     load_eveentity()
     load_eveuniverse()
     load_killstats()
-    load_killstatsaudit()
+    load_corporationaudit()
+    load_allianceaudit()
 
 
 def load_eveentity():
@@ -50,16 +55,30 @@ def load_eveentity():
         )
 
 
-def load_killstatsaudit():
-    KillstatsAudit.objects.all().delete()
-    KillstatsAudit.objects.update_or_create(
+def load_corporationaudit():
+    CorporationsAudit.objects.all().delete()
+    CorporationsAudit.objects.update_or_create(
         id=1,
         corporation=EveCorporationInfo.objects.get(corporation_id=2001),
         owner=EveCharacter.objects.get(character_id=1001),
     )
-    KillstatsAudit.objects.update_or_create(
+    CorporationsAudit.objects.update_or_create(
         id=2,
         corporation=EveCorporationInfo.objects.get(corporation_id=2002),
+        owner=EveCharacter.objects.get(character_id=1002),
+    )
+
+
+def load_allianceaudit():
+    AlliancesAudit.objects.all().delete()
+    AlliancesAudit.objects.update_or_create(
+        id=1,
+        alliance=EveAllianceInfo.objects.get(alliance_id=3001),
+        owner=EveCharacter.objects.get(character_id=1001),
+    )
+    AlliancesAudit.objects.update_or_create(
+        id=2,
+        alliance=EveAllianceInfo.objects.get(alliance_id=3002),
         owner=EveCharacter.objects.get(character_id=1002),
     )
 

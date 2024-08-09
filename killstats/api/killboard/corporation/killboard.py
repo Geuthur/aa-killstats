@@ -10,26 +10,21 @@ from django.utils.translation import gettext_lazy as _
 
 # AA Killstats
 from killstats.api import schema
-from killstats.api.helpers import get_corporations, get_main_and_alts_all
-from killstats.api.killboard.killboard_manager import (
+from killstats.api.account_manager import AccountManager
+from killstats.api.helpers import KillboardDate, get_corporations
+from killstats.api.killboard_manager import (
     killboard_dashboard,
     killboard_hall,
     killboard_process_kills,
 )
 from killstats.hooks import get_extension_logger
 from killstats.models.killboard import Killmail
-from killstats.models.killstatsaudit import KillstatsAudit
+from killstats.models.killstatsaudit import CorporationsAudit
 
 logger = get_extension_logger(__name__)
 
 
-class KillboardDate:
-    def __init__(self, month, year):
-        self.month = int(month)
-        self.year = int(year)
-
-
-class KillboardApiEndpoints:
+class KillboardCorporationApiEndpoints:
     tags = ["Killboard"]
 
     # pylint: disable=too-many-locals
@@ -59,7 +54,8 @@ class KillboardApiEndpoints:
                 killmail_date__month=month,
             )
 
-            mains, all_chars = get_main_and_alts_all(corporations)
+            account = AccountManager(corporations=corporations)
+            mains, all_chars = account.get_mains_alts()
 
             kills, totalvalue, losses, totalvalue_loss = killboard_process_kills(
                 killmail_month, mains, all_chars
@@ -93,7 +89,7 @@ class KillboardApiEndpoints:
             tags=self.tags,
         )
         def get_corporation_admin(request):
-            corporations = KillstatsAudit.objects.visible_to(request.user)
+            corporations = CorporationsAudit.objects.visible_to(request.user)
 
             if not corporations:
                 return 403, "Permission Denied"

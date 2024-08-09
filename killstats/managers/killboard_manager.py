@@ -13,84 +13,9 @@ from killstats.managers.killmail_core import KillmailManager
 logger = get_extension_logger(__name__)
 
 
-class KillmailQuerySet(models.QuerySet):
-    def visible_to(self, user):
-        # superusers get all visible
-        if user.is_superuser:
-            logger.debug("Returning all Squads for superuser %s.", user)
-            return self
-
-        if user.has_perm("killstats.admin_access"):
-            logger.debug("Returning all Killboards for Admin %s.", user)
-            return self
-
-        return self.none()
-
-    def filter_structure(self, exclude=False):
-        """
-        Filter or Exclude Structure Kills.
-
-        Parameters
-        ----------
-        exclude: `bool`
-
-        Returns
-        ----------
-        QuerySet
-        """
-        if exclude:
-            return self.exclude(victim_ship__eve_group__eve_category_id=65)
-        return self.filter(victim_ship__eve_group__eve_category_id=65)
-
-    def filter_loss(self, chars, exclude=False):
-        """
-        Filter or Exclude Losses from Chars List.
-
-        Parameters
-        ----------
-        chars: `list`
-        exclude: `bool`
-
-        Returns
-        ----------
-        QuerySet
-        """
-        if exclude:
-            return self.exclude(victim__eve_id__in=chars)
-        return self.filter(victim__eve_id__in=chars)
-
-    def filter_kills(self, chars):
-        """
-        Filter Kills from Chars List.
-
-        Parameters
-        ----------
-        chars: `list`
-
-        Returns
-        ----------
-        QuerySet
-        """
-        kms = []
-        for killmail in self:
-            if any(
-                attacker["character_id"] in chars for attacker in killmail.attackers
-            ):
-                kms.append(killmail.killmail_id)
-        return self.filter(killmail_id__in=kms)
-
+class KillmailQueryCore(models.QuerySet):
     def filter_corporations(self, corporations):
-        """
-        Filter Kills from Corporations List.
-
-        Parameters
-        ----------
-        corporations: `list`
-
-        Returns
-        ----------
-        QuerySet
-        """
+        """Filter Kills from Corporations List."""
         kms = []
         for killmail in self:
             if any(
@@ -102,18 +27,42 @@ class KillmailQuerySet(models.QuerySet):
                 kms.append(killmail.killmail_id)
         return self.filter(killmail_id__in=kms)
 
+    def filter_alliances(self, alliances):
+        """Filter Kills from Corporations List."""
+        kms = []
+        for killmail in self:
+            if any(
+                attacker["alliance_id"] in alliances for attacker in killmail.attackers
+            ):
+                kms.append(killmail.killmail_id)
+            if killmail.victim_alliance_id in alliances:
+                kms.append(killmail.killmail_id)
+        return self.filter(killmail_id__in=kms)
+
+    def filter_structure(self, exclude=False):
+        """Filter or Exclude Structure Kills."""
+        if exclude:
+            return self.exclude(victim_ship__eve_group__eve_category_id=65)
+        return self.filter(victim_ship__eve_group__eve_category_id=65)
+
+    def filter_loss(self, chars, exclude=False):
+        """Filter or Exclude Losses from Chars List."""
+        if exclude:
+            return self.exclude(victim__eve_id__in=chars)
+        return self.filter(victim__eve_id__in=chars)
+
+    def filter_kills(self, chars):
+        """Filter Kills from Chars List."""
+        kms = []
+        for killmail in self:
+            if any(
+                attacker["character_id"] in chars for attacker in killmail.attackers
+            ):
+                kms.append(killmail.killmail_id)
+        return self.filter(killmail_id__in=kms)
+
     def filter_threshold(self, threshold: int):
-        """
-        Filter Killmails are in Threshold.
-
-        Parameters
-        ----------
-        threshold: `int`
-
-        Returns
-        ----------
-        QuerySet
-        """
+        """Filter Killmails are in Threshold."""
         return self.filter(victim_total_value__gt=threshold)
 
     def filter_top_killer(self, mains):
@@ -147,6 +96,38 @@ class KillmailQuerySet(models.QuerySet):
             or killmail.victim_total_value > current_highest_value.victim_total_value
         ):
             topkiller[character_id] = (killmail, alt_char)
+
+
+class KillmailQueryMining(KillmailQueryCore):
+    def filter_barge(self):
+        """Filter Mining Barge."""
+        return self.filter(victim_ship__eve_group_id=463)
+
+    def filter_exhumer(self):
+        """Filter Exhumer."""
+        return self.filter(victim_ship__eve_group_id=543)
+
+    def filter_indu_command_ship(self):
+        """Filter Industrial Command Ship."""
+        return self.filter(victim_ship__eve_group_id=941)
+
+    def filter_capital_indu_ship(self):
+        """Filter Capital Industrial Ship."""
+        return self.filter(victim_ship__eve_group_id=883)
+
+
+class KillmailQuerySet(KillmailQueryMining):
+    def visible_to(self, user):
+        # superusers get all visible
+        if user.is_superuser:
+            logger.debug("Returning all Squads for superuser %s.", user)
+            return self
+
+        if user.has_perm("killstats.admin_access"):
+            logger.debug("Returning all Killboards for Admin %s.", user)
+            return self
+
+        return self.none()
 
 
 class KillmailBaseManager(models.Manager):

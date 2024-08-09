@@ -8,13 +8,13 @@ from django.utils.html import format_html
 from allianceauth.eveonline.evelinks import eveimageserver
 
 from killstats.hooks import get_extension_logger
-from killstats.models.killstatsaudit import KillstatsAudit
+from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 logger = get_extension_logger(__name__)
 
 
-@admin.register(KillstatsAudit)
-class KillstatsAuditAdmin(admin.ModelAdmin):
+@admin.register(CorporationsAudit)
+class CorporationsAuditAdmin(admin.ModelAdmin):
     list_display = (
         "_entity_pic",
         "_corporation__corporation_id",
@@ -35,7 +35,7 @@ class KillstatsAuditAdmin(admin.ModelAdmin):
     actions = ["delete_objects", "clear_cache_for_selected"]
 
     @admin.display(description="")
-    def _entity_pic(self, obj: KillstatsAudit):
+    def _entity_pic(self, obj: CorporationsAudit):
         eve_id = obj.corporation.corporation_id
         return format_html(
             '<img src="{}" class="img-circle">',
@@ -43,11 +43,11 @@ class KillstatsAuditAdmin(admin.ModelAdmin):
         )
 
     @admin.display(description="Corporation ID", ordering="corporation__corporation_id")
-    def _corporation__corporation_id(self, obj: KillstatsAudit):
+    def _corporation__corporation_id(self, obj: CorporationsAudit):
         return obj.corporation.corporation_id
 
     @admin.display(description="Last Update", ordering="last_update")
-    def _last_update(self, obj: KillstatsAudit):
+    def _last_update(self, obj: CorporationsAudit):
         return obj.last_update
 
     # pylint: disable=unused-argument
@@ -59,7 +59,7 @@ class KillstatsAuditAdmin(admin.ModelAdmin):
         return False
 
     @admin.action(description="Clear cache for selected Corporations")
-    def clear_cache_for_selected(self, request, queryset: KillstatsAudit):
+    def clear_cache_for_selected(self, request, queryset: CorporationsAudit):
         for obj in queryset:
             clear_cache_zkb(obj.corporation.corporation_id)
             logger.debug("Clearing cache for selected Corporations %s", obj.corporation)
@@ -68,10 +68,73 @@ class KillstatsAuditAdmin(admin.ModelAdmin):
         )
 
 
+@admin.register(AlliancesAudit)
+class AlliancesAuditAdmin(admin.ModelAdmin):
+    list_display = (
+        "_entity_pic",
+        "_alliance__alliance_id",
+        "_last_update",
+    )
+
+    list_display_links = (
+        "_entity_pic",
+        "_alliance__alliance_id",
+    )
+
+    list_select_related = ("alliance",)
+
+    ordering = ["alliance__alliance_name"]
+
+    search_fields = ["alliance__alliance_name", "alliance__alliance_id"]
+
+    actions = ["delete_objects", "clear_cache_for_selected"]
+
+    @admin.display(description="")
+    def _entity_pic(self, obj: AlliancesAudit):
+        eve_id = obj.alliance.alliance_id
+        return format_html(
+            '<img src="{}" class="img-circle">',
+            eveimageserver._eve_entity_image_url("alliance", eve_id, 32),
+        )
+
+    @admin.display(description="Alliance ID", ordering="alliance__alliance_id")
+    def _alliance__alliance_id(self, obj: AlliancesAudit):
+        return obj.alliance.alliance_id
+
+    @admin.display(description="Last Update", ordering="last_update")
+    def _last_update(self, obj: AlliancesAudit):
+        return obj.last_update
+
+    # pylint: disable=unused-argument
+    def has_add_permission(self, request):
+        return False
+
+    # pylint: disable=unused-argument
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    @admin.action(description="Clear cache for selected Alliances")
+    def clear_cache_for_selected(self, request, queryset: AlliancesAudit):
+        for obj in queryset:
+            clear_alliance_cache_zkb(obj.alliance.alliance_id)
+            logger.debug("Clearing cache for selected Alliances %s", obj.alliance)
+        self.message_user(request, "Cache successfully cleared for selected Alliances.")
+
+
 def clear_cache_zkb(corporation_id: int):
     conn = get_redis_connection("default")
     for key in conn.scan_iter(
         f"*:zkb_page_cache_https://zkillboard.com/api/npc/0/corporationID/{corporation_id}*"
+    ):
+        conn.delete(key)
+        logger.debug("Deleting key %s", key)
+    return True
+
+
+def clear_alliance_cache_zkb(alliance_id: int):
+    conn = get_redis_connection("default")
+    for key in conn.scan_iter(
+        f"*:zkb_page_cache_https://zkillboard.com/api/npc/0/allianceID/{alliance_id}*"
     ):
         conn.delete(key)
         logger.debug("Deleting key %s", key)

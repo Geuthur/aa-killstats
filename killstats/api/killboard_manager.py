@@ -329,8 +329,7 @@ def killboard_hall(killmail_month: Killmail, mains):
     fame = []
 
     topkiller = (
-        killmail_month.filter_threshold(1_000_000)
-        .filter_kills(all_chars)
+        killmail_month.filter_kills(all_chars)
         .filter_loss(all_chars, exclude=True)
         .filter_top_killer(mains)
     )

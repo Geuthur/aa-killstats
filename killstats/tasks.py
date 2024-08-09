@@ -15,7 +15,7 @@ from killstats.decorators import when_esi_is_available
 from killstats.hooks import get_extension_logger
 from killstats.managers.killboard_manager import KillmailManager
 from killstats.models.killboard import Killmail
-from killstats.models.killstatsaudit import KillstatsAudit
+from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 logger = get_extension_logger(__name__)
 
@@ -23,9 +23,13 @@ logger = get_extension_logger(__name__)
 @shared_task
 @when_esi_is_available
 def killmail_fetch_all(runs: int = 0):
-    corps_query = KillstatsAudit.objects.all()
+    corps_query = CorporationsAudit.objects.all()
+    allys_query = AlliancesAudit.objects.all()
     for corp in corps_query:
         killmail_update_corp.apply_async(args=[corp.corporation.corporation_id])
+        runs = runs + 1
+    for ally in allys_query:
+        killmail_update_ally.apply_async(args=[ally.alliance.alliance_id])
         runs = runs + 1
     logger.info("Queued %s Killstats Audit Updates", runs)
 
@@ -35,7 +39,7 @@ def killmail_fetch_all(runs: int = 0):
 @when_esi_is_available
 def killmail_update_corp(self, corp_id: int, runs: int = 0):
     """Updates the killmails for a corporation"""
-    corp = KillstatsAudit.objects.get(corporation__corporation_id=corp_id)
+    corp = CorporationsAudit.objects.get(corporation__corporation_id=corp_id)
     killstats_url = f"https://zkillboard.com/api/npc/0/corporationID/{corp.corporation.corporation_id}/"
 
     killmail_list = KillmailManager.get_kill_data_bulk(killstats_url)
@@ -54,6 +58,36 @@ def killmail_update_corp(self, corp_id: int, runs: int = 0):
         )
         corp.last_update = timezone.now()
         corp.save()
+    else:
+        logger.debug("No new Killmail found.")
+
+
+# pylint: disable=unused-argument
+@shared_task(bind=True, base=QueueOnce)
+@when_esi_is_available
+def killmail_update_ally(self, alliance_id: int, runs: int = 0):
+    """Updates the killmails for a corporation"""
+    ally = AlliancesAudit.objects.get(alliance__alliance_id=alliance_id)
+    killstats_url = (
+        f"https://zkillboard.com/api/npc/0/allianceID/{ally.alliance.alliance_id}/"
+    )
+
+    killmail_list = KillmailManager.get_kill_data_bulk(killstats_url)
+    if killmail_list:
+        for killmail_dict in killmail_list:
+            killmail = KillmailManager._create_from_dict(killmail_dict)
+            runs = runs + (1 if killmail else 0)
+            killmail.save()
+            Chain(
+                store_killmail.si(killmail.id),
+            ).delay()
+        logger.info(
+            "Killboard runs completed. %s killmails received from zKB for %s",
+            runs,
+            ally.alliance.alliance_name,
+        )
+        ally.last_update = timezone.now()
+        ally.save()
     else:
         logger.debug("No new Killmail found.")
 

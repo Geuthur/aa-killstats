@@ -1,7 +1,10 @@
 // eslint-disable-next-line no-undef
 var corporationPk = corporationsettings.corporation_pk;
+// eslint-disable-next-line no-undef
+var alliancePk = corporationsettings.alliance_pk;
 var selectedMonth, selectedYear;
 var monthText;
+var url;
 
 // Aktuelles Datumobjekt erstellen
 var currentDate = new Date();
@@ -11,6 +14,19 @@ var killsTable, lossesTable;
 selectedYear = currentDate.getFullYear();
 selectedMonth = currentDate.getMonth() + 1; // +1, um 1-basierten Monat zu erhalten
 monthText = getMonthName(selectedMonth);
+if (alliancePk) {
+    url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/';
+} else {
+    url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
+}
+
+function getUrl() {
+    if (alliancePk) {
+        return '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/';
+    } else {
+        return '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
+    }
+}
 
 function getMonthName(monthNumber) {
     var months = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -186,14 +202,11 @@ function updateStats(statsData) {
 $('#monthDropdown li').click(function() {
     selectedMonth = $(this).find('a').data('bs-month-id');
     monthText = getMonthName(selectedMonth);
-
+    url = getUrl();
     $('#killboard').hide();
     $('#hall').hide();
     $('#stats').hide();
     $('#loadingIndicator').removeClass('d-none');
-
-    // URL für die Daten der ausgewählten Kombination von Jahr und Monat erstellen
-    var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
 
     // DataTable neu laden mit den Daten des ausgewählten Monats
     var currentMonthTable = $.ajax({
@@ -231,8 +244,6 @@ $('#monthDropdown li').click(function() {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    var url = '/killstats/api/killboard/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
-
     // AJAX-Anfrage, um Daten für kills und losses abzurufen
     var currentMonthTable = $.ajax({
         url: url,

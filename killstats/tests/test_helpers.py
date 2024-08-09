@@ -11,15 +11,11 @@ from allianceauth.corputils.models import CorpMember, CorpStats
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
-from killstats.api.helpers import (
-    _process_character,
-    get_corp_models_and_string,
-    get_main_and_alts_all,
-)
+from killstats.api.account_manager import AccountManager
 from killstats.errors import KillstatsImportError
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 
-MODULE_PATH = "killstats.api.helpers"
+MODULE_PATH = "killstats.api.account_manager"
 
 
 class TestApiHelpers(TestCase):
@@ -70,8 +66,9 @@ class TestApiHelpers(TestCase):
         for char in chars:
             mains[char.character_id] = {"main": char, "alts": [char]}
         excepted_data = mains
+        account = AccountManager(corporations=[self.corp.corporation_id])
         # when
-        data, _ = get_main_and_alts_all([self.corp.corporation_id])
+        data, _ = account.get_mains_alts()
         # then
         self.assertEqual(data, excepted_data)
 
@@ -92,9 +89,9 @@ class TestApiHelpers(TestCase):
         CorpMember.objects.create(
             character_id=9999, character_name="Test9999", corpstats=corp_stats
         )
-
+        account = AccountManager(corporations=[self.corp.corporation_id])
         # when
-        data, _ = get_main_and_alts_all([self.corp.corporation_id])
+        data, _ = account.get_mains_alts()
         # then
         mock_select_related.assert_called()
         self.assertIn("MagicMock", str(data.values()))
@@ -122,13 +119,14 @@ class TestApiHelpers(TestCase):
         )
         for char in chars:
             mains[char.character_id] = {"main": char, "alts": [char]}
-
+        account = AccountManager(corporations=[self.corp.corporation_id])
         # when
-        data, _ = get_main_and_alts_all([self.corp.corporation_id])
+        data, _ = account.get_mains_alts()
 
     @patch(MODULE_PATH + ".app_settings.KILLSTATS_CORPSTATS_TWO", True)
     def test_get_corp_models_and_string(self):
-        CorpMember = get_corp_models_and_string()
+        account = AccountManager()
+        CorpMember = account.get_corp_models_and_string()
         self.assertIs(CorpMember, ExpectedCorpMember)
 
     def test_process_character(self):
@@ -143,53 +141,58 @@ class TestApiHelpers(TestCase):
         # Test main not in characters
         characters = {}
         chars_list = set()
-        corporations = {}
         missing_chars = set()
 
-        _process_character(char, characters, chars_list, corporations, missing_chars)
+        account = AccountManager(corporations=[2001])
+
+        account._process_character(char, characters, chars_list, missing_chars)
 
         # Test main in characters
         characters = {1002: {"main": main_char, "alts": []}}
         chars_list = set()
-        corporations = {}
         missing_chars = set()
 
-        _process_character(char, characters, chars_list, corporations, missing_chars)
+        account._process_character(char, characters, chars_list, missing_chars)
 
         # Test Corporation exist
         characters = {}
         chars_list = set()
-        corporations = [2001]
         missing_chars = set()
 
-        _process_character(char, characters, chars_list, corporations, missing_chars)
+        account._process_character(char, characters, chars_list, missing_chars)
 
         # Test Corporation not exist
         char = EveCharacter(character_id=1001, corporation_id=2001)
         characters = {}
         chars_list = set()
-        corporations = {}
         missing_chars = set()
 
-        _process_character(char, characters, chars_list, corporations, missing_chars)
+        account._process_character(char, characters, chars_list, missing_chars)
 
         # Test Attribute Error
         error = EveCorporationInfo.objects.get(corporation_id=2001)
         characters = {}
         chars_list = set()
-        corporations = [2001]
         missing_chars = set()
 
-        _process_character(error, characters, chars_list, corporations, missing_chars)
+        account._process_character(error, characters, chars_list, missing_chars)
 
         # Test Missing character
         char = EveCharacter(character_id=9999, corporation_id=2001)
         characters = {}
         chars_list = set()
-        corporations = []
         missing_chars = set()
 
-        _process_character(char, characters, chars_list, corporations, missing_chars)
+        account._process_character(char, characters, chars_list, missing_chars)
+
+        # Test Corporation & Alliance Empty
+        account = AccountManager()
+        char = EveCharacter(character_id=1001, corporation_id=2001)
+        characters = {}
+        chars_list = set()
+        missing_chars = set()
+
+        account._process_character(char, characters, chars_list, missing_chars)
 
 
 class TestApiHelperCorpStatsImport(TestCase):
@@ -207,5 +210,8 @@ class TestApiHelperCorpStatsImport(TestCase):
             {k: None for k in list(sys.modules) if k.startswith("corpstats")},
         ):
             with self.assertRaises(KillstatsImportError):
-                _ = get_corp_models_and_string()
-            mock_logger.error.assert_called()
+                account = AccountManager()
+                _ = account.get_corp_models_and_string()
+            mock_logger.error.assert_called_with(
+                "Corpstats is enabled but not installed"
+            )

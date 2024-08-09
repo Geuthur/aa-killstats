@@ -5,7 +5,6 @@ from django.test import TestCase
 from allianceauth.eveonline.evelinks import eveimageserver
 from allianceauth.eveonline.models import EveCharacter
 
-from killstats.api.helpers import get_main_and_alts_all
 from killstats.models.killboard import EveEntity, EveType, Killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all

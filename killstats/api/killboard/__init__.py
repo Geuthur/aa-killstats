@@ -1,5 +1,7 @@
-from .killboard import KillboardApiEndpoints
+from .alliance.killboard import KillboardAllianceApiEndpoints
+from .corporation.killboard import KillboardCorporationApiEndpoints
 
 
 def setup(api):
-    KillboardApiEndpoints(api)
+    KillboardCorporationApiEndpoints(api)
+    KillboardAllianceApiEndpoints(api)

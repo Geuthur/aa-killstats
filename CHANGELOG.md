@@ -1,5 +1,29 @@
 # Changelog
 
+## \[0.1.8\] - 2024-08-xx
+
+### Added
+
+- Filters
+  - Mining Barge
+  - Exhumer
+  - Industrial Command Ship
+  - Capital Industrial Ship
+- Alliance Killstats API
+- AllianceAudit
+- Alliance Overview
+- Account Manager Class
+
+### Changed
+
+- Refactor get_main_alts
+- Renamed KillstatsAudit to CorporationAudit
+- Killstats Javascript
+
+### Removed
+
+- Threshold Filter in Hall of Fame
+
 ## \[0.1.7\] - 2024-08-06
 
 ### Added
