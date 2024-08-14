@@ -5,9 +5,6 @@ from typing import List
 
 from ninja import NinjaAPI
 
-# Django
-from django.utils.translation import gettext_lazy as _
-
 # AA Killstats
 from killstats.api import schema
 from killstats.api.account_manager import AccountManager
@@ -43,30 +40,28 @@ class KillboardAllianceApiEndpoints:
                 alliances = [alliance_id]
 
             killmail_year = (
-                Killmail.objects.select_related("victim", "victim_ship")
+                Killmail.objects.prefetch_related("victim", "victim_ship")
                 .filter(killmail_date__year=year)
                 .order_by("-killmail_date")
-            )
-
-            killmail_year = killmail_year.filter_alliances(alliances)
+            ).filter_entities(alliances)
 
             killmail_month = killmail_year.filter(
                 killmail_date__year=year,
                 killmail_date__month=month,
             )
 
-            account = AccountManager(alliances=alliances)
-            mains, all_chars = account.get_mains_alts()
-
             kills, totalvalue, losses, totalvalue_loss = killboard_process_kills(
-                killmail_month, mains, all_chars
+                killmail_month, alliances
             )
 
             date = KillboardDate(month, year)
 
-            stats = killboard_dashboard(killmail_year, date, mains, all_chars)
+            account = AccountManager(alliances=alliances)
+            mains, _ = account.get_mains_alts()
 
-            shame, fame = killboard_hall(killmail_month, mains)
+            stats = killboard_dashboard(killmail_year, date, alliances)
+
+            shame, fame = killboard_hall(killmail_month, alliances, mains)
 
             output = []
             output.append(

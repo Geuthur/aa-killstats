@@ -4,11 +4,11 @@ var corporationPk = corporationsettings.corporation_pk;
 var alliancePk = corporationsettings.alliance_pk;
 var selectedMonth, selectedYear;
 var monthText;
-var url;
 
 // Aktuelles Datumobjekt erstellen
 var currentDate = new Date();
 var killsTable, lossesTable;
+var url;
 
 // Aktuelles Jahr und Monat abrufen
 selectedYear = currentDate.getFullYear();
@@ -63,12 +63,12 @@ function updateShame(shameData) {
                         <div class="card-header">${kill.character_name}</div>
                         <div class="card-body">
                             <span class="hall-character-image">
-                                <a href="https://zkillboard.com/character/${kill.character_id}" target="_blank">
-                                    <img class="card-img-zoom" src="https://images.evetech.net/characters/${kill.character_id}/portrait?size=256">
+                                <a href="${kill.zkb_link}" target="_blank">
+                                    <img class="card-img-zoom" src="${kill.portrait}">
                                 </a>
                                 <span class="ship-logo">
                                     <a href="https://zkillboard.com/kill/${kill.killmail_id}" target="_blank">
-                                        <img class="card-img-zoom shop-logo" src="${kill.portrait}">
+                                        <img class="card-img-zoom shop-logo" src="https://images.evetech.net/Render/${kill.ship}_64.png">
                                     </a>
                                 </span>
                             </span>
@@ -104,11 +104,11 @@ function updateFame(fameData) {
             fameTabContent += `
                 <li class="cards_item">
                     <div class="card">
-                        <div class="card-header">${kill.character_name}</div>
+                        <div class="card-header">${kill.attacker_name}</div>
                         <div class="card-body">
                             <span class="hall-character-image">
-                                <a href="https://zkillboard.com/character/${kill.character_id}" target="_blank">
-                                    <img class="card-img-zoom" src="https://images.evetech.net/characters/${kill.character_id}/portrait?size=256">
+                                <a href="${kill.zkb_link}" target="_blank">
+                                    <img class="card-img-zoom" src="${kill.attacker_portrait}">
                                 </a>
                                 <span class="ship-logo">
                                     <a href="https://zkillboard.com/kill/${kill.killmail_id}" target="_blank">
@@ -157,7 +157,7 @@ function updateStats(statsData) {
                 if (stat.character_id) {
                     statsHtml += `
                             <div class="col-md-4">
-                                <a href="https://zkillboard.com/character/${stat.character_id}" target="_blank">
+                                <a href="${stat.zkb_link}" target="_blank">
                                     <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
                                 </a>
                             </div>`;
@@ -268,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             return imageHTML;
                         }
                     },
-                    // Add more columns as needed
                     {
                         data: 'col-type',
                         render: function (data, type, row) {
@@ -279,29 +278,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         data: 'col-portrait',
                         render: function (data, type, row) {
-                            var idToUse = row.character_id || row.corporation_id || row.alliance_id;
-                            var imageUrl = 'https://imageserver.eveonline.com/';
-
-                            if (row.character_id) {
-                                imageUrl += 'characters/' + row.character_id + '/portrait/?size=64';
-                            } else if (row.alliance_id) {
-                                imageUrl += 'alliances/' + row.alliance_id + '/logo/?size=64';
-                            } else if (row.corporation_id) {
-                                imageUrl += 'corporations/' + row.corporation_id + '/logo/?size=64';
-                            } else {
-                                // Fallback image URL if no valid ID is available
-                                imageUrl += 'icons/no-image.png'; // Beispiel für ein Platzhalterbild
-                            }
-
-                            var imageHTML = '<a href="https://zkillboard.com/';
-                            if (row.character_id) {
-                                imageHTML += 'character/' + row.character_id;
-                            } else if (row.alliance_id) {
-                                imageHTML += 'alliance/' + row.alliance_id;
-                            } else if (row.corporation_id) {
-                                imageHTML += 'corporation/' + row.corporation_id;
-                            }
-                            imageHTML += '" target="_blank"> <img class="card-img-zoom" src="' + imageUrl + '" height="64" width="64"/></a>';
+                            var imageHTML = `<a href="${row.zkb_link}" target="_blank">`;
+                            imageHTML += '<img class="card-img-zoom" src="' + row.portrait + '" height="64" width="64"/></a>';
 
                             return imageHTML;
                         }
@@ -309,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         data: 'col-character',
                         render: function (data, type, row) {
-                            var imageHTML = row.name;
+                            var imageHTML = row.character_name;
                             return imageHTML;
                         }
                     },
@@ -350,7 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             return imageHTML;
                         }
                     },
-                    // Add more columns as needed
                     {
                         data: 'col-type',
                         render: function (data, type, row) {
@@ -361,14 +338,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         data: 'col-portrait',
                         render: function (data, type, row) {
-                            var imageHTML = '<a href="https://zkillboard.com/character/' + row.character_id + '"  target="_blank"> <img class="card-img-zoom" src="https://imageserver.eveonline.com/characters/' + row.character_id + '/portrait/?size=64" height="64" width="64"/></a>';
+                            var imageHTML = '<a href="https://zkillboard.com/';
+                            if (row.character_id && row.character_id !== row.alliance_id && row.character_id !== row.corporation_id) {
+                                imageHTML += 'character/' + row.character_id;
+                            } else if (row.alliance_id && row.character_id === row.alliance_id) {
+                                imageHTML += 'alliance/' + row.alliance_id;
+                            } else if (row.corporation_id && row.character_id === row.corporation_id) {
+                                imageHTML += 'corporation/' + row.corporation_id;
+                            }
+                            imageHTML += '" target="_blank"> <img class="card-img-zoom" src="' + row.portrait + '" height="64" width="64"/></a>';
+
                             return imageHTML;
                         }
                     },
                     {
                         data: 'col-character',
                         render: function (data, type, row) {
-                            var imageHTML = row.name;
+                            var imageHTML = row.character_name;
                             return imageHTML;
                         }
                     },

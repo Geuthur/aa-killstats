@@ -14,28 +14,55 @@ logger = get_extension_logger(__name__)
 
 
 class KillmailQueryCore(models.QuerySet):
-    def filter_corporations(self, corporations):
-        """Filter Kills from Corporations List."""
+    def filter_entities(self, entities):
+        """Filter Kills and Losses from Entities List (Corporations or Alliances)."""
         kms = []
         for killmail in self:
+            if killmail.victim.eve_id in entities:
+                kms.append(killmail.killmail_id)
+
             if any(
-                attacker["corporation_id"] in corporations
+                attacker["corporation_id"] in entities
                 for attacker in killmail.attackers
             ):
                 kms.append(killmail.killmail_id)
-            if killmail.victim_corporation_id in corporations:
+
+            if killmail.victim_corporation_id in entities:
+                kms.append(killmail.killmail_id)
+
+            if any(
+                attacker["alliance_id"] in entities for attacker in killmail.attackers
+            ):
+                kms.append(killmail.killmail_id)
+
+            if killmail.victim_alliance_id in entities:
                 kms.append(killmail.killmail_id)
         return self.filter(killmail_id__in=kms)
 
-    def filter_alliances(self, alliances):
-        """Filter Kills from Corporations List."""
+    def filter_entities_kills(self, entities):
+        """Filter Kills from Entities List (Corporations or Alliances)."""
         kms = []
         for killmail in self:
             if any(
-                attacker["alliance_id"] in alliances for attacker in killmail.attackers
+                attacker["corporation_id"] in entities
+                for attacker in killmail.attackers
             ):
                 kms.append(killmail.killmail_id)
-            if killmail.victim_alliance_id in alliances:
+            if any(
+                attacker["alliance_id"] in entities for attacker in killmail.attackers
+            ):
+                kms.append(killmail.killmail_id)
+        return self.filter(killmail_id__in=kms)
+
+    def filter_entities_losses(self, entities):
+        """Filter Losses from Entities List (Corporations or Alliances)."""
+        kms = []
+        for killmail in self:
+            if killmail.victim.eve_id in entities:
+                kms.append(killmail.killmail_id)
+            if killmail.victim_corporation_id in entities:
+                kms.append(killmail.killmail_id)
+            if killmail.victim_alliance_id in entities:
                 kms.append(killmail.killmail_id)
         return self.filter(killmail_id__in=kms)
 
@@ -44,22 +71,6 @@ class KillmailQueryCore(models.QuerySet):
         if exclude:
             return self.exclude(victim_ship__eve_group__eve_category_id=65)
         return self.filter(victim_ship__eve_group__eve_category_id=65)
-
-    def filter_loss(self, chars, exclude=False):
-        """Filter or Exclude Losses from Chars List."""
-        if exclude:
-            return self.exclude(victim__eve_id__in=chars)
-        return self.filter(victim__eve_id__in=chars)
-
-    def filter_kills(self, chars):
-        """Filter Kills from Chars List."""
-        kms = []
-        for killmail in self:
-            if any(
-                attacker["character_id"] in chars for attacker in killmail.attackers
-            ):
-                kms.append(killmail.killmail_id)
-        return self.filter(killmail_id__in=kms)
 
     def filter_threshold(self, threshold: int):
         """Filter Killmails are in Threshold."""
