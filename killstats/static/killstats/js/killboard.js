@@ -104,11 +104,11 @@ function updateFame(fameData) {
             fameTabContent += `
                 <li class="cards_item">
                     <div class="card">
-                        <div class="card-header">${kill.attacker_name}</div>
+                        <div class="card-header">${kill.character_name}</div>
                         <div class="card-body">
                             <span class="hall-character-image">
                                 <a href="${kill.zkb_link}" target="_blank">
-                                    <img class="card-img-zoom" src="${kill.attacker_portrait}">
+                                    <img class="card-img-zoom" src="${kill.portrait}">
                                 </a>
                                 <span class="ship-logo">
                                     <a href="https://zkillboard.com/kill/${kill.killmail_id}" target="_blank">

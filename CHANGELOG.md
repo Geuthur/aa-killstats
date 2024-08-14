@@ -18,6 +18,7 @@
 
 - Refactor get_main_alts
 - Renamed KillstatsAudit to CorporationAudit
+- Refactor Killboard Manager
 - Killstats Javascript
 
 ### Removed

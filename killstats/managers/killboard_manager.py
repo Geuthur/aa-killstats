@@ -18,23 +18,17 @@ class KillmailQueryCore(models.QuerySet):
         """Filter Kills and Losses from Entities List (Corporations or Alliances)."""
         kms = []
         for killmail in self:
-            if killmail.victim.eve_id in entities:
-                kms.append(killmail.killmail_id)
-
             if any(
                 attacker["corporation_id"] in entities
                 for attacker in killmail.attackers
             ):
                 kms.append(killmail.killmail_id)
-
             if killmail.victim_corporation_id in entities:
                 kms.append(killmail.killmail_id)
-
             if any(
                 attacker["alliance_id"] in entities for attacker in killmail.attackers
             ):
                 kms.append(killmail.killmail_id)
-
             if killmail.victim_alliance_id in entities:
                 kms.append(killmail.killmail_id)
         return self.filter(killmail_id__in=kms)
