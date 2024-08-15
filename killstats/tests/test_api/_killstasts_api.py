@@ -259,3 +259,121 @@ Killstats_Stats_Entry = [
         ]
     }
 ]
+
+Killstats_Halls_Entry = [
+    {
+        "shame": [
+            {
+                "killmail_id": 119303073,
+                "character_id": 1002,
+                "character_name": "rotze Rotineque",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c5467167aa7d65245a49d19d44275",
+                "totalValue": 94395699,
+                "date": "2024-07-07T21:36:58Z",
+                "title": "rotze Rotineque",
+                "portrait": "https://images.evetech.net/characters/1002/portrait?size=256",
+                "zkb_link": "https://zkillboard.com/character/1002/",
+                "count": 0,
+            },
+            {
+                "killmail_id": 119303113,
+                "character_id": 1001,
+                "character_name": "Gneuten",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 17634,
+                "ship_name": "Caracal Navy Issue",
+                "hash": "95ff494261eed2c4a790aad70c7f0053c75f89c6",
+                "totalValue": 76734851,
+                "date": "2024-07-07T21:38:59Z",
+                "title": "Gneuten",
+                "portrait": "https://images.evetech.net/characters/1001/portrait?size=256",
+                "zkb_link": "https://zkillboard.com/character/1001/",
+                "count": 0,
+            },
+            {
+                "killmail_id": 119303075,
+                "character_id": 1004,
+                "character_name": "Garthd",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
+                "totalValue": 1000,
+                "date": "2024-07-07T21:38:58Z",
+                "title": "Garthd",
+                "portrait": "https://images.evetech.net/characters/1004/portrait?size=256",
+                "zkb_link": "https://zkillboard.com/character/1004/",
+                "count": 0,
+            },
+        ],
+        "fame": [
+            {
+                "killmail_id": 119303075,
+                "character_id": 1001,
+                "character_name": "Gneuten",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
+                "totalValue": 1000,
+                "date": "2024-07-07T21:38:58Z",
+                "title": "Garthd",
+                "portrait": "https://images.evetech.net/characters/1001/portrait?size=256",
+                "zkb_link": "https://zkillboard.com/character/1004/",
+                "count": 0,
+            }
+        ],
+    }
+]
+
+Killstats_Kills_Entry = {
+    "draw": 1,
+    "recordsTotal": 1,
+    "recordsFiltered": 1,
+    "data": [
+        {
+            "killmail_id": 119303075,
+            "killmail_date": "2024-07-07T21:38:58Z",
+            "victim": {"id": 1004, "name": "Garthd"},
+            "victim_ship": {"id": 29340, "name": "Osprey Navy Issue"},
+            "victim_corporation_id": 2001,
+            "victim_alliance_id": 3001,
+            "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
+            "victim_total_value": 1000,
+            "victim_fitted_value": 2000,
+            "victim_destroyed_value": 3000,
+            "victim_dropped_value": 1000,
+            "victim_region_id": 10000059,
+            "victim_solar_system_id": 30004668,
+            "victim_position_x": -74459258618.29333,
+            "victim_position_y": -4921962525.529236,
+            "victim_position_z": -8888733393.073042,
+            "attackers": [
+                {
+                    "character_id": 1001,
+                    "corporation_id": 2001,
+                    "alliance_id": 3001,
+                    "ship_type_id": 17634,
+                    "damage_done": 8056,
+                    "final_blow": False,
+                },
+                {
+                    "character_id": 1002,
+                    "corporation_id": 2001,
+                    "alliance_id": 3001,
+                    "ship_type_id": 29340,
+                    "damage_done": 2788,
+                    "final_blow": True,
+                },
+            ],
+        }
+    ],
+    "totalvalue": [1000],
+}

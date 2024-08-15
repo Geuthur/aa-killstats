@@ -53,7 +53,6 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         url = "/killstats/api/stats/month/7/year/2024/alliance/0/"
         # when
         response = self.client.get(url)
-        print(response.json())
         # then
         expected_data = _alliance_api.Killstats_Stats_Entry
         self.assertEqual(response.status_code, 200)
@@ -68,6 +67,23 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         response = self.client.get(url)
         # then
         expected_data = _alliance_api.Killstats_Stats_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        url = "/killstats/api/halls/month/7/year/2024/alliance/3001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _alliance_api.Killstats_Halls_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        url = "/killstats/api/killmail/month/7/year/2024/alliance/3001/kills/"
+        # when
+        response = self.client.get(url)
+        print(response.json())
+        # then
+        expected_data = _alliance_api.Killstats_Kills_Entry
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 

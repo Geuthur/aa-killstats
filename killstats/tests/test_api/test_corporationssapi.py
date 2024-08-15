@@ -70,6 +70,23 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        url = "/killstats/api/halls/month/7/year/2024/corporation/2001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _killstasts_api.Killstats_Halls_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        url = "/killstats/api/killmail/month/7/year/2024/corporation/2001/kills/"
+        # when
+        response = self.client.get(url)
+
+        # then
+        expected_data = _killstasts_api.Killstats_Kills_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
     def test_get_corporation_admin(self):
         self.client.force_login(self.user2)
         url = "/killstats/api/killboard/corporation/admin/"
