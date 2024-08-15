@@ -5,7 +5,6 @@ from django.test import TestCase
 from allianceauth.eveonline.evelinks import eveimageserver
 from allianceauth.eveonline.models import EveCharacter
 
-from killstats.api.helpers import get_main_and_alts_all
 from killstats.models.killboard import EveEntity, EveType, Killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
@@ -61,6 +60,11 @@ class TestKillboardtModel(TestCase):
         self.assertTrue(self.killmail.is_corp([2001]))
         self.assertTrue(self.killmail.is_corp([2001]))
         self.assertFalse(self.killmail.is_corp([3001]))
+
+    def test_is_ally(self):
+        self.assertFalse(self.killmail.is_alliance([2001]))
+        self.assertFalse(self.killmail.is_alliance([2001]))
+        self.assertTrue(self.killmail.is_alliance([3001]))
 
     def test_is_structure(self):
         self.killmail.victim_ship.eve_group.eve_category_id = 65

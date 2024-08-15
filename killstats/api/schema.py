@@ -16,15 +16,18 @@ class Killboard(Schema):
     attackers: Optional[list] = None
 
 
-class KillboardIndex(Schema):
-    kills: Optional[list] = None
-    losses: Optional[list] = None
-    totalKills: Optional[int] = None
-    totalLoss: Optional[int] = None
+class KillboardHall(Schema):
     shame: Optional[list] = None
     fame: Optional[list] = None
+
+
+class KillboardStats(Schema):
     stats: Optional[list] = None
 
 
 class CorporationAdmin(Schema):
     corporation: Optional[dict] = None
+
+
+class AllianceAdmin(Schema):
+    alliance: Optional[dict] = None

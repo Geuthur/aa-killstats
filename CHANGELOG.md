@@ -1,5 +1,46 @@
 # Changelog
 
+## \[0.1.8\] - 2024-08-16
+
+### Performance
+
+- Optimized Loading Times
+- Optimized Database Querys
+
+### Fixed
+
+- Hall of Shame/Fame switch Tabs Bug
+- Portrait System for Alliance,Corporation,Character
+- Stats System
+
+### Added
+
+- Filters
+  - Mining Barge
+  - Exhumer
+  - Industrial Command Ship
+  - Capital Industrial Ship
+- Alliance Killstats API
+- AllianceAudit
+- Alliance Overview
+- Account Manager Class
+- Killmail Fetch System with Datatable Feature
+
+### Changed
+
+- Refactor Killstats API
+- Refactor Killstats Data Fetching System
+- Refactor Killstats Javascript
+- Refactor Killboard Manager
+- Moved Mains & Alts Functions to Account Manager
+- Renamed KillstatsAudit to CorporationAudit
+- Moved Stats to own API
+- Moved Hall of Fame/Shame to own API
+
+### Removed
+
+- Threshold Filter in Hall of Fame
+
 ## \[0.1.7\] - 2024-08-06
 
 ### Added

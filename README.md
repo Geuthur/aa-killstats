@@ -26,6 +26,7 @@ Killstats for Corporations, Hall of Fame, Hall of Shame, etc.
 ## Features<a name="features"></a>
 
 - Graphical Overview
+- Corporation & Alliance Overview
 - Kills from alts count to Main Character
 - Hall of Fame, Hall of Shame
 - Killstats like Top Kill, Top Killer, Top Loss, Alltime Killer, etc.
@@ -33,7 +34,7 @@ Killstats for Corporations, Hall of Fame, Hall of Shame, etc.
 
 ## Upcoming<a name="upcoming"></a>
 
-- Access to Killboards from other Corporation (Admin Access)
+- Filtering Settings for each Corporation / Alliance
 
 ## Installation<a name="installation"></a>
 

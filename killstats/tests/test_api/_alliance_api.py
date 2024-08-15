@@ -34,10 +34,42 @@ KillstatsMonth = [
                 "date": "2024-07-07T21:38:58Z",
                 "count": 0,
             },
+            {
+                "title": "None",
+                "killmail_id": 119303073,
+                "name": "rotze Rotineque",
+                "character_id": 1002,
+                "character_name": "rotze Rotineque",
+                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c5467167aa7d65245a49d19d44275",
+                "totalValue": 94395699,
+                "date": "2024-07-07T21:36:58Z",
+                "count": 0,
+            },
         ],
         "totalKills": 0,
-        "totalLoss": 76735851,
+        "totalLoss": 171131550,
         "shame": [
+            {
+                "title": "None",
+                "killmail_id": 119303073,
+                "name": "rotze Rotineque",
+                "character_id": 1002,
+                "character_name": "rotze Rotineque",
+                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c5467167aa7d65245a49d19d44275",
+                "totalValue": 94395699,
+                "date": "2024-07-07T21:36:58Z",
+                "count": 0,
+            },
             {
                 "title": "None",
                 "killmail_id": 119303113,
@@ -75,27 +107,27 @@ KillstatsMonth = [
         "stats": [
             {
                 "title": "Top Loss:",
-                "killmail_id": 119303113,
-                "name": "Gneuten",
-                "character_id": 1001,
-                "character_name": "Gneuten",
-                "portrait": "https://images.evetech.net/types/17634/icon?size=64",
+                "killmail_id": 119303073,
+                "name": "rotze Rotineque",
+                "character_id": 1002,
+                "character_name": "rotze Rotineque",
+                "portrait": "https://images.evetech.net/types/29340/icon?size=64",
                 "corporation_id": 2001,
                 "alliance_id": 3001,
-                "ship": 17634,
-                "ship_name": "Caracal Navy Issue",
-                "hash": "95ff494261eed2c4a790aad70c7f0053c75f89c6",
-                "totalValue": 76734851,
-                "date": "2024-07-07T21:38:59Z",
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c5467167aa7d65245a49d19d44275",
+                "totalValue": 94395699,
+                "date": "2024-07-07T21:36:58Z",
                 "count": 0,
             },
             {
                 "title": "Worst Ship:",
                 "type": "count",
-                "ship": 17634,
-                "ship_name": "Caracal Navy Issue",
-                "portrait": "https://images.evetech.net/types/17634/icon?size=256",
-                "count": 1,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "portrait": "https://images.evetech.net/types/29340/icon?size=256",
+                "count": 2,
                 "loss": True,
             },
             {
@@ -260,6 +292,7 @@ Killstats_Stats_Entry = [
     }
 ]
 
+
 Killstats_Halls_Entry = [
     {
         "shame": [
@@ -328,7 +361,23 @@ Killstats_Halls_Entry = [
                 "portrait": "https://images.evetech.net/characters/1001/portrait?size=256",
                 "zkb_link": "https://zkillboard.com/character/1004/",
                 "count": 0,
-            }
+            },
+            {
+                "killmail_id": 119303075,
+                "character_id": 1002,
+                "character_name": "rotze Rotineque",
+                "corporation_id": 2001,
+                "alliance_id": 3001,
+                "ship": 29340,
+                "ship_name": "Osprey Navy Issue",
+                "hash": "1185d04b1b6c6667167aa7d65245a49d19d44275",
+                "totalValue": 1000,
+                "date": "2024-07-07T21:38:58Z",
+                "title": "Garthd",
+                "portrait": "https://images.evetech.net/characters/1002/portrait?size=256",
+                "zkb_link": "https://zkillboard.com/character/1004/",
+                "count": 0,
+            },
         ],
     }
 ]

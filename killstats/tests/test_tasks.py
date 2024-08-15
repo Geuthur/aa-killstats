@@ -5,8 +5,13 @@ from django.db import IntegrityError
 from django.test import TestCase
 
 from killstats.managers.killmail_core import KillmailManager
-from killstats.models.killstatsaudit import KillstatsAudit
-from killstats.tasks import killmail_fetch_all, killmail_update_corp, store_killmail
+from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
+from killstats.tasks import (
+    killmail_fetch_all,
+    killmail_update_ally,
+    killmail_update_corp,
+    store_killmail,
+)
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import (
     _load_get_bulk_data,
@@ -29,23 +34,27 @@ class TestTasks(TestCase):
         load_killstats_all()
 
     @patch(MODULE_PATH + ".killmail_update_corp.apply_async")
+    @patch(MODULE_PATH + ".killmail_update_ally.apply_async")
     @patch(MODULE_PATH + ".logger")
-    def test_killmail_fetch_all(self, mock_logger, mock_update_corp):
+    def test_killmail_fetch_all(self, mock_logger, mock_update_ally, mock_update_corp):
         # given
-        corp_count = KillstatsAudit.objects.count()
+        corp_count = CorporationsAudit.objects.count()
+        ally_count = AlliancesAudit.objects.count()
+        expected_count = corp_count + ally_count
         # when
         killmail_fetch_all()
         # then
         self.assertEqual(mock_update_corp.call_count, corp_count)
+        self.assertEqual(mock_update_ally.call_count, ally_count)
         mock_logger.info.assert_called_once_with(
-            "Queued %s Killstats Audit Updates", corp_count
+            "Queued %s Killstats Audit Updates", expected_count
         )
 
     @patch(MODULE_PATH + ".KillmailManager.get_kill_data_bulk")
     @patch(MODULE_PATH + ".logger")
     def test_killmail_update_corp(self, mock_logger, mock_get_kill_data_bulk):
         # given
-        corp = KillstatsAudit.objects.get(corporation__corporation_id=2001)
+        corp = CorporationsAudit.objects.get(corporation__corporation_id=2001)
 
         mock_get_kill_data_bulk.return_value = _load_get_bulk_data()
         # when
@@ -59,13 +68,41 @@ class TestTasks(TestCase):
 
     @patch(MODULE_PATH + ".KillmailManager.get_kill_data_bulk")
     @patch(MODULE_PATH + ".logger")
+    def test_killmail_update_ally(self, mock_logger, mock_get_kill_data_bulk):
+        # given
+        ally = AlliancesAudit.objects.get(alliance__alliance_id=3001)
+
+        mock_get_kill_data_bulk.return_value = _load_get_bulk_data()
+        # when
+        killmail_update_ally(ally.alliance.alliance_id)
+        # then
+        mock_logger.info.assert_called_once_with(
+            "Killboard runs completed. %s killmails received from zKB for %s",
+            3,
+            ally.alliance.alliance_name,
+        )
+
+    @patch(MODULE_PATH + ".KillmailManager.get_kill_data_bulk")
+    @patch(MODULE_PATH + ".logger")
     def test_killmail_update_corp_no_new(self, mock_logger, mock_get_kill_data_bulk):
         # given
-        corp = KillstatsAudit.objects.get(corporation__corporation_id=2001)
+        corp = CorporationsAudit.objects.get(corporation__corporation_id=2001)
 
         mock_get_kill_data_bulk.return_value = None
         # when
         killmail_update_corp(corp.corporation.corporation_id)
+        # then
+        mock_logger.debug.assert_called_once_with("No new Killmail found.")
+
+    @patch(MODULE_PATH + ".KillmailManager.get_kill_data_bulk")
+    @patch(MODULE_PATH + ".logger")
+    def test_killmail_update_ally_no_new(self, mock_logger, mock_get_kill_data_bulk):
+        # given
+        ally = AlliancesAudit.objects.get(alliance__alliance_id=3001)
+
+        mock_get_kill_data_bulk.return_value = None
+        # when
+        killmail_update_ally(ally.alliance.alliance_id)
         # then
         mock_logger.debug.assert_called_once_with("No new Killmail found.")
 

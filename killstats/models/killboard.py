@@ -51,18 +51,39 @@ class Killmail(models.Model):
             self.victim.category, self.victim.eve_id, 32
         )
 
-    def is_kill(self, chars: list):
+    def is_kill(self, eve_ids: list):
         """Return True if any attacker is in the list of characters."""
-        return any(attacker["character_id"] in chars for attacker in self.attackers)
+        char_ids = self.attackers_distinct_character_ids()
+        corp_ids = self.attackers_distinct_corporation_ids()
+        alliance_ids = self.attackers_distinct_alliance_ids()
+        if any(char_id in char_ids for char_id in eve_ids):
+            return True
+        if any(corp_id in corp_ids for corp_id in eve_ids):
+            return True
+        if any(alliance_id in alliance_ids for alliance_id in eve_ids):
+            return True
+        return False
 
-    def is_loss(self, chars: list):
+    def is_loss(self, eve_ids: list):
         """Return True if the victim is in the list of characters."""
-        return self.victim.eve_id in chars if self.victim else False
+        if self.victim.eve_id in eve_ids:
+            return True
+        if self.victim_corporation_id in eve_ids:
+            return True
+        if self.victim_alliance_id in eve_ids:
+            return True
+        return False
 
     def is_corp(self, corps: list):
         """Return True if the victim corporation is in the list of corporations."""
         return self.victim_corporation_id in corps or any(
             attacker["corporation_id"] in corps for attacker in self.attackers
+        )
+
+    def is_alliance(self, alliances: list):
+        """Return True if the victim alliance is in the list of alliances."""
+        return self.victim_alliance_id in alliances or any(
+            attacker["alliance_id"] in alliances for attacker in self.attackers
         )
 
     def is_structure(self):

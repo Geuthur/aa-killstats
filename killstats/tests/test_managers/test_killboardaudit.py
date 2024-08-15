@@ -3,7 +3,7 @@ from django.test import TestCase
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
-from killstats.models.killstatsaudit import KillstatsAudit
+from killstats.models.killstatsaudit import CorporationsAudit
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
@@ -23,8 +23,8 @@ class KillstatsAuditQuerySetTest(TestCase):
         self.user.is_superuser = True
         self.user.save()
         # when
-        result = KillstatsAudit.objects.visible_to(self.user)
-        expected_result = KillstatsAudit.objects.all()
+        result = CorporationsAudit.objects.visible_to(self.user)
+        expected_result = CorporationsAudit.objects.all()
         # then
         self.assertEqual(list(result), list(expected_result))
 
@@ -37,8 +37,8 @@ class KillstatsAuditQuerySetTest(TestCase):
             ],
         )
         # when
-        expected_result = KillstatsAudit.objects.all()
-        result = KillstatsAudit.objects.visible_to(self.user)
+        expected_result = CorporationsAudit.objects.all()
+        result = CorporationsAudit.objects.visible_to(self.user)
         # then
         self.assertEqual(list(result), list(expected_result))
 
@@ -48,10 +48,10 @@ class KillstatsAuditQuerySetTest(TestCase):
             1001,
         )
         # when
-        expected_result = KillstatsAudit.objects.filter(
+        expected_result = CorporationsAudit.objects.filter(
             corporation=EveCorporationInfo.objects.get(corporation_id=2001)
         )
-        result = KillstatsAudit.objects.visible_to(self.user)
+        result = CorporationsAudit.objects.visible_to(self.user)
         # then
         self.assertEqual(list(result), list(expected_result))
 
@@ -63,7 +63,7 @@ class KillstatsAuditQuerySetTest(TestCase):
         self.user.profile.main_character = None
         # when
         result = list(
-            KillstatsAudit.objects.visible_to(self.user).values_list(
+            CorporationsAudit.objects.visible_to(self.user).values_list(
                 "corporation_id", flat=True
             )
         )
