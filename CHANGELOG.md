@@ -1,6 +1,6 @@
 # Changelog
 
-## \[0.1.8\] - 2024-08-xx
+## \[0.1.8\] - 2024-08-16
 
 ### Performance
 
@@ -24,15 +24,16 @@
 - AllianceAudit
 - Alliance Overview
 - Account Manager Class
+- Killmail Fetch System with Datatable Feature
 
 ### Changed
 
-- Refactor API
-- Refactor Killstats Fetching Data
-- Moved Mains & Alts Functions to Account Manager
+- Refactor Killstats API
+- Refactor Killstats Data Fetching System
+- Refactor Killstats Javascript
 - Refactor Killboard Manager
+- Moved Mains & Alts Functions to Account Manager
 - Renamed KillstatsAudit to CorporationAudit
-- Killstats Javascript
 - Moved Stats to own API
 - Moved Hall of Fame/Shame to own API
 
