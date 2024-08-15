@@ -405,9 +405,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Initialisieren Sie die DataTable für kills
-    var killsTable = initializeDataTable('#kills', urlKills, '#total-value-kills');
+    killsTable = initializeDataTable('#kills', urlKills, '#total-value-kills');
 
     // Initialisieren Sie die DataTable für losses
-    var lossesTable = initializeDataTable('#losses', urlLosses, '#total-value-losses');
+    lossesTable = initializeDataTable('#losses', urlLosses, '#total-value-losses');
 
 });
