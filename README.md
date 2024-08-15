@@ -7,7 +7,7 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W810Q5J4)
 
-Killstats for Corporations, Hall of Fame, Hall of Shame, etc.
+Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 
 ## -
 
@@ -35,6 +35,7 @@ Killstats for Corporations, Hall of Fame, Hall of Shame, etc.
 ## Upcoming<a name="upcoming"></a>
 
 - Filtering Settings for each Corporation / Alliance
+- Administration Access for specific Corps or Alliances
 
 ## Installation<a name="installation"></a>
 
@@ -80,10 +81,10 @@ python manage.py migrate
 
 With the Following IDs you can set up the permissions for the KILLSTATS
 
-| ID             | Description                       |                                                               |
-| :------------- | :-------------------------------- | :------------------------------------------------------------ |
-| `basic_access` | Can access the Killstats module   | All Members with the Permission can access the Killstats App. |
-| `admin_access` | Can Add Corporations to Killstats | Can Add Corporations to Killstats                             |
+| ID             | Description                                  |                                                               |
+| :------------- | :------------------------------------------- | :------------------------------------------------------------ |
+| `basic_access` | Can access the Killstats module              | All Members with the Permission can access the Killstats App. |
+| `admin_access` | Can Add Corporations & Alliance to Killstats | Can Add Corporations to Killstats                             |
 
 ### Step 6 - (Optional) Setting up Compatibilies<a name="step6"></a>
 
