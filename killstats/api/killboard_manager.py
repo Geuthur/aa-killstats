@@ -257,14 +257,20 @@ def _stats_killmail(
             if main_list is None
             else main_list
         )
-
-        character_id = main.character_id if alt is None else alt.character_id
-        character_name = (
-            f"{main.character_name}"
-            if alt is None
-            else f"{alt.character_name} ({main.character_name})"
-        )
-        portrait = eveimageserver.character_portrait_url(character_id, 256)
+        try:
+            character_id = main.character_id if alt is None else alt.character_id
+            character_name = (
+                f"{main.character_name}"
+                if alt is None
+                else f"{alt.character_name} ({main.character_name})"
+            )
+            portrait = eveimageserver.character_portrait_url(character_id, 256)
+        except AttributeError:
+            logger.debug(
+                "Error getting character details for %s %s",
+                character_id,
+                character_name,
+            )
 
     stats.append(
         {

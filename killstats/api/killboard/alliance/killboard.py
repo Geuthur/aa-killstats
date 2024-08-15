@@ -7,15 +7,12 @@ from ninja import NinjaAPI
 
 # AA Killstats
 from killstats.api import schema
-from killstats.api.account_manager import AccountManager
-from killstats.api.helpers import KillboardDate, get_alliances
-from killstats.api.killboard_manager import (
-    killboard_dashboard,
-    killboard_hall,
-    killboard_process_kills,
+from killstats.api.killboard.killboard_helper import (
+    get_killmails_data,
+    get_killstats_halls,
+    get_killstats_stats,
 )
 from killstats.hooks import get_extension_logger
-from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit
 
 logger = get_extension_logger(__name__)
@@ -24,61 +21,39 @@ logger = get_extension_logger(__name__)
 class KillboardAllianceApiEndpoints:
     tags = ["Killboard"]
 
-    # pylint: disable=too-many-locals
     def __init__(self, api: NinjaAPI):
+        # Killmails
         @api.get(
-            "killboard/month/{month}/year/{year}/alliance/{alliance_id}/",
-            response={200: List[schema.KillboardIndex], 403: str},
+            "killmail/month/{month}/year/{year}/alliance/{alliance_id}/{mode}/",
+            response={200: dict, 403: str},
             tags=self.tags,
         )
-        # pylint: disable=duplicate-code
+        def get_alliance_killmails(
+            request, month, year, alliance_id: int, mode, page_size: int = 100
+        ):
+            return get_killmails_data(
+                request, month, year, alliance_id, mode, page_size, "alliance"
+            )
+
+        # Hall of Fame/Shame
+        @api.get(
+            "halls/month/{month}/year/{year}/alliance/{alliance_id}/",
+            response={200: List[schema.KillboardHall], 403: str},
+            tags=self.tags,
+        )
+        def get_halls(request, month, year, alliance_id: int):
+            return get_killstats_halls(request, month, year, alliance_id, "alliance")
+
+        # Stats
+        @api.get(
+            "stats/month/{month}/year/{year}/alliance/{alliance_id}/",
+            response={200: List[schema.KillboardStats], 403: str},
+            tags=self.tags,
+        )
         def get_killstats(request, month, year, alliance_id: int):
-            # Killboard
-            if alliance_id == 0:
-                alliances = get_alliances(request)
-            else:
-                alliances = [alliance_id]
+            return get_killstats_stats(request, month, year, alliance_id, "alliance")
 
-            killmail_year = (
-                Killmail.objects.prefetch_related("victim", "victim_ship")
-                .filter(killmail_date__year=year)
-                .order_by("-killmail_date")
-            ).filter_entities(alliances)
-
-            killmail_month = killmail_year.filter(
-                killmail_date__year=year,
-                killmail_date__month=month,
-            )
-
-            kills, totalvalue, losses, totalvalue_loss = killboard_process_kills(
-                killmail_month, alliances
-            )
-
-            date = KillboardDate(month, year)
-
-            account = AccountManager(alliances=alliances)
-            mains, _ = account.get_mains_alts()
-
-            stats = killboard_dashboard(killmail_year, date, alliances)
-
-            shame, fame = killboard_hall(killmail_month, alliances, mains)
-
-            output = []
-            output.append(
-                {
-                    "kills": kills,
-                    "losses": losses,
-                    "totalKills": totalvalue,
-                    "totalLoss": totalvalue_loss,
-                    # Addons
-                    "shame": shame,
-                    "fame": fame,
-                    "stats": stats,
-                }
-            )
-
-            return output
-
+        # Admin
         @api.get(
             "killboard/alliance/admin/",
             response={200: List[schema.AllianceAdmin], 403: str},

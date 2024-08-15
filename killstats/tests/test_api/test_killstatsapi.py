@@ -8,7 +8,7 @@ from allianceauth.eveonline.models import EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
 from killstats.api.killboard import KillboardCorporationApiEndpoints
-from killstats.tests.test_api._killstasts_api import KillstatsEmpty, KillstatsMonth
+from killstats.tests.test_api import _killstasts_api
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
@@ -38,11 +38,11 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.maxDiff = None
         # given
         self.client.force_login(self.user)
-        url = "/killstats/api/killboard/month/7/year/2020/corporation/0/"
+        url = "/killstats/api/stats/month/7/year/2020/corporation/0/"
         # when
         response = self.client.get(url)
         # then
-        expected_data = KillstatsEmpty
+        expected_data = _killstasts_api.Killstats_Stats
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
@@ -50,11 +50,11 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.maxDiff = None
         # given
         self.client.force_login(self.user)
-        url = "/killstats/api/killboard/month/7/year/2024/corporation/0/"
+        url = "/killstats/api/stats/month/7/year/2024/corporation/0/"
         # when
         response = self.client.get(url)
         # then
-        expected_data = KillstatsMonth
+        expected_data = _killstasts_api.Killstats_Stats_Entry
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
@@ -62,11 +62,11 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.maxDiff = None
         # given
         self.client.force_login(self.user)
-        url = "/killstats/api/killboard/month/7/year/2024/corporation/2001/"
+        url = "/killstats/api/stats/month/7/year/2024/corporation/2001/"
         # when
         response = self.client.get(url)
         # then
-        expected_data = KillstatsMonth
+        expected_data = _killstasts_api.Killstats_Stats_Entry
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
@@ -97,7 +97,6 @@ class ManageApiJournalCharEndpointsTest(TestCase):
 
         # when
         response = self.client.get(url)
-        print(response.json())
         # then
         self.assertContains(response, "Permission Denied", status_code=403)
 

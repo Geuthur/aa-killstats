@@ -2,6 +2,17 @@
 
 ## \[0.1.8\] - 2024-08-xx
 
+### Performance
+
+- Optimized Loading Times
+- Optimized Database Querys
+
+### Fixed
+
+- Hall of Shame/Fame switch Tabs Bug
+- Portrait System for Alliance,Corporation,Character
+- Stats System
+
 ### Added
 
 - Filters
@@ -16,10 +27,14 @@
 
 ### Changed
 
-- Refactor get_main_alts
-- Renamed KillstatsAudit to CorporationAudit
+- Refactor API
+- Refactor Killstats Fetching Data
+- Moved Mains & Alts Functions to Account Manager
 - Refactor Killboard Manager
+- Renamed KillstatsAudit to CorporationAudit
 - Killstats Javascript
+- Moved Stats to own API
+- Moved Hall of Fame/Shame to own API
 
 ### Removed
 
