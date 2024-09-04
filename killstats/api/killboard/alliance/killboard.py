@@ -62,7 +62,7 @@ class KillboardAllianceApiEndpoints:
         def get_corporation_admin(request):
             alliances = AlliancesAudit.objects.visible_to(request.user)
 
-            if not alliances:
+            if alliances is None:
                 return 403, "Permission Denied"
 
             alliance_dict = {}

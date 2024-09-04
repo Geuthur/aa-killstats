@@ -67,7 +67,7 @@ class KillboardCorporationApiEndpoints:
         def get_corporation_admin(request):
             corporations = CorporationsAudit.objects.visible_to(request.user)
 
-            if not corporations:
+            if corporations is None:
                 return 403, "Permission Denied"
 
             corporation_dict = {}

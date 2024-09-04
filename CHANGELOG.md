@@ -1,5 +1,15 @@
 # Changelog
 
+## \[0.1.9\] - 2024-09-05
+
+### Fixed
+
+- No Permission occurs if Data is Empty
+
+### Moved
+
+- Killstats Stats moved ip and Header moved down to Hall of Fame Header
+
 ## \[0.1.8\] - 2024-08-16
 
 ### Performance

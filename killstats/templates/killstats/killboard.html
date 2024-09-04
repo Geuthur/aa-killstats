@@ -32,6 +32,9 @@
 {% endblock extra_css %}
 
 {% block killstats_block %}
+	<!--Dashboard-->
+	{% include 'killstats/killboard/dashboard.html' with stats=stats %}
+	<br>
 	<!--Killstats-->
 	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center">
 		<h3 id="currentMonthLink" class="page-header text-center">Killstats - {{ value|current_month }}</h3>
@@ -56,9 +59,7 @@
 		</div>
 	</div>
 	<br>
-	<!--Dashboard-->
-	{% include 'killstats/killboard/dashboard.html' with stats=stats %}
-	<br>
+
 	<!--Hall-->
 	{% include 'killstats/killboard/hall.html' with shame=shame fame=fame %}
 	<br>
