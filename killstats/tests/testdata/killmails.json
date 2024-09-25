@@ -17,20 +17,12 @@
             "victim_position_z":"-8888754631.141735",
             "attackers": [
                 {
-                    "character_id": 2119686107,
-                    "corporation_id": 98637264,
-                    "alliance_id": 99011223,
+                    "character_id": 1000,
+                    "corporation_id": 1000125,
+                    "alliance_id": null,
                     "ship_type_id": 17634,
                     "damage_done": 8056,
                     "final_blow": false
-                },
-                {
-                    "character_id": 407345230,
-                    "corporation_id": 146531499,
-                    "alliance_id": 99011223,
-                    "ship_type_id": 29340,
-                    "damage_done": 2788,
-                    "final_blow": true
                 }
             ],
             "victim":"1001",
@@ -53,20 +45,12 @@
             "victim_position_z":"-8888733393.073042",
             "attackers": [
                 {
-                    "character_id": 2119686107,
-                    "corporation_id": 98637264,
-                    "alliance_id": 99011223,
-                    "ship_type_id": 17715,
+                    "character_id": 1000,
+                    "corporation_id": 1000125,
+                    "alliance_id": null,
+                    "ship_type_id": 17634,
                     "damage_done": 8056,
                     "final_blow": false
-                },
-                {
-                    "character_id": 407345230,
-                    "corporation_id": 146531499,
-                    "alliance_id": 99011223,
-                    "ship_type_id": 29340,
-                    "damage_done": 2788,
-                    "final_blow": true
                 }
             ],
             "victim":"1002",
@@ -107,6 +91,42 @@
             ],
             "victim":"1004",
             "victim_ship":"29340"
+        },
+        {
+            "killmail_id":"119303077",
+            "killmail_date":"2024-07-07 21:38:58",
+            "victim_corporation_id":"1000125",
+            "victim_alliance_id": null,
+            "hash":"1185d04b1b6c6667167aa7d65245aasdfasdf49d19d44275",
+            "victim_total_value":"1000",
+            "victim_fitted_value":"2000",
+            "victim_destroyed_value":"3000",
+            "victim_dropped_value":"1000",
+            "victim_region_id":"10000059",
+            "victim_solar_system_id":"30004668",
+            "victim_position_x":"-74459258618.29333",
+            "victim_position_y":"-4921962525.529236",
+            "victim_position_z":"-8888733393.073042",
+            "attackers": [
+                {
+                    "character_id": 1001,
+                    "corporation_id": 2001,
+                    "alliance_id": 3001,
+                    "ship_type_id": 17634,
+                    "damage_done": 8056,
+                    "final_blow": false
+                },
+                {
+                    "character_id": 1002,
+                    "corporation_id": 2001,
+                    "alliance_id": 3001,
+                    "ship_type_id": 29340,
+                    "damage_done": 2788,
+                    "final_blow": true
+                }
+            ],
+            "victim":"1000",
+            "victim_ship":"17634"
         }
     ]
 }

@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from eveuniverse.models import EveType
+from eveuniverse.models import EveEntity, EveType
 
 from allianceauth.eveonline.models import (
     EveAllianceInfo,
@@ -12,7 +12,7 @@ from allianceauth.eveonline.models import (
     EveCorporationInfo,
 )
 
-from killstats.models import AlliancesAudit, CorporationsAudit, EveEntity, Killmail
+from killstats.models import AlliancesAudit, Attacker, CorporationsAudit, Killmail
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 
@@ -38,8 +38,8 @@ _killstats_data = _load_killmail_data()
 
 
 def load_killstats_all():
-    load_eveentity()
     load_eveuniverse()
+    load_eveentity()
     load_killstats()
     load_corporationaudit()
     load_allianceaudit()
@@ -48,8 +48,8 @@ def load_killstats_all():
 def load_eveentity():
     EveEntity.objects.all().delete()
     for character_info in _entities_data.get("EveEntity"):
-        EveEntity.objects.create(
-            eve_id=character_info.get("eve_id"),
+        EveEntity.objects.get_or_create(
+            id=character_info.get("eve_id"),
             name=character_info.get("name"),
             category=character_info.get("category"),
         )
@@ -85,13 +85,14 @@ def load_allianceaudit():
 
 def load_killstats():
     Killmail.objects.all().delete()
+    Attacker.objects.all().delete()
     for killmail in _killstats_data.get("Killmail"):
-        Killmail.objects.update_or_create(
+        km, _ = Killmail.objects.update_or_create(
             killmail_id=killmail.get("killmail_id"),
             killmail_date=datetime.strptime(
                 killmail.get("killmail_date"), "%Y-%m-%d %H:%M:%S"
             ),
-            victim=EveEntity.objects.get(eve_id=killmail.get("victim")),
+            victim=EveEntity.objects.get(id=killmail.get("victim")),
             victim_ship=EveType.objects.get(id=killmail.get("victim_ship")),
             victim_corporation_id=killmail.get("victim_corporation_id"),
             victim_alliance_id=killmail.get("victim_alliance_id", None),
@@ -107,3 +108,35 @@ def load_killstats():
             hash=killmail.get("hash"),
             attackers=killmail.get("attackers"),
         )
+
+        for attacker in km.attackers:
+            character = None
+            corporation = None
+            alliance = None
+            ship = None
+
+            character_id = attacker.get("character_id", None)
+            corporation_id = attacker.get("corporation_id", None)
+            alliance_id = attacker.get("alliance_id", None)
+            ship_type_id = attacker.get("ship_type_id", None)
+
+            if character_id is not None:
+                character = EveEntity.objects.get(id=character_id)
+            if corporation_id is not None:
+                corporation = EveEntity.objects.get(id=corporation_id)
+            if alliance_id is not None:
+                alliance = EveEntity.objects.get(id=alliance_id)
+            if ship_type_id is not None:
+                ship = EveType.objects.get(id=ship_type_id)
+
+            Attacker.objects.update_or_create(
+                killmail=km,
+                character=character,
+                corporation=corporation,
+                alliance=alliance,
+                ship=ship,
+                damage_done=attacker.get("damage_done", None),
+                final_blow=attacker.get("final_blow", None),
+                weapon_type_id=attacker.get("weapon_type_id", None),
+                security_status=attacker.get("security_status", None),
+            )
