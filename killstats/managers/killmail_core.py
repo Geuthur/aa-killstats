@@ -269,7 +269,6 @@ class KillmailManager(_KillmailBase):
         :return:
         :rtype:
         """
-        # AA Killstats
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Killmail
 
@@ -339,18 +338,16 @@ class KillmailManager(_KillmailBase):
         cache.delete(self._storage_key(self.id))
 
     def create_names_bulk(self, eve_ids: List):
-        if len(eve_ids) > 0:
-            # AA Killstats
-            # pylint: disable=import-outside-toplevel
-            from killstats.managers.general_manager import EveEntityManager
+        # pylint: disable=import-outside-toplevel
+        from eveuniverse.models import EveEntity
 
-            EveEntityManager.create_bulk_from_esi(self, eve_ids)
+        if len(eve_ids) > 0:
+            EveEntity.objects.bulk_create_esi(eve_ids)
             return True
         return False
 
     @staticmethod
     def get_ship_name(ship_type: int):
-        # Alliance Auth (External Libs)
         # pylint: disable=import-outside-toplevel
         from eveuniverse.models import EveType
 
@@ -361,18 +358,16 @@ class KillmailManager(_KillmailBase):
 
     @staticmethod
     def get_entity_name(eve_id: int):
-        # AA Killstats
         # pylint: disable=import-outside-toplevel
-        from killstats.models.general import EveEntity
+        from eveuniverse.models import EveEntity
 
-        entity, new_entry = EveEntity.objects.get_or_create_esi(eve_id=eve_id)
+        entity, new_entry = EveEntity.objects.get_or_create_esi(id=eve_id)
         if new_entry:
             logger.debug("Kllboard Manager EveName: %s added", entity.name)
         return entity
 
     @staticmethod
     def get_region_id(solar_system: int):
-        # Alliance Auth (External Libs)
         # pylint: disable=import-outside-toplevel
         from eveuniverse.models import EveSolarSystem
 
@@ -383,6 +378,38 @@ class KillmailManager(_KillmailBase):
         if new_entry:
             logger.debug("%s added to System", region_id.name)
         return region_id.id
+
+    def create_attackers(self, killmail):
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
+        for attacker in self.attackers:
+            character = None
+            if attacker.character_id:
+                character = self.get_entity_name(attacker.character_id)
+
+            corporation = None
+            if attacker.corporation_id:
+                corporation = self.get_entity_name(attacker.corporation_id)
+
+            alliance = None
+            if attacker.alliance_id:
+                alliance = self.get_entity_name(attacker.alliance_id)
+
+            ship = None
+            if attacker.ship_type_id:
+                ship = self.get_ship_name(attacker.ship_type_id)
+
+            Attacker.objects.create(
+                killmail=killmail,
+                character=character,
+                corporation=corporation,
+                alliance=alliance,
+                ship=ship,
+                damage_done=attacker.damage_done,
+                final_blow=attacker.is_final_blow,
+            )
+        return True
 
     @classmethod
     def get(cls, cache_id: int) -> "KillmailManager":
