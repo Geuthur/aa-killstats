@@ -1,12 +1,7 @@
-# Standard Library
-from typing import Set
-
 # Django
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-# Alliance Auth (External Libs)
-from eveuniverse.models import EveType
+from eveuniverse.models import EveEntity, EveType
 
 # Alliance Auth
 from allianceauth.eveonline.evelinks import eveimageserver
@@ -14,7 +9,6 @@ from allianceauth.eveonline.evelinks import eveimageserver
 # AA Killstats
 from killstats.hooks import get_extension_logger
 from killstats.managers.killboard_manager import EveKillmailManager
-from killstats.models.general import EveEntity
 
 logger = get_extension_logger(__name__)
 
@@ -48,31 +42,8 @@ class Killmail(models.Model):
 
     def get_image_url(self):
         return eveimageserver._eve_entity_image_url(
-            self.victim.category, self.victim.eve_id, 32
+            self.victim.category, self.victim.id, 32
         )
-
-    def is_kill(self, eve_ids: list):
-        """Return True if any attacker is in the list of characters."""
-        char_ids = self.attackers_distinct_character_ids()
-        corp_ids = self.attackers_distinct_corporation_ids()
-        alliance_ids = self.attackers_distinct_alliance_ids()
-        if any(char_id in char_ids for char_id in eve_ids):
-            return True
-        if any(corp_id in corp_ids for corp_id in eve_ids):
-            return True
-        if any(alliance_id in alliance_ids for alliance_id in eve_ids):
-            return True
-        return False
-
-    def is_loss(self, eve_ids: list):
-        """Return True if the victim is in the list of characters."""
-        if self.victim.eve_id in eve_ids:
-            return True
-        if self.victim_corporation_id in eve_ids:
-            return True
-        if self.victim_alliance_id in eve_ids:
-            return True
-        return False
 
     def is_corp(self, corps: list):
         """Return True if the victim corporation is in the list of corporations."""
@@ -96,68 +67,54 @@ class Killmail(models.Model):
 
     def is_capsule(self):
         """Return True if the victim is a capsule."""
-        return self.victim_ship.id in (670, 33328)
+        return self.victim_ship.eve_group.id == 29
 
     def get_month(self, month):
         """Get all killmails of a specific month."""
         return self.killmail_date.month == month
 
-    def attackers_distinct_alliance_ids(self) -> Set[int]:
-        """Return distinct alliance IDs of all attackers."""
-        return [
-            attacker["alliance_id"]
-            for attacker in self.attackers
-            if "alliance_id" in attacker
-        ]
-
-    def attackers_distinct_corporation_ids(self) -> Set[int]:
-        """Return distinct corporation IDs of all attackers."""
-        return [
-            attacker["corporation_id"]
-            for attacker in self.attackers
-            if "corporation_id" in attacker
-        ]
-
-    def attackers_distinct_character_ids(self) -> Set[int]:
-        """Return distinct character IDs of all attackers."""
-        return [
-            attacker["character_id"]
-            for attacker in self.attackers
-            if "character_id" in attacker
-        ]
-
     def threshold(self, threshold: int) -> bool:
         """Return True if the total value of the killmail is above the threshold."""
         return self.victim_total_value > threshold
 
-    def attacker_main(self, mains):
-        """
-        Get Attacker Main Data from Mains Dict
+    class Meta:
+        default_permissions = ()
 
-        Returns
-        ----------
-        - Main Name:  `str`
-        - CharacterID: `int`
-        - Alt Object: `object`
-        """
-        for attacker in self.attackers:
-            attacker_id = attacker["character_id"]
 
-            if attacker_id in mains:
-                main_data = mains[attacker_id]
-                main = main_data["main"]
-                main_id = attacker_id
-                return main, main_id, None
-
-            # Check if the attacker is an alt and get the associated main character
-            for main_data in mains.values():
-                for alt in main_data["alts"]:
-                    if attacker_id == alt.character_id:
-                        main = main_data["main"]
-                        main_id = attacker_id
-                        attacker = alt
-                        return main, main_id, attacker
-        return None, None, None
+class Attacker(models.Model):
+    killmail = models.ForeignKey(Killmail, on_delete=models.CASCADE)
+    character = models.ForeignKey(
+        EveEntity,
+        on_delete=models.CASCADE,
+        related_name="attacker",
+        null=True,
+        blank=True,
+    )
+    corporation = models.ForeignKey(
+        EveEntity,
+        on_delete=models.CASCADE,
+        related_name="attacker_corp",
+        null=True,
+        blank=True,
+    )
+    alliance = models.ForeignKey(
+        EveEntity,
+        on_delete=models.CASCADE,
+        related_name="attacker_alliance",
+        null=True,
+        blank=True,
+    )
+    ship = models.ForeignKey(
+        EveType,
+        on_delete=models.CASCADE,
+        related_name="attacker_ship",
+        null=True,
+        blank=True,
+    )
+    damage_done = models.IntegerField(null=True, blank=True)
+    final_blow = models.BooleanField(null=True, blank=True)
+    weapon_type_id = models.PositiveBigIntegerField(null=True, blank=True)
+    security_status = models.FloatField(null=True, blank=True)
 
     class Meta:
         default_permissions = ()
