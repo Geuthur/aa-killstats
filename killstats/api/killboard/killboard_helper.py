@@ -71,12 +71,14 @@ def get_killmails_data(
                 "killmail_id": killmail.killmail_id,
                 "killmail_date": killmail.killmail_date,
                 "victim": {
-                    "id": killmail.victim.eve_id,
+                    "id": killmail.victim.id,
                     "name": killmail.victim.name,
                 },
                 "victim_ship": {
-                    "id": killmail.victim_ship.id,
-                    "name": killmail.victim_ship.name,
+                    "id": killmail.victim_ship_id,
+                    "name": (
+                        killmail.victim_ship.name if killmail.victim_ship else "Unknown"
+                    ),
                 },
                 "victim_corporation_id": killmail.victim_corporation_id,
                 "victim_alliance_id": killmail.victim_alliance_id,
@@ -111,6 +113,10 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
             entities = get_corporations(request)
     else:
         entities = [entity_id]
+
+    # Ensure that only Corporation Kills are shown
+    if any(entity > 10000000 for entity in entities):
+        entities = [entity for entity in entities if entity >= 10000000]
 
     if entity_type == "alliance":
         account = AccountManager(alliances=entities)
@@ -147,6 +153,10 @@ def get_killstats_stats(request, month, year, entity_id: int, entity_type: str):
             entities = get_corporations(request)
     else:
         entities = [entity_id]
+
+    # Ensure that only Corporation Kills are shown
+    if any(entity > 10000000 for entity in entities):
+        entities = [entity for entity in entities if entity >= 10000000]
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
