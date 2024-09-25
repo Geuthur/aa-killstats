@@ -97,7 +97,7 @@ def store_killmail(killmail_id: int) -> None:
     """stores killmail as EveKillmail object"""
     killmail = KillmailManager.get(killmail_id)
     try:
-        Killmail.objects.create_from_killmail(killmail)
+        Killmail.objects.update_or_create_from_killmail(killmail)
     except IntegrityError:
         logger.warning(
             "%s: Failed to store killmail, because it already exists", killmail.id
