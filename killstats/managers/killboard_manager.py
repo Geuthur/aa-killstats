@@ -1,10 +1,14 @@
 """Managers for killboard."""
 
 # Standard Library
+from collections import Counter
 from typing import Any, Tuple
 
 # Django
 from django.db import models, transaction
+from eveuniverse.models import EveEntity, EveType
+
+from killstats.decorators import log_timing
 
 # AA Voices of War
 from killstats.hooks import get_extension_logger
@@ -16,48 +20,70 @@ logger = get_extension_logger(__name__)
 class KillmailQueryCore(models.QuerySet):
     def filter_entities(self, entities):
         """Filter Kills and Losses from Entities List (Corporations or Alliances)."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
         kms = []
-        for killmail in self:
-            if any(
-                attacker["corporation_id"] in entities
-                for attacker in killmail.attackers
-            ):
-                kms.append(killmail.killmail_id)
-            if killmail.victim_corporation_id in entities:
-                kms.append(killmail.killmail_id)
-            if any(
-                attacker["alliance_id"] in entities for attacker in killmail.attackers
-            ):
-                kms.append(killmail.killmail_id)
-            if killmail.victim_alliance_id in entities:
-                kms.append(killmail.killmail_id)
+
+        # Get all Killmail IDs
+        km_ids = self.values_list("killmail_id", flat=True)
+
+        # Get all Attackers from Entities
+        kms_data = Attacker.objects.filter(
+            killmail_id__in=km_ids, corporation_id__in=entities
+        ).values_list("killmail_id", "corporation_id", "alliance_id")
+
+        for killmail_id, corporation_id, alliance_id in kms_data:
+            if corporation_id in entities or alliance_id in entities:
+                kms.append(killmail_id)
+
+        # Include Victim Kills
+        victim_kms = self.filter(
+            models.Q(victim_id__in=entities)
+            | models.Q(victim_corporation_id__in=entities)
+            | models.Q(victim_alliance_id__in=entities)
+        )
+        for killmail in victim_kms:
+            kms.append(killmail.killmail_id)
+
         return self.filter(killmail_id__in=kms)
 
     def filter_entities_kills(self, entities):
         """Filter Kills from Entities List (Corporations or Alliances)."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
         kms = []
-        for killmail in self:
-            if any(
-                attacker["corporation_id"] in entities
-                for attacker in killmail.attackers
-            ):
-                kms.append(killmail.killmail_id)
-            if any(
-                attacker["alliance_id"] in entities for attacker in killmail.attackers
-            ):
-                kms.append(killmail.killmail_id)
+
+        # Sammle alle Angreifer-Daten
+        km_ids = self.values_list("killmail_id", flat=True)
+
+        kms_data = Attacker.objects.filter(
+            models.Q(corporation_id__in=entities)
+            | models.Q(alliance_id__in=entities)
+            | models.Q(character_id__in=entities),
+            killmail_id__in=km_ids,
+        ).values_list("killmail_id", "corporation_id", "alliance_id")
+
+        for killmail_id, corporation_id, alliance_id in kms_data:
+            if corporation_id in entities or alliance_id in entities:
+                kms.append(killmail_id)
+
         return self.filter(killmail_id__in=kms)
 
     def filter_entities_losses(self, entities):
         """Filter Losses from Entities List (Corporations or Alliances)."""
         kms = []
-        for killmail in self:
-            if killmail.victim.eve_id in entities:
-                kms.append(killmail.killmail_id)
-            if killmail.victim_corporation_id in entities:
-                kms.append(killmail.killmail_id)
-            if killmail.victim_alliance_id in entities:
-                kms.append(killmail.killmail_id)
+
+        victim_kms = self.filter(
+            models.Q(victim_id__in=entities)
+            | models.Q(victim_corporation_id__in=entities)
+            | models.Q(victim_alliance_id__in=entities)
+        )
+
+        for killmail in victim_kms:
+            kms.append(killmail.killmail_id)
+
         return self.filter(killmail_id__in=kms)
 
     def filter_structure(self, exclude=False):
@@ -121,7 +147,170 @@ class KillmailQueryMining(KillmailQueryCore):
         return self.filter(victim_ship__eve_group_id=883)
 
 
-class KillmailQuerySet(KillmailQueryMining):
+class KillmailQueryStats(KillmailQueryMining):
+    def _get_top_ship(self, entities, km_ids):
+        """Get the top ship for the given entities."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
+        ship_ids = Attacker.objects.filter(
+            models.Q(corporation_id__in=entities)
+            | models.Q(alliance_id__in=entities)
+            | models.Q(character_id__in=entities),
+            killmail_id__in=km_ids,
+        ).values_list("ship__id", flat=True)
+
+        if ship_ids.exists():
+            top_ship_counter = Counter(ship_ids)
+            top_ship_id, count = top_ship_counter.most_common(1)[0]
+            top_ship = EveType.objects.get(id=top_ship_id)
+            top_ship.ship_count = count
+            return top_ship
+        return None
+
+    def _get_worst_ship(self, entities, km_ids):
+        """Get the worst ship for the given entities."""
+        losses = self.filter(
+            models.Q(victim_id__in=entities)
+            | models.Q(victim_corporation_id__in=entities)
+            | models.Q(victim_alliance_id__in=entities),
+            killmail_id__in=km_ids,
+        ).exclude(victim_ship__eve_group_id=29)
+
+        worst_ship = (
+            losses.values("victim_ship_id")
+            .annotate(kill_count=models.Count("victim_ship_id"))
+            .order_by("-kill_count", "victim_ship__name")
+        )
+
+        if not worst_ship.exists():
+            return None
+
+        worst_ships = worst_ship[0]
+        ship_id = worst_ships["victim_ship_id"]
+        kill_count = worst_ships["kill_count"]
+
+        # Get the worst ship and add the kill count
+        worst_ship = EveType.objects.get(id=ship_id)
+        worst_ship.ship_count = kill_count
+
+        return worst_ship
+
+    def _get_top_victim(self, entities, km_ids):
+        """Get the top victim for the given entities."""
+        victims = (
+            self.filter(
+                models.Q(victim_id__in=entities)
+                | models.Q(victim_corporation_id__in=entities)
+                | models.Q(victim_alliance_id__in=entities),
+                killmail_id__in=km_ids,
+            )
+            .values("victim_id")
+            .annotate(kill_count=models.Count("victim_id"))
+            .order_by("-kill_count", "victim__name")
+        )
+
+        if victims.exists():
+            top_victim_data = victims[0]
+            top_victim = EveEntity.objects.get(id=top_victim_data["victim_id"])
+            top_victim.kill_count = top_victim_data["kill_count"]
+            return top_victim
+        return None
+
+    def _get_top_killer(self, entities, km_ids):
+        """Get the top killer for the given entities."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
+        attackers = (
+            Attacker.objects.filter(
+                models.Q(corporation_id__in=entities)
+                | models.Q(alliance_id__in=entities)
+                | models.Q(character_id__in=entities),
+                killmail_id__in=km_ids,
+            )
+            .values("character_id")
+            .annotate(kill_count=models.Count("killmail_id"))
+            .order_by("-kill_count", "character__name")
+        )
+
+        if attackers.exists():
+            print("attackers", attackers)
+            top_attacker_data = attackers[0]
+            top_attacker = EveEntity.objects.get(id=top_attacker_data["character_id"])
+            top_attacker.kill_count = top_attacker_data["kill_count"]
+            return top_attacker
+        return None
+
+    @log_timing(logger)
+    def get_killboard_stats(self, entities, date):
+        """Get all killboard stats for the given entities."""
+        stats = {}
+
+        month, year = date.month, date.year
+
+        # Common queries
+        losses = self.filter_entities_losses(entities)
+        kills = self.filter_entities_kills(entities)
+
+        # Get the highest loss
+        highest_loss = (
+            losses.filter(killmail_date__year=year, killmail_date__month=month)
+            .annotate(total_value=models.F("victim_total_value"))
+            .order_by("-total_value")
+            .first()
+        )
+        stats["highest_loss"] = highest_loss
+
+        # Get the highest kill
+        highest_kill = (
+            kills.filter(killmail_date__year=year, killmail_date__month=month)
+            .annotate(total_value=models.F("victim_total_value"))
+            .order_by("-total_value")
+            .first()
+        )
+        stats["highest_kill"] = highest_kill
+
+        # Get the top ship
+        km_ids = kills.filter(
+            killmail_date__year=year,
+            killmail_date__month=month,
+        ).values_list("killmail_id", flat=True)
+
+        km_ids_year = kills.filter(killmail_date__year=year).values_list(
+            "killmail_id", flat=True
+        )
+
+        km_ids_loss = losses.filter(
+            killmail_date__year=year,
+            killmail_date__month=month,
+        ).values_list("killmail_id", flat=True)
+
+        km_ids_loss_year = losses.filter(killmail_date__year=year).values_list(
+            "killmail_id", flat=True
+        )
+
+        # Get the worst ship
+        stats["worst_ship"] = self._get_worst_ship(entities, km_ids_loss)
+
+        stats["top_ship"] = self._get_top_ship(entities, km_ids)
+
+        # Get the top killer Month
+        stats["top_killer"] = self._get_top_killer(entities, km_ids)
+
+        # Get the top killer Year
+        stats["alltime_killer"] = self._get_top_killer(entities, km_ids_year)
+
+        # Get the top victim Month
+        stats["top_loss"] = self._get_top_victim(entities, km_ids_loss)
+
+        # Get the top victim Year
+        stats["alltime_loss"] = self._get_top_victim(entities, km_ids_loss_year)
+
+        return stats
+
+
+class KillmailQuerySet(KillmailQueryStats):
     def visible_to(self, user):
         # superusers get all visible
         if user.is_superuser:
@@ -174,7 +363,7 @@ class KillmailBaseManager(models.Manager):
             except Exception as e:
                 logger.debug("Error on Create Names: %s", e, exc_info=True)
 
-        _, new_entry = Killmail.objects.get_or_create(
+        km, new_entry = Killmail.objects.get_or_create(
             killmail_id=killmail.id,
             killmail_date=killmail.time,
             victim=victim,
@@ -193,6 +382,9 @@ class KillmailBaseManager(models.Manager):
             victim_position_z=killmail.position.z,
             attackers=killmail.attackers_distinct_info(),
         )
+
+        killmail.create_attackers(km)
+
         return new_entry
 
     def update_or_create_from_killmail(
@@ -201,7 +393,7 @@ class KillmailBaseManager(models.Manager):
         """Update or create new EveKillmail from a Killmail object."""
         with transaction.atomic():
             try:
-                self.get(id=killmail.id).delete()
+                self.get(killmail_id=killmail.id).delete()
                 created = False
             except self.model.DoesNotExist:
                 created = True
