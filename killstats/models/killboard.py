@@ -32,8 +32,6 @@ class Killmail(models.Model):
     victim_position_x = models.FloatField(null=True, blank=True)
     victim_position_y = models.FloatField(null=True, blank=True)
     victim_position_z = models.FloatField(null=True, blank=True)
-    # Attackers as JSON
-    attackers = models.JSONField(null=True, blank=True)
 
     objects = EveKillmailManager()
 
@@ -47,14 +45,20 @@ class Killmail(models.Model):
 
     def is_corp(self, corps: list):
         """Return True if the victim corporation is in the list of corporations."""
+        attackers = Attacker.objects.filter(killmail=self).values_list(
+            "corporation_id", flat=True
+        )
         return self.victim_corporation_id in corps or any(
-            attacker["corporation_id"] in corps for attacker in self.attackers
+            attacker in corps for attacker in attackers
         )
 
     def is_alliance(self, alliances: list):
         """Return True if the victim alliance is in the list of alliances."""
+        attackers = Attacker.objects.filter(killmail=self).values_list(
+            "alliance_id", flat=True
+        )
         return self.victim_alliance_id in alliances or any(
-            attacker["alliance_id"] in alliances for attacker in self.attackers
+            attacker in alliances for attacker in attackers
         )
 
     def is_structure(self):
