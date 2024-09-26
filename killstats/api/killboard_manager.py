@@ -78,6 +78,7 @@ def _get_character_details(killmail, mains, entities):
     return main, alt
 
 
+# pylint: disable=too-many-positional-arguments
 def _stats_killmail(
     killmail: Killmail,
     stats: list,

@@ -6,7 +6,7 @@ from killstats.api.killboard_manager import killboard_dashboard, killboard_hall
 from killstats.models.killboard import Killmail
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals, too-many-positional-arguments
 def get_killmails_data(
     request, month, year, entity_id: int, mode, page_size: int, entity_type: str
 ):

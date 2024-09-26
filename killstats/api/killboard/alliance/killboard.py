@@ -1,8 +1,5 @@
 """API"""
 
-# Standard Library
-from typing import List
-
 from ninja import NinjaAPI
 
 # AA Killstats
@@ -28,6 +25,7 @@ class KillboardAllianceApiEndpoints:
             response={200: dict, 403: str},
             tags=self.tags,
         )
+        # pylint: disable=too-many-positional-arguments
         def get_alliance_killmails(
             request, month, year, alliance_id: int, mode, page_size: int = 100
         ):
@@ -38,25 +36,27 @@ class KillboardAllianceApiEndpoints:
         # Hall of Fame/Shame
         @api.get(
             "halls/month/{month}/year/{year}/alliance/{alliance_id}/",
-            response={200: List[schema.KillboardHall], 403: str},
+            response={200: list[schema.KillboardHall], 403: str},
             tags=self.tags,
         )
+        # pylint: disable=too-many-positional-arguments
         def get_halls(request, month, year, alliance_id: int):
             return get_killstats_halls(request, month, year, alliance_id, "alliance")
 
         # Stats
         @api.get(
             "stats/month/{month}/year/{year}/alliance/{alliance_id}/",
-            response={200: List[schema.KillboardStats], 403: str},
+            response={200: list[schema.KillboardStats], 403: str},
             tags=self.tags,
         )
+        # pylint: disable=too-many-positional-arguments
         def get_killstats(request, month, year, alliance_id: int):
             return get_killstats_stats(request, month, year, alliance_id, "alliance")
 
         # Admin
         @api.get(
             "killboard/alliance/admin/",
-            response={200: List[schema.AllianceAdmin], 403: str},
+            response={200: list[schema.AllianceAdmin], 403: str},
             tags=self.tags,
         )
         def get_corporation_admin(request):

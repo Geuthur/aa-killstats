@@ -3,7 +3,7 @@ import json
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import List, Optional, Set
+from typing import Optional
 
 # Third Party
 import requests
@@ -60,18 +60,18 @@ class _KillmailCharacter(_KillmailBase):
         "ship_type_id",
     ]
 
-    character_id: Optional[int] = None
-    corporation_id: Optional[int] = None
-    alliance_id: Optional[int] = None
-    faction_id: Optional[int] = None
-    ship_type_id: Optional[int] = None
+    character_id: int | None = None
+    corporation_id: int | None = None
+    alliance_id: int | None = None
+    faction_id: int | None = None
+    ship_type_id: int | None = None
 
 
 @dataclass
 class KillmailVictim(_KillmailCharacter):
     """A victim on a killmail."""
 
-    damage_taken: Optional[int] = None
+    damage_taken: int | None = None
 
 
 @dataclass
@@ -80,34 +80,34 @@ class KillmailAttacker(_KillmailCharacter):
 
     ENTITY_PROPS = _KillmailCharacter.ENTITY_PROPS + ["weapon_type_id"]
 
-    damage_done: Optional[int] = None
-    is_final_blow: Optional[bool] = None
-    security_status: Optional[float] = None
-    weapon_type_id: Optional[int] = None
+    damage_done: int | None = None
+    is_final_blow: bool | None = None
+    security_status: float | None = None
+    weapon_type_id: int | None = None
 
 
 @dataclass
 class KillmailPosition(_KillmailBase):
     "A position for a killmail."
-    x: Optional[float] = None
-    y: Optional[float] = None
-    z: Optional[float] = None
+    x: float | None = None
+    y: float | None = None
+    z: float | None = None
 
 
 @dataclass
 class KillmailZkb(_KillmailBase):
     """A ZKB entry for a killmail."""
 
-    location_id: Optional[int] = None
-    hash: Optional[str] = None
-    fitted_value: Optional[float] = None
-    dropped_value: Optional[float] = None
-    destroyed_value: Optional[float] = None
-    total_value: Optional[float] = None
-    points: Optional[int] = None
-    is_npc: Optional[bool] = None
-    is_solo: Optional[bool] = None
-    is_awox: Optional[bool] = None
+    location_id: int | None = None
+    hash: str | None = None
+    fitted_value: float | None = None
+    dropped_value: float | None = None
+    destroyed_value: float | None = None
+    total_value: float | None = None
+    points: int | None = None
+    is_npc: bool | None = None
+    is_solo: bool | None = None
+    is_awox: bool | None = None
 
 
 @dataclass
@@ -121,35 +121,35 @@ class KillmailManager(_KillmailBase):
     id: int
     time: datetime
     victim: KillmailVictim
-    attackers: List[KillmailAttacker]
+    attackers: list[KillmailAttacker]
     position: KillmailPosition
     zkb: KillmailZkb
-    solar_system_id: Optional[int] = None
+    solar_system_id: int | None = None
 
     def __repr__(self):
         return f"{type(self).__name__}(id={self.id})"
 
-    def attackers_distinct_alliance_ids(self) -> Set[int]:
+    def attackers_distinct_alliance_ids(self) -> set[int]:
         """Return distinct alliance IDs of all attackers."""
         return {obj.alliance_id for obj in self.attackers if obj.alliance_id}
 
-    def attackers_distinct_corporation_ids(self) -> Set[int]:
+    def attackers_distinct_corporation_ids(self) -> set[int]:
         """Return distinct corporation IDs of all attackers."""
         return {obj.corporation_id for obj in self.attackers if obj.corporation_id}
 
-    def attackers_distinct_character_ids(self) -> Set[int]:
+    def attackers_distinct_character_ids(self) -> set[int]:
         """Return distinct character IDs of all attackers."""
         return {obj.character_id for obj in self.attackers if obj.character_id}
 
-    def attackers_ship_type_ids(self) -> List[int]:
+    def attackers_ship_type_ids(self) -> list[int]:
         """Returns ship type IDs of all attackers with duplicates."""
         return [obj.ship_type_id for obj in self.attackers if obj.ship_type_id]
 
-    def attackers_weapon_type_ids(self) -> List[int]:
+    def attackers_weapon_type_ids(self) -> list[int]:
         """Returns weapon type IDs of all attackers with duplicates."""
         return [obj.weapon_type_id for obj in self.attackers if obj.weapon_type_id]
 
-    def attackers_distinct_info(self) -> Set[int]:
+    def attackers_distinct_info(self) -> set[int]:
         """Return distinct attacker main info of all attackers."""
         attackers_info = []
 
@@ -337,7 +337,7 @@ class KillmailManager(_KillmailBase):
         """Delete this killmail from temporary storage."""
         cache.delete(self._storage_key(self.id))
 
-    def create_names_bulk(self, eve_ids: List):
+    def create_names_bulk(self, eve_ids: list):
         # pylint: disable=import-outside-toplevel
         from eveuniverse.models import EveEntity
 
@@ -469,7 +469,7 @@ class KillmailManager(_KillmailBase):
         return victim, position
 
     @classmethod
-    def _extract_attackers(cls, killmail_data: dict) -> List[KillmailAttacker]:
+    def _extract_attackers(cls, killmail_data: dict) -> list[KillmailAttacker]:
         attackers = []
         for attacker_data in killmail_data.get("attackers", []):
             params = {}
