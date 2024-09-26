@@ -75,10 +75,8 @@ def get_killmails_data(
                     "name": killmail.victim.name,
                 },
                 "victim_ship": {
-                    "id": killmail.victim_ship_id,
-                    "name": (
-                        killmail.victim_ship.name if killmail.victim_ship else "Unknown"
-                    ),
+                    "id": killmail.victim_ship.id,
+                    "name": killmail.victim_ship.name,
                 },
                 "victim_corporation_id": killmail.victim_corporation_id,
                 "victim_alliance_id": killmail.victim_alliance_id,
@@ -92,7 +90,6 @@ def get_killmails_data(
                 "victim_position_x": killmail.victim_position_x,
                 "victim_position_y": killmail.victim_position_y,
                 "victim_position_z": killmail.victim_position_z,
-                "attackers": killmail.attackers,
             }
         )
 
@@ -130,7 +127,10 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
         )
     ).filter_entities(entities)
 
-    mains, _ = account.get_mains_alts()
+    if entity_id == 0:
+        mains, _ = account.get_mains_alts()
+    else:
+        mains = []
 
     shame, fame = killboard_hall(killmails, entities, mains)
 
