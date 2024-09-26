@@ -1,7 +1,6 @@
 """Managers for killboard."""
 
 # Standard Library
-from collections import Counter
 from typing import Any
 
 # Django
@@ -166,18 +165,21 @@ class KillmailQueryStats(KillmailQueryMining):
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Attacker
 
-        ship_ids = Attacker.objects.filter(
-            models.Q(corporation_id__in=entities)
-            | models.Q(alliance_id__in=entities)
-            | models.Q(character_id__in=entities),
-            killmail_id__in=km_ids,
-        ).values_list("ship__id", flat=True)
+        topship = (
+            Attacker.objects.filter(
+                models.Q(corporation_id__in=entities)
+                | models.Q(alliance_id__in=entities)
+                | models.Q(character_id__in=entities),
+                killmail_id__in=km_ids,
+            )
+            .values("ship__id")
+            .annotate(count=models.Count("ship__id"))
+            .order_by("-count")
+        ).first()
 
-        if ship_ids.exists():
-            top_ship_counter = Counter(ship_ids)
-            top_ship_id, count = top_ship_counter.most_common(1)[0]
-            top_ship = EveType.objects.get(id=top_ship_id)
-            top_ship.ship_count = count
+        if topship:
+            top_ship = EveType.objects.get(id=topship["ship__id"])
+            top_ship.ship_count = topship["count"]
             return top_ship
         return None
 
@@ -195,25 +197,23 @@ class KillmailQueryStats(KillmailQueryMining):
             losses.values("victim_ship_id")
             .annotate(kill_count=models.Count("victim_ship_id"))
             .order_by("-kill_count", "victim_ship__name")
-        )
+        ).first()
 
-        if not worst_ship.exists():
-            return None
+        if worst_ship:
+            ship_id = worst_ship["victim_ship_id"]
+            kill_count = worst_ship["kill_count"]
 
-        worst_ships = worst_ship[0]
-        ship_id = worst_ships["victim_ship_id"]
-        kill_count = worst_ships["kill_count"]
+            # Get the worst ship and add the kill count
+            worst_ship = EveType.objects.get(id=ship_id)
+            worst_ship.ship_count = kill_count
+            return worst_ship
 
-        # Get the worst ship and add the kill count
-        worst_ship = EveType.objects.get(id=ship_id)
-        worst_ship.ship_count = kill_count
-
-        return worst_ship
+        return None
 
     @log_timing(logger)
     def _get_top_victim(self, entities, km_ids):
         """Get the top victim for the given entities."""
-        victims = (
+        victim = (
             self.filter(
                 models.Q(victim_id__in=entities)
                 | models.Q(victim_corporation_id__in=entities)
@@ -223,12 +223,11 @@ class KillmailQueryStats(KillmailQueryMining):
             .values("victim_id")
             .annotate(kill_count=models.Count("victim_id"))
             .order_by("-kill_count", "victim__name")
-        )
+        ).first()
 
-        if victims.exists():
-            top_victim_data = victims[0]
-            top_victim = EveEntity.objects.get(id=top_victim_data["victim_id"])
-            top_victim.kill_count = top_victim_data["kill_count"]
+        if victim:
+            top_victim = EveEntity.objects.get(id=victim["victim_id"])
+            top_victim.kill_count = victim["kill_count"]
             return top_victim
         return None
 
@@ -238,7 +237,7 @@ class KillmailQueryStats(KillmailQueryMining):
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Attacker
 
-        attackers = (
+        attacker = (
             Attacker.objects.filter(
                 models.Q(corporation_id__in=entities)
                 | models.Q(alliance_id__in=entities)
@@ -248,13 +247,11 @@ class KillmailQueryStats(KillmailQueryMining):
             .values("character_id")
             .annotate(kill_count=models.Count("killmail_id"))
             .order_by("-kill_count", "character__name")
-        )
+        ).first()
 
-        if attackers.exists():
-            print("attackers", attackers)
-            top_attacker_data = attackers[0]
-            top_attacker = EveEntity.objects.get(id=top_attacker_data["character_id"])
-            top_attacker.kill_count = top_attacker_data["kill_count"]
+        if attacker:
+            top_attacker = EveEntity.objects.get(id=attacker["character_id"])
+            top_attacker.kill_count = attacker["kill_count"]
             return top_attacker
         return None
 
@@ -287,24 +284,24 @@ class KillmailQueryStats(KillmailQueryMining):
         )
         stats["highest_kill"] = highest_kill
 
-        # Get the top ship
-        km_ids = kills.filter(
-            killmail_date__year=year,
-            killmail_date__month=month,
-        ).values_list("killmail_id", flat=True)
-
+        # Get Killmail IDs for the given year
         km_ids_year = kills.filter(killmail_date__year=year).values_list(
             "killmail_id", flat=True
         )
-
-        km_ids_loss = losses.filter(
+        # Get Killmail IDs for the given month
+        km_ids = km_ids_year.filter(
             killmail_date__year=year,
             killmail_date__month=month,
         ).values_list("killmail_id", flat=True)
-
+        # Get Loss Killmail IDs for the given year
         km_ids_loss_year = losses.filter(killmail_date__year=year).values_list(
             "killmail_id", flat=True
         )
+        # Get Loss Killmail IDs for the given month
+        km_ids_loss = km_ids_loss_year.filter(
+            killmail_date__year=year,
+            killmail_date__month=month,
+        ).values_list("killmail_id", flat=True)
 
         # Get the worst ship
         stats["worst_ship"] = self._get_worst_ship(entities, km_ids_loss)
