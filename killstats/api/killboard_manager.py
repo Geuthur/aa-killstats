@@ -154,66 +154,66 @@ def killboard_dashboard(
 ):
     stats = []
 
-    test = killmail_year.get_killboard_stats(entities, date)
+    statsdata = killmail_year.get_killboard_stats(entities, date)
 
-    if test["highest_loss"]:
-        stats.append(format_killmail(test["highest_loss"], title="Top Loss:"))
-    if test["worst_ship"]:
+    if statsdata["highest_loss"]:
+        stats.append(format_killmail(statsdata["highest_loss"], title="Top Loss:"))
+    if statsdata["worst_ship"]:
         stats.append(
             format_killmail_details(
-                test["worst_ship"],
+                statsdata["worst_ship"],
                 loss=True,
                 title="Worst Ship:",
-                count=test["worst_ship"].ship_count,
+                count=statsdata["worst_ship"].ship_count,
                 stats_type="ship",
             )
         )
-    if test["top_loss"]:
+    if statsdata["top_loss"]:
         stats.append(
             format_killmail_details(
-                test["top_loss"],
+                statsdata["top_loss"],
                 loss=True,
                 title="Top Victim:",
-                count=test["top_loss"].kill_count,
+                count=statsdata["top_loss"].kill_count,
                 stats_type="character",
             )
         )
-    if test["alltime_loss"]:
+    if statsdata["alltime_loss"]:
         stats.append(
             format_killmail_details(
-                test["alltime_loss"],
+                statsdata["alltime_loss"],
                 loss=True,
                 title="Alltime Victim:",
-                count=test["alltime_loss"].kill_count,
+                count=statsdata["alltime_loss"].kill_count,
                 stats_type="character",
             )
         )
-    if test["highest_kill"]:
-        stats.append(format_killmail(test["highest_kill"], title="Top Kill:"))
-    if test["top_ship"]:
+    if statsdata["highest_kill"]:
+        stats.append(format_killmail(statsdata["highest_kill"], title="Top Kill:"))
+    if statsdata["top_ship"]:
         stats.append(
             format_killmail_details(
-                test["top_ship"],
+                statsdata["top_ship"],
                 title="Top Ship:",
-                count=test["top_ship"].ship_count,
+                count=statsdata["top_ship"].ship_count,
                 stats_type="ship",
             )
         )
-    if test["top_killer"]:
+    if statsdata["top_killer"]:
         stats.append(
             format_killmail_details(
-                test["top_killer"],
+                statsdata["top_killer"],
                 title="Top Killer:",
-                count=test["top_killer"].kill_count,
+                count=statsdata["top_killer"].kill_count,
                 stats_type="character",
             )
         )
-    if test["alltime_killer"]:
+    if statsdata["alltime_killer"]:
         stats.append(
             format_killmail_details(
-                test["alltime_killer"],
+                statsdata["alltime_killer"],
                 title="Alltime Killer:",
-                count=test["alltime_killer"].kill_count,
+                count=statsdata["alltime_killer"].kill_count,
                 stats_type="character",
             )
         )
