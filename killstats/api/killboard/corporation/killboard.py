@@ -28,11 +28,9 @@ class KillboardCorporationApiEndpoints:
             tags=self.tags,
         )
         # pylint: disable=too-many-positional-arguments
-        def get_corporation_killmails(
-            request, month, year, corporation_id: int, mode, page_size: int = 100
-        ):
+        def get_corporation_killmails(request, month, year, corporation_id: int, mode):
             return get_killmails_data(
-                request, month, year, corporation_id, mode, page_size, "corporation"
+                request, month, year, corporation_id, mode, "corporation"
             )
 
         # Hall of Fame/Shame

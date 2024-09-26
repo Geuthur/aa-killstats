@@ -26,11 +26,9 @@ class KillboardAllianceApiEndpoints:
             tags=self.tags,
         )
         # pylint: disable=too-many-positional-arguments
-        def get_alliance_killmails(
-            request, month, year, alliance_id: int, mode, page_size: int = 100
-        ):
+        def get_alliance_killmails(request, month, year, alliance_id: int, mode):
             return get_killmails_data(
-                request, month, year, alliance_id, mode, page_size, "alliance"
+                request, month, year, alliance_id, mode, "alliance"
             )
 
         # Hall of Fame/Shame
