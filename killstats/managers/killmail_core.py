@@ -379,11 +379,11 @@ class KillmailManager(_KillmailBase):
             logger.debug("%s added to System", region_id.name)
         return region_id.id
 
-    def create_attackers(self, killmail):
+    def create_attackers(self, killmail, killmanager):
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Attacker
 
-        for attacker in self.attackers:
+        for attacker in killmanager.attackers:
             character = None
             if attacker.character_id:
                 character = self.get_entity_name(attacker.character_id)
