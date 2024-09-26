@@ -15,10 +15,6 @@ KILLMAIL_MAPPING = {
 }
 
 
-def filter_killmail_mapping(search_value):
-    return {k: v for k, v in KILLMAIL_MAPPING.items() if search_value in v}
-
-
 # pylint: disable=too-many-locals, too-many-positional-arguments
 def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: str):
     if entity_id == 0:
@@ -29,6 +25,7 @@ def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: 
     else:
         entities = [entity_id]
 
+    # Datatables parameters
     start = int(request.GET.get("start", 0))
     length = int(request.GET.get("length", 25))
     limit = start + length
