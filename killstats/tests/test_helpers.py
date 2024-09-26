@@ -1,18 +1,12 @@
-import sys
-from unittest.mock import MagicMock, patch
-
-from corpstats.models import CorpMember as ExpectedCorpMember
+from unittest.mock import patch
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import RequestFactory, TestCase
-from esi.models import Token
 
-from allianceauth.corputils.models import CorpMember, CorpStats
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
 from killstats.api.account_manager import AccountManager
-from killstats.errors import KillstatsImportError
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 
 MODULE_PATH = "killstats.api.account_manager"

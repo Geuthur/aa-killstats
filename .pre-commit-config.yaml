@@ -133,6 +133,8 @@ repos:
             .min(.js|.js.map)|
             static/(.*)/libs/
           )
+        args: ['--legacy-peer-deps']
+
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.9.0
     hooks:
