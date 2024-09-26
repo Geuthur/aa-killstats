@@ -27,11 +27,8 @@ class TestKillboardtModel(TestCase):
             victim=cls.victim,
             victim_ship=cls.victim_ship,
             victim_corporation_id=2001,
+            victim_alliance_id=3001,
             hash="hash1",
-            attackers=[
-                {"character_id": 1001, "corporation_id": 2001, "alliance_id": 3001},
-                {"character_id": 1002, "corporation_id": 2002, "alliance_id": 3002},
-            ],
             victim_total_value=1_000_000,
         )
 
@@ -42,20 +39,14 @@ class TestKillboardtModel(TestCase):
             victim_ship=cls.victim_ship2,
             victim_corporation_id=2001,
             hash="hash2",
-            attackers=[
-                {"character_id": 1004, "corporation_id": 2001, "alliance_id": 3001},
-                {"character_id": 1005, "corporation_id": 2002, "alliance_id": 3002},
-            ],
             victim_total_value=100_000_000,
         )
 
     def test_is_corp(self):
         self.assertTrue(self.killmail.is_corp([2001]))
-        self.assertTrue(self.killmail.is_corp([2001]))
         self.assertFalse(self.killmail.is_corp([3001]))
 
     def test_is_ally(self):
-        self.assertFalse(self.killmail.is_alliance([2001]))
         self.assertFalse(self.killmail.is_alliance([2001]))
         self.assertTrue(self.killmail.is_alliance([3001]))
 

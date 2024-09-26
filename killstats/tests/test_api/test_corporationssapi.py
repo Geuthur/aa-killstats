@@ -13,7 +13,7 @@ from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
 
-class ManageApiJournalCharEndpointsTest(TestCase):
+class ManageApiCorporationEndpointsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -34,8 +34,7 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         cls.api = NinjaAPI()
         cls.manage_api_endpoints = KillboardCorporationApiEndpoints(api=cls.api)
 
-    def test_killstats_killboard_api_no_entry(self):
-        self.maxDiff = None
+    def test_killboard_api_no_entry(self):
         # given
         self.client.force_login(self.user)
         url = "/killstats/api/stats/month/7/year/2020/corporation/0/"
@@ -46,8 +45,7 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
-    def test_killstats_killboard_api(self):
-        self.maxDiff = None
+    def test_killboard_api(self):
         # given
         self.client.force_login(self.user)
         url = "/killstats/api/stats/month/7/year/2024/corporation/0/"
@@ -58,10 +56,21 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
-    def test_killstats_killboard_api_single(self):
-        self.maxDiff = None
+        # Hall of Fame
+        url = "/killstats/api/halls/month/7/year/2024/corporation/0/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _killstasts_api.Killstats_Halls_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_killboard_api_single(self):
         # given
         self.client.force_login(self.user)
+        self.maxDiff = None
+
+        # Stats
         url = "/killstats/api/stats/month/7/year/2024/corporation/2001/"
         # when
         response = self.client.get(url)
@@ -70,20 +79,32 @@ class ManageApiJournalCharEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Hall of Fame
         url = "/killstats/api/halls/month/7/year/2024/corporation/2001/"
         # when
         response = self.client.get(url)
         # then
-        expected_data = _killstasts_api.Killstats_Halls_Entry
+        expected_data = _killstasts_api.Killstats_Halls_Single
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
-        url = "/killstats/api/killmail/month/7/year/2024/corporation/2001/kills/"
+    def test_killmail_api(self):
+        # given
+        self.client.force_login(self.user)
+
+        url = "/killstats/api/killmail/month/7/year/2024/corporation/3001/kills/"
         # when
         response = self.client.get(url)
-
         # then
         expected_data = _killstasts_api.Killstats_Kills_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        url = "/killstats/api/killmail/month/7/year/2024/corporation/0/losses/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _killstasts_api.Killstats_Losses_Entry
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 

@@ -106,10 +106,10 @@ def load_killstats():
             victim_position_y=killmail.get("victim_position_y"),
             victim_position_z=killmail.get("victim_position_z"),
             hash=killmail.get("hash"),
-            attackers=killmail.get("attackers"),
         )
 
-        for attacker in km.attackers:
+        attackers = killmail.get("attackers")
+        for attacker in attackers:
             character = None
             corporation = None
             alliance = None
