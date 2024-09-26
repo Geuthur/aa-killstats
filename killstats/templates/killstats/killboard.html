@@ -33,7 +33,7 @@
 
 {% block killstats_block %}
 	<!--Dashboard-->
-	{% include 'killstats/killboard/dashboard.html' with stats=stats %}
+	{% include 'killstats/partials/dashboard.html' with stats=stats %}
 	<br>
 	<!--Killstats-->
 	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center">
@@ -61,18 +61,18 @@
 	<br>
 
 	<!--Hall-->
-	{% include 'killstats/killboard/hall.html' with shame=shame fame=fame %}
+	{% include 'killstats/partials/hall.html' with shame=shame fame=fame %}
 	<br>
 	<div id="killboard" class="card" style="display: none;">
-		<div class="rounded-top" style="--bs-bg-opacity: .5;">
-			<ul class="nav nav-tabs" style="--bs-bg-opacity: .5;" id="killstats-killmail">
+		<div class="rounded-top">
+			<ul class="nav nav-tabs" id="killstats-killmail">
 				<li class="nav-item">
-					<a class="nav-link active" href="#tab-kills" data-bs-toggle="tab" data-bs-target="#tab-kills" >
+					<a class="nav-link bg-secondary rounded-top active" href="#tab-kills" data-bs-toggle="tab" data-bs-target="#tab-kills" >
 						Kills
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#tab-losses" data-bs-toggle="tab" data-bs-target="#tab-losses">
+					<a class="nav-link bg-secondary rounded-top" href="#tab-losses" data-bs-toggle="tab" data-bs-target="#tab-losses">
 						Losses
 					</a>
 				</li>
@@ -81,8 +81,8 @@
 		<div class="panel panel-default panel-tabs">
 			<div class="panel-body">
 				<div class="card-body bg-secondary tab-content">
-					{% include 'killstats/killboard/kills.html' %}
-					{% include 'killstats/killboard/losses.html' %}
+					{% include 'killstats/partials/kills.html' %}
+					{% include 'killstats/partials/losses.html' %}
 				</div>
 			</div>
 		</div>
@@ -100,7 +100,7 @@
 {% include "bundles/moment-js.html" with locale=True %}
 
 {% include "bundles/filterdropdown-js.html" %}
-{% include 'killstats/killboard/killboard-js.html' %}
+{% include 'killstats/bundles/killboard-js.html' %}
 
 {% endblock extra_javascript %}
 
