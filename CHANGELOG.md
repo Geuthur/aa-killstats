@@ -1,5 +1,33 @@
 # Changelog
 
+> \[!IMPORTANT\]
+> The Migraten to the new Attacker System can take a while if you have large killmail db
+> We recommend to delete all Killmails and Fetch it again over the Task System
+
+### Added
+
+- Added Attacker model isntead of Json Field
+- Log timing for performance tests
+
+### Chamged
+
+- Installation Description for README
+- Killmails are now create with transaction function
+- Get EVE Data from django eveuniverse
+- Performance improvments in Stats process
+
+### Fixed
+
+- API Fetch Error if Ship not exist
+
+### Removed
+
+- EveEntity model
+- Stats Manager now handled directly from QuerySet
+- Attacker JSON Field from Killmail
+- Temporarily removed filter Hall of Fame accept only 1 kill per Character cause performance issues
+- Corp Utils, CorpStats Two support
+
 ## \[0.1.9\] - 2024-09-05
 
 ### Fixed
