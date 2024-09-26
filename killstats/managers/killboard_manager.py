@@ -30,7 +30,10 @@ class KillmailQueryCore(models.QuerySet):
 
         # Get all Attackers from Entities
         kms_data = Attacker.objects.filter(
-            killmail_id__in=km_ids, corporation_id__in=entities
+            models.Q(corporation_id__in=entities)
+            | models.Q(alliance_id__in=entities)
+            | models.Q(character_id__in=entities),
+            killmail_id__in=km_ids,
         ).values_list("killmail_id", "corporation_id", "alliance_id")
 
         for killmail_id, corporation_id, alliance_id in kms_data:
@@ -38,13 +41,14 @@ class KillmailQueryCore(models.QuerySet):
                 kms.append(killmail_id)
 
         # Include Victim Kills
-        victim_kms = self.filter(
+        victim_kms_ids = self.filter(
             models.Q(victim_id__in=entities)
             | models.Q(victim_corporation_id__in=entities)
             | models.Q(victim_alliance_id__in=entities)
-        )
-        for killmail in victim_kms:
-            kms.append(killmail.killmail_id)
+        ).values_list("killmail_id", flat=True)
+
+        for killmail_id in victim_kms_ids:
+            kms.append(killmail_id)
 
         return self.filter(killmail_id__in=kms)
 
@@ -98,18 +102,26 @@ class KillmailQueryCore(models.QuerySet):
 
     def filter_top_killer(self, mains):
         """Returns Topkiller from Killmail as dict."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
+        # Fetch all attackers related to the killmails in self
+        attackers = Attacker.objects.filter(killmail__in=self).select_related(
+            "killmail"
+        )
+
         topkiller = {}
-        for killmail in self:
-            for attacker in killmail.attackers:
-                character_id, alt_char = self._find_main_or_alt(attacker, mains)
-                if not character_id:
-                    continue
-                self._update_topkiller(topkiller, character_id, killmail, alt_char)
+        for attacker in attackers:
+            character_id, alt_char = self._find_main_or_alt(attacker, mains)
+            if not character_id:
+                continue
+            self._update_topkiller(topkiller, character_id, attacker.killmail, alt_char)
+
         return topkiller
 
     def _find_main_or_alt(self, attacker, mains):
         """Finds the main character or alt character based on attacker info."""
-        character_id = attacker.get("character_id", 0)
+        character_id = attacker.character_id
         if character_id in mains:
             main_data = mains[character_id]
             return main_data["main"].character_id, None
@@ -148,6 +160,7 @@ class KillmailQueryMining(KillmailQueryCore):
 
 
 class KillmailQueryStats(KillmailQueryMining):
+    @log_timing(logger)
     def _get_top_ship(self, entities, km_ids):
         """Get the top ship for the given entities."""
         # pylint: disable=import-outside-toplevel
@@ -168,6 +181,7 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_ship
         return None
 
+    @log_timing(logger)
     def _get_worst_ship(self, entities, km_ids):
         """Get the worst ship for the given entities."""
         losses = self.filter(
@@ -196,6 +210,7 @@ class KillmailQueryStats(KillmailQueryMining):
 
         return worst_ship
 
+    @log_timing(logger)
     def _get_top_victim(self, entities, km_ids):
         """Get the top victim for the given entities."""
         victims = (
@@ -217,6 +232,7 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_victim
         return None
 
+    @log_timing(logger)
     def _get_top_killer(self, entities, km_ids):
         """Get the top killer for the given entities."""
         # pylint: disable=import-outside-toplevel
@@ -380,10 +396,9 @@ class KillmailBaseManager(models.Manager):
             victim_position_x=killmail.position.x,
             victim_position_y=killmail.position.y,
             victim_position_z=killmail.position.z,
-            attackers=killmail.attackers_distinct_info(),
         )
 
-        killmail.create_attackers(km)
+        killmail.create_attackers(km, killmail)
 
         return new_entry
 
