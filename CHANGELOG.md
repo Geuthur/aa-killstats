@@ -1,8 +1,9 @@
 # Changelog
 
+## \[0.5.0\] - 2024-09-26
+
 > \[!IMPORTANT\]
-> The Migraten to the new Attacker System can take a while if you have large killmail db
-> We recommend to delete all Killmails and Fetch it again over the Task System
+> With the new Version we need to delete all Killmails.
 
 ### Added
 
@@ -12,13 +13,16 @@
 ### Chamged
 
 - Installation Description for README
-- Killmails are now create with transaction function
 - Get EVE Data from django eveuniverse
-- Performance improvments in Stats process
+- Significant Performance boost in Stats Process
+- Killmails are now create with transaction function
+- Killmail Datatable Search supports now Type, Character, Total Value, Date
+- Design Improvments
 
 ### Fixed
 
 - API Fetch Error if Ship not exist
+- Overview Action button title is edit instead of show
 
 ### Removed
 
