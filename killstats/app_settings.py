@@ -3,9 +3,6 @@
 # Alliance Auth (External Libs)
 from app_utils.app_settings import clean_setting
 
-# Switch between AA-Corp Stats and CorpStats Two APP
-KILLSTATS_CORPSTATS_TWO = clean_setting("KILLSTATS_CORPSTATS_TWO", False)
-
 # Set Naming on Auth Hook
 KILLSTATS_APP_NAME = clean_setting("KILLSTATS_APP_NAME", "Killstats")
 
