@@ -13,4 +13,8 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name="EveEntity",
         ),
+        migrations.RemoveField(
+            model_name="killmail",
+            name="attackers",
+        ),
     ]
