@@ -183,7 +183,7 @@ class KillmailManager(_KillmailBase):
 
         killmail_list = []
         try:
-            for page in range(1, 7):
+            for page in range(1, 10):
                 result = KillmailManager._fetch_page_data(base_url, page)
                 killmail_ids = [data["killmail_id"] for data in result]
                 existing_killmail_ids = Killmail.objects.filter(
