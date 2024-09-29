@@ -32,8 +32,6 @@ from killstats.providers import esi
 
 logger = get_extension_logger(__name__)
 USERAGENT = "killstats v{__version__}"
-
-MAX_RETRIES = 3
 RETRY_DELAY = 3
 
 
@@ -146,7 +144,7 @@ class KillmailManager(_KillmailBase):
 
         killmail_list = []
         try:
-            for page in range(1, 20):
+            for page in range(1, 6):
                 result = KillmailManager._fetch_page_data(base_url, page)
                 if result is None:
                     continue
@@ -175,46 +173,44 @@ class KillmailManager(_KillmailBase):
     def _fetch_page_data(base_url, page):
         cache_key = f"zkb_page_cache_{base_url}_{page}"
         cached_zkb = cache.get(cache_key)
-        if cached_zkb is not None:
+        # Check only the first page if they changed and cache lifetime is not expired
+        if cached_zkb is not None and page > 3:
             return cached_zkb
 
         redis = get_redis_client()
 
-        retries = 0
-        while retries < MAX_RETRIES:
-            try:
-                # Ensure that you dont spam zKB Requests
-                with redis.lock(
-                    KillmailManager.lock_key(), sleep=3, blocking_timeout=5
-                ):
-                    logger.debug("Fetching %s page %s from zKillboard", base_url, page)
-                    url = f"{base_url}page/{page}/"
-                    headers = {
-                        "User-Agent": USERAGENT,
-                        "Content-Type": "application/json",
-                        "Accept-Encoding": "gzip",
-                    }
-                    request_result = requests.get(url=url, headers=headers)
-                    request_result.raise_for_status()
-                    # Only refresh page 1-3 cause other pages are not changing (normally)
-                    if page > 3:
-                        timeout_value = KILLBOARD_ZKB_CACHE_LIFETIME
-                        cache.set(
-                            key=cache_key,
-                            value=request_result.json(),
-                            timeout=timeout_value,
-                        )
-                    # Sleep to prevent spamming zKB
-                    time.sleep(1)
-                    return request_result.json()
-            except LockError:
-                logger.debug("Lock is already in use. Retrying...")
-                retries += 1
-                time.sleep(RETRY_DELAY)
-            except requests.RequestException as exc:
-                logger.warning("Request failed: %s", exc, exc_info=True)
-                raise ValueError(str(exc)) from exc
-        logger.error("Failed to fetch page %s from zKillboard", page)
+        try:
+            # Ensure that you dont spam zKB Requests
+            with redis.lock(KillmailManager.lock_key(), blocking_timeout=600):
+                logger.debug("Fetching %s page %s from zKillboard", base_url, page)
+                url = f"{base_url}page/{page}/"
+                headers = {
+                    "User-Agent": USERAGENT,
+                    "Content-Type": "application/json",
+                    "Accept-Encoding": "gzip",
+                }
+
+                timeout_value = KILLBOARD_ZKB_CACHE_LIFETIME
+
+                # Make a GET request to fetch the new content
+                request_result = requests.get(url=url, headers=headers)
+                request_result.raise_for_status()
+                new_data = request_result.json()
+
+                cache.set(
+                    key=cache_key,
+                    value=new_data,
+                    timeout=timeout_value,
+                )
+                # Sleep to prevent spamming zKB
+                time.sleep(1)
+                return request_result.json()
+        except LockError:
+            logger.debug("Lock is already in use.")
+        except requests.RequestException as exc:
+            logger.warning("Request failed: %s", exc, exc_info=True)
+            raise ValueError(str(exc)) from exc
+        logger.error("Failed to fetch %s page %s from zKillboard", base_url, page)
         return None
 
     @staticmethod
