@@ -4,13 +4,6 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
-def migrate_table(apps, schema_editor):
-    try:
-        apps.get_model("killstats", "Killmail").objects.all().delete()
-    except:
-        pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -19,7 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_table),
         migrations.CreateModel(
             name="Attacker",
             fields=[
@@ -30,6 +22,14 @@ class Migration(migrations.Migration):
                         primary_key=True,
                         serialize=False,
                         verbose_name="ID",
+                    ),
+                ),
+                (
+                    "killmail",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="attacker_killmail",
+                        to="killstats.killmail",
                     ),
                 ),
                 ("damage_done", models.IntegerField(blank=True, null=True)),
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="attacker",
+                        related_name="attacker_character",
                         to="eveuniverse.eveentity",
                     ),
                 ),
@@ -67,6 +67,16 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="attacker_corp",
                         to="eveuniverse.eveentity",
+                    ),
+                ),
+                (
+                    "ship",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="attacker_ship",
+                        to="eveuniverse.evetype",
                     ),
                 ),
             ],
@@ -89,23 +99,5 @@ class Migration(migrations.Migration):
         ),
         migrations.DeleteModel(
             name="EveEntity",
-        ),
-        migrations.AddField(
-            model_name="attacker",
-            name="killmail",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="killstats.killmail"
-            ),
-        ),
-        migrations.AddField(
-            model_name="attacker",
-            name="ship",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="attacker_ship",
-                to="eveuniverse.evetype",
-            ),
         ),
     ]
