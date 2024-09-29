@@ -20,7 +20,7 @@ ZKILLBOARD_KILLMAIL_URL_REGEX = r"^http[s]?:\/\/zkillboard\.com\/kill\/\d+\/"
 STORAGE_BASE_KEY = "killstats_storage_"
 
 # Max lifetime of killmails in temporary storage in seconds
-KILLBOARD_STORAGE_LIFETIME = clean_setting("KILLBOARD_STORAGE_LIFETIME", 3_600 * 24 * 1)
+KILLBOARD_STORAGE_LIFETIME = clean_setting("KILLBOARD_STORAGE_LIFETIME", 3_600 * 24 * 3)
 
 # Max Killmails per run should not be higher then 500
 KILLBOARD_MAX_KILLMAILS_PER_RUN = clean_setting("KILLBOARD_MAX_KILLMAILS_PER_RUN", 400)
