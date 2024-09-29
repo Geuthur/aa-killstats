@@ -38,6 +38,24 @@ class Killmail(models.Model):
     def __str__(self):
         return f"Killmail {self.killmail_id}"
 
+    def get_or_unknown_victim_name(self):
+        """Return the victim name or Unknown."""
+        return self.victim.name if self.victim else _("Unknown")
+
+    def get_or_unknown_victim_ship_name(self):
+        """Return the victim ship name or Unknown."""
+        return self.victim_ship.name if self.victim_ship else _("Unknown")
+
+    def evaluate_victim_id(self):
+        """Return the victim ID."""
+        if self.victim is not None:
+            return self.victim.id
+        if self.victim_corporation_id is not None:
+            return self.victim_corporation_id
+        if self.victim_alliance_id is not None:
+            return self.victim_alliance_id
+        return 0
+
     def get_image_url(self):
         return eveimageserver._eve_entity_image_url(
             self.victim.category, self.victim.id, 32
@@ -86,11 +104,13 @@ class Killmail(models.Model):
 
 
 class Attacker(models.Model):
-    killmail = models.ForeignKey(Killmail, on_delete=models.CASCADE)
+    killmail = models.ForeignKey(
+        Killmail, on_delete=models.CASCADE, related_name="attacker_killmail"
+    )
     character = models.ForeignKey(
         EveEntity,
         on_delete=models.CASCADE,
-        related_name="attacker",
+        related_name="attacker_character",
         null=True,
         blank=True,
     )
@@ -119,6 +139,32 @@ class Attacker(models.Model):
     final_blow = models.BooleanField(null=True, blank=True)
     weapon_type_id = models.PositiveBigIntegerField(null=True, blank=True)
     security_status = models.FloatField(null=True, blank=True)
+
+    def get_or_unknown_character_name(self):
+        """Return the character name or Unknown."""
+        return self.character.name if self.character else _("Unknown")
+
+    def get_or_unknown_corporation_name(self):
+        """Return the corporation name or Unknown."""
+        return self.corporation.name if self.corporation else _("Unknown")
+
+    def get_or_unknown_alliance_name(self):
+        """Return the alliance name or Unknown."""
+        return self.alliance.name if self.alliance else _("Unknown")
+
+    def get_or_unknown_ship_name(self):
+        """Return the ship name or Unknown."""
+        return self.ship.name if self.ship else _("Unknown")
+
+    def evaluate_attacker(self) -> tuple:
+        """Return the attacker ID and Name."""
+        if self.character is not None:
+            return self.character.id, self.character.name
+        if self.corporation is not None:
+            return self.corporation.id, self.corporation.name
+        if self.alliance is not None:
+            return self.alliance.id, self.alliance.name
+        return 0, _("Unknown")
 
     class Meta:
         default_permissions = ()
