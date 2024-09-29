@@ -129,11 +129,7 @@ def _stats_killmail(
             "corporation_id": killmail.victim_corporation_id,
             "alliance_id": killmail.victim_alliance_id,
             "ship": killmail.victim_ship_id,
-            "ship_name": (
-                killmail.victim_ship.name
-                if killmail.victim_ship is not None
-                else "Unknown"
-            ),
+            "ship_name": killmail.get_or_unknown_ship_name(),
             "hash": killmail.hash,
             "totalValue": killmail.victim_total_value,
             "date": killmail.killmail_date,
@@ -248,12 +244,12 @@ def killboard_hall(killmail_month: Killmail, entities, mains):
 def format_killmail(killmail: Killmail, title):
     return {
         "killmail_id": killmail.killmail_id,
-        "character_id": killmail.victim.id,
-        "character_name": killmail.victim.name,
+        "character_id": killmail.victim_id,
+        "character_name": killmail.get_or_unknown_victim_name(),
         "corporation_id": killmail.victim_corporation_id,
         "alliance_id": killmail.victim_alliance_id,
-        "ship": killmail.victim_ship.id,
-        "ship_name": killmail.victim_ship.name,
+        "ship": killmail.victim_ship_id,
+        "ship_name": killmail.get_or_unknown_victim_ship_name(),
         "hash": killmail.hash,
         "totalValue": killmail.victim_total_value,
         "date": killmail.killmail_date.isoformat(),
