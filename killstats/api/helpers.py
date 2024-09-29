@@ -11,16 +11,6 @@ class KillboardDate:
         self.year = int(year)
 
 
-def evaluate_killmail_type(killmail):
-    if killmail.victim is not None:
-        return killmail.victim.id
-    if killmail.victim_corporation_id is not None:
-        return killmail.victim_corporation_id
-    if killmail.victim_alliance_id is not None:
-        return killmail.victim_alliance_id
-    return "Unknown", None
-
-
 def get_corporations(request):
     linked_characters = request.user.profile.main_character.character_ownership.user.character_ownerships.select_related(
         "character", "user"
