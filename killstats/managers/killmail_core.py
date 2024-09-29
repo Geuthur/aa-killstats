@@ -8,14 +8,14 @@ from typing import Optional
 # Third Party
 import requests
 from dacite import DaciteError, from_dict
-from django_redis import get_redis_connection
-from redis.lock import Lock
+from redis.exceptions import LockError
 
 # Django
 from django.core.cache import cache
 from django.utils.dateparse import parse_datetime
 
 # Alliance Auth (External Libs)
+from app_utils.allianceauth import get_redis_client
 from app_utils.json import JSONDateTimeDecoder, JSONDateTimeEncoder
 
 # AA Voices of War
@@ -24,6 +24,7 @@ from killstats.app_settings import (
     KILLBOARD_MAX_KILLMAILS_PER_RUN,
     KILLBOARD_STORAGE_LIFETIME,
     KILLBOARD_ZKB_CACHE_LIFETIME,
+    STORAGE_BASE_KEY,
     ZKILLBOARD_API_URL,
 )
 from killstats.hooks import get_extension_logger
@@ -31,6 +32,9 @@ from killstats.providers import esi
 
 logger = get_extension_logger(__name__)
 USERAGENT = "killstats v{__version__}"
+
+MAX_RETRIES = 3
+RETRY_DELAY = 3
 
 
 class KillboardException(Exception):
@@ -112,9 +116,7 @@ class KillmailZkb(_KillmailBase):
 
 @dataclass
 class KillmailManager(_KillmailBase):
-    """
-    Killmail Manager
-    """
+    """Killmail Manager"""
 
     _STORAGE_BASE_KEY = "killboard_storage_killmail_"
 
@@ -129,62 +131,25 @@ class KillmailManager(_KillmailBase):
     def __repr__(self):
         return f"{type(self).__name__}(id={self.id})"
 
-    def attackers_distinct_alliance_ids(self) -> set[int]:
-        """Return distinct alliance IDs of all attackers."""
-        return {obj.alliance_id for obj in self.attackers if obj.alliance_id}
-
-    def attackers_distinct_corporation_ids(self) -> set[int]:
-        """Return distinct corporation IDs of all attackers."""
-        return {obj.corporation_id for obj in self.attackers if obj.corporation_id}
-
-    def attackers_distinct_character_ids(self) -> set[int]:
-        """Return distinct character IDs of all attackers."""
-        return {obj.character_id for obj in self.attackers if obj.character_id}
-
-    def attackers_ship_type_ids(self) -> list[int]:
-        """Returns ship type IDs of all attackers with duplicates."""
-        return [obj.ship_type_id for obj in self.attackers if obj.ship_type_id]
-
-    def attackers_weapon_type_ids(self) -> list[int]:
-        """Returns weapon type IDs of all attackers with duplicates."""
-        return [obj.weapon_type_id for obj in self.attackers if obj.weapon_type_id]
-
-    def attackers_distinct_info(self) -> set[int]:
-        """Return distinct attacker main info of all attackers."""
-        attackers_info = []
-
-        for attacker in self.attackers:
-            attacker_info = {
-                "character_id": attacker.character_id,
-                "corporation_id": attacker.corporation_id,
-                "alliance_id": attacker.alliance_id,
-                "ship_type_id": attacker.ship_type_id,
-                "damage_done": attacker.damage_done,
-                "final_blow": attacker.is_final_blow,
-            }
-            attackers_info.append(attacker_info)
-
-        return attackers_info
-
     def asjson(self) -> str:
         """Convert killmail into JSON data."""
         return json.dumps(asdict(self), cls=JSONDateTimeEncoder)
 
     @staticmethod
-    def get_kill_data_bulk(
+    def get_killmail_data_bulk(
         base_url: str, max_entries_per_bulk: int = KILLBOARD_MAX_KILLMAILS_PER_RUN
     ):
-        """
-        Get kill data bulk from zKillboard
-        """
+        """Get kill data bulk from zKillboard"""
         # TODO Maybe another way to get the data?
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Killmail
 
         killmail_list = []
         try:
-            for page in range(1, 10):
+            for page in range(1, 20):
                 result = KillmailManager._fetch_page_data(base_url, page)
+                if result is None:
+                    continue
                 killmail_ids = [data["killmail_id"] for data in result]
                 existing_killmail_ids = Killmail.objects.filter(
                     killmail_id__in=killmail_ids
@@ -208,39 +173,49 @@ class KillmailManager(_KillmailBase):
 
     @staticmethod
     def _fetch_page_data(base_url, page):
-        conn = get_redis_connection("default")
-        lock_id = "zkb_lock"
         cache_key = f"zkb_page_cache_{base_url}_{page}"
         cached_zkb = cache.get(cache_key)
-        if not cached_zkb:
-            # Ensure that you dont spam zKB Requests
-            with Lock(conn, lock_id, blocking_timeout=360):
-                time.sleep(1.5)
-                logger.debug("Fetching (uncached) page %s from zKillboard", page)
-                url = f"{base_url}page/{page}/"
-                headers = {
-                    "User-Agent": USERAGENT,
-                    "Content-Type": "application/json",
-                    "Accept-Encoding": "gzip",
-                }
-                try:
+        if cached_zkb is not None:
+            return cached_zkb
+
+        redis = get_redis_client()
+
+        retries = 0
+        while retries < MAX_RETRIES:
+            try:
+                # Ensure that you dont spam zKB Requests
+                with redis.lock(
+                    KillmailManager.lock_key(), sleep=3, blocking_timeout=5
+                ):
+                    logger.debug("Fetching %s page %s from zKillboard", base_url, page)
+                    url = f"{base_url}page/{page}/"
+                    headers = {
+                        "User-Agent": USERAGENT,
+                        "Content-Type": "application/json",
+                        "Accept-Encoding": "gzip",
+                    }
                     request_result = requests.get(url=url, headers=headers)
                     request_result.raise_for_status()
-                    # Only refresh page 1,2 cause other pages are not changing (normally)
-                    if page > 2:
-                        timeout_value = None
-                    else:
+                    # Only refresh page 1-3 cause other pages are not changing (normally)
+                    if page > 3:
                         timeout_value = KILLBOARD_ZKB_CACHE_LIFETIME
-                    cache.set(
-                        key=cache_key,
-                        value=request_result.json(),
-                        timeout=timeout_value,
-                    )
+                        cache.set(
+                            key=cache_key,
+                            value=request_result.json(),
+                            timeout=timeout_value,
+                        )
+                    # Sleep to prevent spamming zKB
+                    time.sleep(1)
                     return request_result.json()
-                except requests.RequestException as exc:
-                    logger.warning("Request failed: %s", exc, exc_info=True)
-                    raise ValueError(str(exc)) from exc
-        return cached_zkb
+            except LockError:
+                logger.debug("Lock is already in use. Retrying...")
+                retries += 1
+                time.sleep(RETRY_DELAY)
+            except requests.RequestException as exc:
+                logger.warning("Request failed: %s", exc, exc_info=True)
+                raise ValueError(str(exc)) from exc
+        logger.error("Failed to fetch page %s from zKillboard", page)
+        return None
 
     @staticmethod
     def _process_killmail_data(data):
@@ -259,25 +234,27 @@ class KillmailManager(_KillmailBase):
             logger.error("Killmail can't fetch %s", exc)
             return None
 
-    @staticmethod
-    def get_kill_data(kill_id: str):
-        """
-        Get kill data from zKillboard
-
-        :param kill_id:
-        :type kill_id:
-        :return:
-        :rtype:
-        """
+    # pylint: disable=too-many-locals
+    @classmethod
+    def get_single_killmail(cls, killmail_id: int):
+        """Get kill data from zKillboard"""
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Killmail
 
-        url = f"{ZKILLBOARD_API_URL}killID/{kill_id}/"
+        cache_key = f"{STORAGE_BASE_KEY}_KILLMAIL_{killmail_id}"
+        killmail_json = cache.get(cache_key)
+        if killmail_json:
+            return KillmailManager.from_json(killmail_json)
+
+        logger.debug("Fetching killmail %s from zKillboard", killmail_id)
+
+        url = f"{ZKILLBOARD_API_URL}killID/{killmail_id}/"
         headers = {"User-Agent": USERAGENT, "Content-Type": "application/json"}
         request_result = requests.get(url=url, headers=headers, timeout=5)
 
         try:
             request_result.raise_for_status()
+            zkb_killmail = request_result.json()[0]
         except requests.HTTPError as exc:
             error_str = str(exc)
 
@@ -294,11 +271,9 @@ class KillmailManager(_KillmailBase):
 
             raise ValueError(error_str) from exc
 
-        result = request_result.json()[0]
-
         try:
-            killmail_id = result["killmail_id"]
-            killmail_hash = result["zkb"]["hash"]
+            killmail_id = zkb_killmail["killmail_id"]
+            killmail_hash = zkb_killmail["zkb"]["hash"]
 
             # Überprüfe, ob die Killmail bereits in der Datenbank existiert
             existing_killmail = Killmail.objects.filter(killmail_id=killmail_id).first()
@@ -309,7 +284,7 @@ class KillmailManager(_KillmailBase):
 
             esi_killmail = esi.client.Killmails.get_killmails_killmail_id_killmail_hash(
                 killmail_id=killmail_id, killmail_hash=killmail_hash
-            ).result()
+            ).results()
         except Exception as exc:
             raise ValueError("Invalid Kill ID or Hash.") from exc
 
@@ -320,9 +295,12 @@ class KillmailManager(_KillmailBase):
         killmail_dict = {
             "killID": killmail_id,
             "killmail": esi_killmail,
-            "zkb": result["zkb"],
+            "zkb": zkb_killmail["zkb"],
         }
-        return killmail_dict
+        killmail = cls._create_from_dict(killmail_dict)
+        if killmail:
+            cache.set(key=cache_key, value=killmail.asjson())
+        return killmail
 
     def save(self) -> None:
         """Save this killmail to temporary storage."""
@@ -400,14 +378,18 @@ class KillmailManager(_KillmailBase):
             if attacker.ship_type_id:
                 ship = self.get_ship_name(attacker.ship_type_id)
 
-            Attacker.objects.create(
+            Attacker.objects.get_or_create(
                 killmail=killmail,
                 character=character,
                 corporation=corporation,
                 alliance=alliance,
-                ship=ship,
-                damage_done=attacker.damage_done,
-                final_blow=attacker.is_final_blow,
+                defaults={
+                    "ship": ship,
+                    "damage_done": attacker.damage_done,
+                    "final_blow": attacker.is_final_blow,
+                    "security_status": attacker.security_status,
+                    "weapon_type_id": attacker.weapon_type_id,
+                },
             )
         return True
 
