@@ -129,7 +129,7 @@ def _stats_killmail(
             "corporation_id": killmail.victim_corporation_id,
             "alliance_id": killmail.victim_alliance_id,
             "ship": killmail.victim_ship_id,
-            "ship_name": killmail.get_or_unknown_ship_name(),
+            "ship_name": killmail.get_or_unknown_victim_ship_name(),
             "hash": killmail.hash,
             "totalValue": killmail.victim_total_value,
             "date": killmail.killmail_date,
