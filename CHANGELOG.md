@@ -4,6 +4,8 @@
 
 > \[!IMPORTANT\]
 > With the new Version we need to delete all Killmails.
+> The Migration can take a while if Killmail DB is big
+> We prefer to clear the Killstats Killmail table
 
 ### Added
 
@@ -15,7 +17,7 @@
 - Installation Description for README
 - Get EVE Data from django eveuniverse
 - Significant Performance boost in Stats Process
-- Killmails are now create with transaction function
+- Killmails are now create atomic
 - Killmail Datatable Search supports now Type, Character, Total Value, Date
 - Design Improvments
 
@@ -23,6 +25,8 @@
 
 - API Fetch Error if Ship not exist
 - Overview Action button title is edit instead of show
+- Tasks create killmails that already exists
+- zKB Cache cached wrong on first 2 pages
 
 ### Removed
 
