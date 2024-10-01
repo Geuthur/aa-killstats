@@ -56,10 +56,35 @@ class Killmail(models.Model):
             return self.victim_alliance_id
         return 0
 
+    def evaluate_zkb_link(self):
+        zkb = f"https://zkillboard.com/character/{self.victim.id}/"
+        if self.victim.category == "corporation":
+            zkb = f"https://zkillboard.com/corporation/{self.victim_corporation_id}/"
+        if self.victim.category == "alliance":
+            zkb = f"https://zkillboard.com/alliance/{self.victim_alliance_id}/"
+        return zkb
+
+    def evaluate_portrait(self):
+        portrait = eveimageserver.character_portrait_url(self.victim.id, 256)
+        if self.victim.category == "corporation":
+            portrait = eveimageserver.corporation_logo_url(
+                self.victim_corporation_id, 256
+            )
+        if self.victim.category == "alliance":
+            portrait = eveimageserver.alliance_logo_url(self.victim_alliance_id, 256)
+        return portrait
+
+    def get_ship_image_url(self):
+        if self.victim_ship is not None:
+            return eveimageserver.type_render_url(self.victim_ship.id, 32)
+        return ""
+
     def get_image_url(self):
-        return eveimageserver._eve_entity_image_url(
-            self.victim.category, self.victim.id, 32
-        )
+        if self.victim is not None:
+            return eveimageserver._eve_entity_image_url(
+                self.victim.category, self.victim.id, 32
+            )
+        return ""
 
     def is_corp(self, corps: list):
         """Return True if the victim corporation is in the list of corporations."""
@@ -139,18 +164,6 @@ class Attacker(models.Model):
     final_blow = models.BooleanField(null=True, blank=True)
     weapon_type_id = models.PositiveBigIntegerField(null=True, blank=True)
     security_status = models.FloatField(null=True, blank=True)
-
-    def get_or_unknown_character_name(self):
-        """Return the character name or Unknown."""
-        return self.character.name if self.character else _("Unknown")
-
-    def get_or_unknown_corporation_name(self):
-        """Return the corporation name or Unknown."""
-        return self.corporation.name if self.corporation else _("Unknown")
-
-    def get_or_unknown_alliance_name(self):
-        """Return the alliance name or Unknown."""
-        return self.alliance.name if self.alliance else _("Unknown")
 
     def get_or_unknown_ship_name(self):
         """Return the ship name or Unknown."""
