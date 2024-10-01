@@ -270,7 +270,7 @@ class KillmailQueryStats(KillmailQueryMining):
         highest_loss = (
             losses.filter(killmail_date__year=year, killmail_date__month=month)
             .annotate(total_value=models.F("victim_total_value"))
-            .order_by("-total_value")
+            .order_by("-total_value", "-victim_fitted_value")
             .first()
         )
         stats["highest_loss"] = highest_loss
@@ -279,7 +279,7 @@ class KillmailQueryStats(KillmailQueryMining):
         highest_kill = (
             kills.filter(killmail_date__year=year, killmail_date__month=month)
             .annotate(total_value=models.F("victim_total_value"))
-            .order_by("-total_value")
+            .order_by("-total_value", "-victim_fitted_value")
             .first()
         )
         stats["highest_kill"] = highest_kill
