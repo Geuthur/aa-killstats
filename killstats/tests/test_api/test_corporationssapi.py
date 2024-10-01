@@ -75,7 +75,7 @@ class ManageApiCorporationEndpointsTest(TestCase):
         # when
         response = self.client.get(url)
         # then
-        expected_data = _killstasts_api.Killstats_Stats_Entry
+        expected_data = _killstasts_api.Killstats_Stats_Single
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 

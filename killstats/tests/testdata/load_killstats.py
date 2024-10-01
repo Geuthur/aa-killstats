@@ -1,9 +1,9 @@
 """Generate AllianceAuth test objects from JSON data."""
 
 import json
-from datetime import datetime
 from pathlib import Path
 
+from django.utils import timezone
 from eveuniverse.models import EveEntity, EveType
 
 from allianceauth.eveonline.models import (
@@ -14,14 +14,6 @@ from allianceauth.eveonline.models import (
 
 from killstats.models import AlliancesAudit, Attacker, CorporationsAudit, Killmail
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
-
-
-def _load_eveentity_data():
-    with open(Path(__file__).parent / "eveentity.json", encoding="utf-8") as fp:
-        return json.load(fp)
-
-
-_entities_data = _load_eveentity_data()
 
 
 def _load_killmail_data():
@@ -39,20 +31,9 @@ _killstats_data = _load_killmail_data()
 
 def load_killstats_all():
     load_eveuniverse()
-    load_eveentity()
     load_killstats()
     load_corporationaudit()
     load_allianceaudit()
-
-
-def load_eveentity():
-    EveEntity.objects.all().delete()
-    for character_info in _entities_data.get("EveEntity"):
-        EveEntity.objects.get_or_create(
-            id=character_info.get("eve_id"),
-            name=character_info.get("name"),
-            category=character_info.get("category"),
-        )
 
 
 def load_corporationaudit():
@@ -89,7 +70,7 @@ def load_killstats():
     for killmail in _killstats_data.get("Killmail"):
         km, _ = Killmail.objects.update_or_create(
             killmail_id=killmail.get("killmail_id"),
-            killmail_date=datetime.strptime(
+            killmail_date=timezone.datetime.strptime(
                 killmail.get("killmail_date"), "%Y-%m-%d %H:%M:%S"
             ),
             victim=EveEntity.objects.get(id=killmail.get("victim")),
