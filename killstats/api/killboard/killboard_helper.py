@@ -5,11 +5,18 @@ from killstats.api.helpers import KillboardDate, get_alliances, get_corporations
 from killstats.api.killboard_manager import killboard_dashboard, killboard_hall
 from killstats.models.killboard import Killmail
 
+KILLMAIL_MAPPING = {
+    0: "killmail_id",
+    1: "victim_ship__name",
+    2: "victim",
+    3: "victim__name",
+    4: "victim_total_value",
+    5: "killmail_date",
+}
 
-# pylint: disable=too-many-locals
-def get_killmails_data(
-    request, month, year, entity_id: int, mode, page_size: int, entity_type: str
-):
+
+# pylint: disable=too-many-locals, too-many-positional-arguments
+def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: str):
     if entity_id == 0:
         if entity_type == "alliance":
             entities = get_alliances(request)
@@ -18,26 +25,16 @@ def get_killmails_data(
     else:
         entities = [entity_id]
 
+    # Datatables parameters
     start = int(request.GET.get("start", 0))
-    length = int(request.GET.get("length", page_size))
+    length = int(request.GET.get("length", 25))
+    limit = start + length
+
     search_value = request.GET.get("search[value]", "")
     order_column_index = int(request.GET.get("order[0][column]", 0))
     order_dir = request.GET.get("order[0][dir]", "desc")
-
-    column_mapping = {
-        0: "killmail_id",
-        1: "victim_ship__name",
-        2: "victim",
-        3: "victim__name",
-        4: "victim_total_value",
-        5: "killmail_date",
-    }
-
-    order_column = column_mapping.get(order_column_index, "killmail_date")
+    order_column = KILLMAIL_MAPPING.get(order_column_index, "killmail_date")
     order_by = f"{'-' if order_dir == 'desc' else ''}{order_column}"
-
-    offset = start
-    limit = length
 
     killmails = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -58,11 +55,13 @@ def get_killmails_data(
         killmails = killmails.filter(
             Q(victim__name__icontains=search_value)
             | Q(victim_ship__name__icontains=search_value)
+            | Q(victim_total_value__icontains=search_value)
+            | Q(killmail_date__icontains=search_value)
         )
 
     total_count = killmails.count()
     record_count = killmails.count()
-    killmails = killmails[offset : offset + limit]
+    killmails = killmails[start:limit]
 
     output = []
     for killmail in killmails:
@@ -71,12 +70,14 @@ def get_killmails_data(
                 "killmail_id": killmail.killmail_id,
                 "killmail_date": killmail.killmail_date,
                 "victim": {
-                    "id": killmail.victim.eve_id,
-                    "name": killmail.victim.name,
+                    "id": killmail.victim_id,
+                    "name": killmail.victim.name if killmail.victim else "Unknown",
                 },
                 "victim_ship": {
-                    "id": killmail.victim_ship.id,
-                    "name": killmail.victim_ship.name,
+                    "id": killmail.victim_ship_id,
+                    "name": (
+                        killmail.victim_ship.name if killmail.victim_ship else "Unknown"
+                    ),
                 },
                 "victim_corporation_id": killmail.victim_corporation_id,
                 "victim_alliance_id": killmail.victim_alliance_id,
@@ -90,7 +91,6 @@ def get_killmails_data(
                 "victim_position_x": killmail.victim_position_x,
                 "victim_position_y": killmail.victim_position_y,
                 "victim_position_z": killmail.victim_position_z,
-                "attackers": killmail.attackers,
             }
         )
 
@@ -112,6 +112,10 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
     else:
         entities = [entity_id]
 
+    # Ensure that only Corporation Kills are shown
+    if any(entity > 10000000 for entity in entities):
+        entities = [entity for entity in entities if entity >= 10000000]
+
     if entity_type == "alliance":
         account = AccountManager(alliances=entities)
     else:
@@ -124,7 +128,10 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
         )
     ).filter_entities(entities)
 
-    mains, _ = account.get_mains_alts()
+    if entity_id == 0:
+        mains, _ = account.get_mains_alts()
+    else:
+        mains = []
 
     shame, fame = killboard_hall(killmails, entities, mains)
 
@@ -147,6 +154,10 @@ def get_killstats_stats(request, month, year, entity_id: int, entity_type: str):
             entities = get_corporations(request)
     else:
         entities = [entity_id]
+
+    # Ensure that only Corporation Kills are shown
+    if any(entity > 10000000 for entity in entities):
+        entities = [entity for entity in entities if entity >= 10000000]
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")

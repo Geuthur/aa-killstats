@@ -42,22 +42,27 @@ def killmail_update_corp(self, corp_id: int, runs: int = 0):
     corp = CorporationsAudit.objects.get(corporation__corporation_id=corp_id)
     killstats_url = f"https://zkillboard.com/api/npc/0/corporationID/{corp.corporation.corporation_id}/"
 
-    killmail_list = KillmailManager.get_kill_data_bulk(killstats_url)
+    killmail_list = KillmailManager.get_killmail_data_bulk(killstats_url)
+    existing_kms = Killmail.objects.all().values_list("killmail_id", flat=True)
     if killmail_list:
         for killmail_dict in killmail_list:
             killmail = KillmailManager._create_from_dict(killmail_dict)
-            runs = runs + (1 if killmail else 0)
             killmail.save()
+            if killmail.id in existing_kms:
+                continue
+            runs = runs + (1 if killmail else 0)
             Chain(
                 store_killmail.si(killmail.id),
             ).delay()
+        corp.last_update = timezone.now()
+        corp.save()
+
+    if not runs == 0:
         logger.info(
             "Killboard runs completed. %s killmails received from zKB for %s",
             runs,
             corp.corporation.corporation_name,
         )
-        corp.last_update = timezone.now()
-        corp.save()
     else:
         logger.debug("No new Killmail found.")
 
@@ -72,22 +77,29 @@ def killmail_update_ally(self, alliance_id: int, runs: int = 0):
         f"https://zkillboard.com/api/npc/0/allianceID/{ally.alliance.alliance_id}/"
     )
 
-    killmail_list = KillmailManager.get_kill_data_bulk(killstats_url)
+    killmail_list = KillmailManager.get_killmail_data_bulk(killstats_url)
+
+    existing_kms = Killmail.objects.all().values_list("killmail_id", flat=True)
+
     if killmail_list:
         for killmail_dict in killmail_list:
             killmail = KillmailManager._create_from_dict(killmail_dict)
-            runs = runs + (1 if killmail else 0)
             killmail.save()
+            if killmail.id in existing_kms:
+                continue
+            runs = runs + (1 if killmail else 0)
             Chain(
                 store_killmail.si(killmail.id),
             ).delay()
+        ally.last_update = timezone.now()
+        ally.save()
+
+    if not runs == 0:
         logger.info(
             "Killboard runs completed. %s killmails received from zKB for %s",
             runs,
             ally.alliance.alliance_name,
         )
-        ally.last_update = timezone.now()
-        ally.save()
     else:
         logger.debug("No new Killmail found.")
 

@@ -8,14 +8,31 @@
 {% block page_title %} Killstats {% endblock %}
 
 {% block header_nav_brand %}
-    Killstats
+    <style>
+    .killstats-link {
+        color: white !important; /* Stellt sicher, dass diese Farbregel Vorrang hat */
+        text-decoration: none !important; /* Entfernt die Unterstreichung */
+        transition: color 0.3s; /* Fügt eine sanfte Übergangsanimation hinzu */
+    }
+
+    .killstats-link:hover {
+        color: rgba(255, 255, 255, 0.4) !important; /* Reduziert die Farbintensität um 60% beim Hover */
+    }
+    </style>
+    <a class="killstats-link" href="{% url 'killstats:index' %}">Killstats</a>
 {% endblock header_nav_brand %}
 
 {% block header_nav_collapse_left %}
-    {% block killstats_menu %}
-        {% include 'killstats/menu.html' %}
-    {% endblock %}
+
+{% include 'killstats/partials/menu/navigation.html' %}
+
 {% endblock header_nav_collapse_left %}
+
+{% block header_nav_collapse_right %}
+
+{% include 'killstats/partials/menu/administration.html' %}
+
+{% endblock header_nav_collapse_right %}
 
 {% block content %}
 

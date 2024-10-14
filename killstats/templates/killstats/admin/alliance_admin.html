@@ -1,6 +1,5 @@
 {% extends 'killstats/base.html' %}
 {% load i18n %}
-{% load humanize %}
 {% load static %}
 
 {% block killstats_block %}
@@ -52,7 +51,7 @@ AlliancesAjax = {
                 {
                     targets: 0,
                     render: function (data, type, row) {
-                        return '<img src="https://images.evetech.net/alliances/' + row.alliance_id + '/logo?size=32" class="rounded-circle" title="' + row.alliance_name + '" height="30">';
+                        return '<img src="https://images.evetech.net/alliances/' + row.alliance_id + '/logo?size=32" class="rounded-circle" title="' + row.alliance_name + '" height="30" data-tooltip-toggle="ally-tooltip" data-bs-placement="top">';
                     },
                     sortable: false,
                 },
@@ -61,11 +60,27 @@ AlliancesAjax = {
                     className: 'text-end',
                     sortable: false,
                     render: function (data, type, row) {
-                        return '<a href="/killstats/alliance/'+ row.alliance_id +'/"><button class="btn btn-primary btn-sm" title="Edit"><i class="fa-solid fa-eye"></i></button></a>';
+                        return `
+                        <a href="/killstats/alliance/${row.alliance_id}/">
+                        <button class="btn btn-primary btn-sm" title="{% trans "Show" %}" data-tooltip-toggle="ally-tooltip" data-bs-placement="left">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        </a>
+                        `;
                     },
                 }
             ],
             order: [[1, 'asc']],
+            initComplete: function() {
+                $('[data-tooltip-toggle="ally-tooltip"]').tooltip({
+                    trigger: 'hover',
+                });
+            },
+            drawCallback: function() {
+                $('[data-tooltip-toggle="ally-tooltip"]').tooltip({
+                    trigger: 'hover',
+                });
+            }
         });
     },
     error: function(response) {

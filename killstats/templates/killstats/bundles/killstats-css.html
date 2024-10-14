@@ -1,2 +1,33 @@
 
 <link rel="stylesheet" type="text/css" href="/static/killstats/css/custom.css">
+<style>
+@media all {
+    .hall-character-image {
+        display: block;
+        position: relative;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    .ship-logo {
+        position: absolute;
+        left: .5rem;
+        bottom: .5rem;
+        width: 48px;
+        height: 48px;
+        z-index: 2;
+    }
+
+    .ship-logo img {
+        opacity: 0.5;
+        transition: opacity 0.5s ease-in-out;
+        -moz-transition: opacity 0.5s ease-in-out;
+        -webkit-transition: opacity 0.5s ease-in-out;
+    }
+    .ship-logo:hover {
+        opacity: 1;
+    }
+}
+</style>

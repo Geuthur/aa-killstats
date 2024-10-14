@@ -268,8 +268,8 @@ function updateStats(statsData) {
         statsData.forEach(function (stat) {
             // Erstelle das HTML für jede Statistik basierend auf dem Typ
             statsHtml += `
-                <div class="card mb-4 px-0">
-                    <div class="row g-0">`;
+            <div class="col-md-3 mb-2">
+                <div class="row g-0 bg-secondary rounded">`;
 
             // Füge den <a>-Tag hinzu, wenn character_id vorhanden ist
             if (stat.count) {
@@ -277,40 +277,40 @@ function updateStats(statsData) {
                     statsHtml += `
                             <div class="col-md-4">
                                 <a href="${stat.zkb_link}" target="_blank">
-                                    <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
+                                    <img class="card-img-zoom img-fluid rounded-start w-100 h-100" src="${stat.portrait}">
                                 </a>
                             </div>`;
                 } else {
                     statsHtml += `
                             <div class="col-md-4">
-                                <img class="card-img img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
+                                <img class="card-img img-fluid rounded-start w-100 h-100" src="${stat.portrait}">
                             </div>`;
                 }
             } else {
                 statsHtml += `
                             <div class="col-md-4">
                                 <a href="https://zkillboard.com/kill/${stat.killmail_id}" target="_blank">
-                                    <img class="card-img-zoom img-fluid rounded-start" style="width: 100%; height:100%" src="${stat.portrait}">
+                                    <img class="card-img-zoom img-fluid rounded-start w-100 h-100" src="${stat.portrait}">
                                 </a>
                             </div>`;
             }
 
             statsHtml += `
-                    <div class="col-md-8">
+                    <div class="col-md-8 px-2 py-2">
                         <div class="card-body">
-                            <h5 class="card-title">${stat.title} ${stat.ship_name ? stat.ship_name : ''}</h5>`;
+                            <h5 class="card-title text-truncate">${stat.title} ${stat.ship_name ? stat.ship_name : ''}</h5>`;
 
             if (stat.type === 'count') {
-                statsHtml += `<p>${stat.loss ? 'Deaths' : 'Kills'}: ${stat.count}</p>`;
+                statsHtml += `<p class="text-truncate">${stat.loss ? 'Deaths' : 'Kills'}: ${stat.count}</p>`;
             } else {
-                statsHtml += `<span class="dashboard-item-value">${stat.totalValue.toLocaleString()} ISK</span>`;
+                statsHtml += `<p class="text-truncate">${stat.totalValue.toLocaleString()} ISK</p>`;
             }
 
             statsHtml += `
-                            </div>
                         </div>
                     </div>
-                </div>`;
+                </div>
+            </div>`;
         });
 
         // Fügen Sie das erstellte HTML in das Container-Element ein

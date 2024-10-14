@@ -15,6 +15,7 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
   - [Features](#features)
   - [Upcoming](#upcoming)
   - [Installation](#features)
+    - [Step 0 - Check dependencies are installed](#step0)
     - [Step 1 - Install the Package](#step1)
     - [Step 2 - Configure Alliance Auth](#step2)
     - [Step 3 - Add the Scheduled Tasks and Settings](#step3)
@@ -43,6 +44,10 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 > AA Killstats needs at least Alliance Auth v4.0.0
 > Please make sure to update your Alliance Auth before you install this APP
 
+### Step 0 - Check dependencies are installed<a name="step0"></a>
+
+- Ledger needs the app [django-eveuniverse](https://apps.allianceauth.org/apps/detail/django-eveuniverse) to function. Please make sure it is installed.
+
 ### Step 1 - Install the Package<a name="step1"></a>
 
 Make sure you're in your virtual environment (venv) of your Alliance Auth then install the pakage.
@@ -55,8 +60,6 @@ pip install aa-killstats
 
 Configure your Alliance Auth settings (`local.py`) as follows:
 
-- Add `'allianceauth.corputils',` to `INSTALLED_APPS`
-- Add `'eveuniverse',` to `INSTALLED_APPS`
 - Add `'killstats',` to `INSTALLED_APPS`
 
 ### Step 3 - Add the Scheduled Tasks<a name="step3"></a>
@@ -81,10 +84,10 @@ python manage.py migrate
 
 With the Following IDs you can set up the permissions for the KILLSTATS
 
-| ID             | Description                                  |                                                               |
-| :------------- | :------------------------------------------- | :------------------------------------------------------------ |
-| `basic_access` | Can access the Killstats module              | All Members with the Permission can access the Killstats App. |
-| `admin_access` | Can Add Corporations & Alliance to Killstats | Can Add Corporations to Killstats                             |
+| ID             | Description                     |                                                                  |
+| :------------- | :------------------------------ | :--------------------------------------------------------------- |
+| `basic_access` | Can access this app, Killstats. | All Members with the Permission can access the Killstats App.    |
+| `admin_access` | Has access to all killstats.    | Has access to all Killstats Views, Can add Corporation/Alliance. |
 
 ### Step 6 - (Optional) Setting up Compatibilies<a name="step6"></a>
 
@@ -93,8 +96,6 @@ The Following Settings can be setting up in the `local.py`
 - KILLSTATS_APP_NAME:          `"YOURNAME"`     - Set the name of the APP
 
 - KILLSTATS_LOGGER_USE:        `True / False`   - Set to use own Logger File
-
-- KILLSTATS_CORPSTATS_TWO:     `True / False`   - Set to use Corp Stats Two APP to Fetch Members that are not registred
 
 If you set up KILLSTATS_LOGGER_USE to `True` you need to add the following code below:
 

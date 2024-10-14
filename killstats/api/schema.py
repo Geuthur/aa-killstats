@@ -1,33 +1,32 @@
 from datetime import datetime
-from typing import Optional
 
 from ninja import Schema
 
 
 class Killboard(Schema):
-    kills: Optional[int] = None
-    date: Optional[datetime] = None
-    character_id: Optional[int] = None
-    character_name: Optional[str] = None
-    ship_id: Optional[int] = None
-    ship_name: Optional[str] = None
-    hash: Optional[str] = None
-    totalValue: Optional[int] = None
-    attackers: Optional[list] = None
+    kills: int | None = None
+    date: datetime | None = None
+    character_id: int | None = None
+    character_name: str | None = None
+    ship_id: int | None = None
+    ship_name: str | None = None
+    hash: str | None = None
+    totalValue: int | None = None
+    attackers: list | None = None
 
 
 class KillboardHall(Schema):
-    shame: Optional[list] = None
-    fame: Optional[list] = None
+    shame: list | None = None
+    fame: list | None = None
 
 
 class KillboardStats(Schema):
-    stats: Optional[list] = None
+    stats: list | None = None
 
 
 class CorporationAdmin(Schema):
-    corporation: Optional[dict] = None
+    corporation: dict | None = None
 
 
 class AllianceAdmin(Schema):
-    alliance: Optional[dict] = None
+    alliance: dict | None = None

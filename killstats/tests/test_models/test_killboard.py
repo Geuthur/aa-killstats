@@ -1,11 +1,11 @@
-from datetime import datetime
-
 from django.test import TestCase
+from django.utils import timezone
+from eveuniverse.models import EveEntity, EveGroup, EveType
 
 from allianceauth.eveonline.evelinks import eveimageserver
 from allianceauth.eveonline.models import EveCharacter
 
-from killstats.models.killboard import EveEntity, EveType, Killmail
+from killstats.models.killboard import Killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
@@ -14,138 +14,137 @@ MODULE_PATH = "killstats.models.killstatsaudit"
 
 class TestKillboardtModel(TestCase):
     @classmethod
-    def setUpClass(cls) -> None:
-        super().setUpClass()
+    def setUp(self):
         load_allianceauth()
         load_killstats_all()
-        cls.victim = EveEntity.objects.get(eve_id=1005)
-        cls.victim_ship = EveType.objects.get(id=670)
-        cls.killmail = Killmail.objects.create(
-            killmail_id=1,
-            killmail_date=datetime.now(),
-            victim=cls.victim,
-            victim_ship=cls.victim_ship,
+        self.killmail = Killmail.objects.get(killmail_id=119303113)
+        self.killmail2 = Killmail.objects.create(
+            killmail_id=119303114,
+            killmail_date=timezone.now(),
+            victim=EveEntity.objects.get(id=1001),
+            victim_ship=EveType.objects.get(id=670),
             victim_corporation_id=2001,
-            hash="hash1",
-            attackers=[
-                {"character_id": 1001, "corporation_id": 2001, "alliance_id": 3001},
-                {"character_id": 1002, "corporation_id": 2002, "alliance_id": 3002},
-            ],
-            victim_total_value=1_000_000,
+            victim_alliance_id=3001,
+            hash="hash",
+            victim_total_value=1000,
+            victim_fitted_value=500,
+            victim_destroyed_value=500,
+            victim_dropped_value=500,
+            victim_region_id=1001,
+            victim_solar_system_id=2001,
+            victim_position_x=1.0,
+            victim_position_y=1.0,
+            victim_position_z=1.0,
         )
-
-        cls.killmail2 = Killmail.objects.create(
-            killmail_id=2,
-            killmail_date=datetime.now(),
-            victim=cls.victim,
-            victim_ship=cls.victim_ship,
-            victim_corporation_id=2001,
-            hash="hash2",
-            attackers=[
-                {"character_id": 1004, "corporation_id": 2001, "alliance_id": 3001},
-                {"character_id": 1005, "corporation_id": 2002, "alliance_id": 3002},
-            ],
-            victim_total_value=100_000_000,
-        )
-
-    def test_is_kill(self):
-        self.assertTrue(self.killmail.is_kill([1002]))
-        self.assertFalse(self.killmail.is_kill([1004]))
-
-    def test_is_loss(self):
-        self.assertTrue(self.killmail.is_loss([1005]))
-        self.assertFalse(self.killmail.is_loss([1004]))
 
     def test_is_corp(self):
         self.assertTrue(self.killmail.is_corp([2001]))
-        self.assertTrue(self.killmail.is_corp([2001]))
-        self.assertFalse(self.killmail.is_corp([3001]))
+        self.assertFalse(self.killmail2.is_corp([3001]))
 
     def test_is_ally(self):
         self.assertFalse(self.killmail.is_alliance([2001]))
-        self.assertFalse(self.killmail.is_alliance([2001]))
-        self.assertTrue(self.killmail.is_alliance([3001]))
+        self.assertTrue(self.killmail2.is_alliance([3001]))
 
     def test_is_structure(self):
         self.killmail.victim_ship.eve_group.eve_category_id = 65
         self.assertTrue(self.killmail.is_structure())
-        self.killmail.victim_ship.eve_group.eve_category_id = 1
+        self.killmail.victim_ship.eve_group.eve_category_id = 0
         self.assertFalse(self.killmail.is_structure())
 
     def test_is_mobile(self):
         self.killmail.victim_ship.eve_group.eve_category_id = 22
         self.assertTrue(self.killmail.is_mobile())
-        self.killmail.victim_ship.eve_group.eve_category_id = 1
+        self.killmail.victim_ship.eve_group.eve_category_id = 0
         self.assertFalse(self.killmail.is_mobile())
 
     def test_is_capsule(self):
-        self.killmail.victim_ship.id = 670
-        self.assertTrue(self.killmail.is_capsule())
-        self.killmail.victim_ship.id = 33328
-        self.assertTrue(self.killmail.is_capsule())
-        self.killmail.victim_ship.id = 1
         self.assertFalse(self.killmail.is_capsule())
+        self.killmail.victim_ship.eve_group = EveGroup.objects.get(id=29)
+        self.assertTrue(self.killmail.is_capsule())
 
     def test_get_month(self):
-        self.killmail.killmail_date = datetime(2023, 10, 1)
+        self.killmail.killmail_date = timezone.datetime(
+            2023, 10, 1, tzinfo=timezone.utc
+        )
         self.assertTrue(self.killmail.get_month(10))
+        self.killmail.killmail_date = timezone.datetime(
+            2023, 1, 30, tzinfo=timezone.utc
+        )
         self.assertFalse(self.killmail.get_month(9))
 
-    def test_attackers_distinct_alliance_ids(self):
-        self.assertEqual(
-            set(self.killmail.attackers_distinct_alliance_ids()), {3001, 3002}
-        )
-
-    def test_attackers_distinct_corporation_ids(self):
-        self.assertEqual(
-            set(self.killmail.attackers_distinct_corporation_ids()), {2001, 2002}
-        )
-
-    def test_attackers_distinct_character_ids(self):
-        self.assertEqual(
-            set(self.killmail.attackers_distinct_character_ids()), {1001, 1002}
-        )
-
     def test_threshold(self):
-        killmail = Killmail.objects.get(killmail_id=1)
-        self.assertTrue(killmail.threshold(500_000))
-        self.assertFalse(killmail.threshold(1_500_000))
-
-    def test_attacker_main_empty(self):
-        mains = {}
-        killmail = Killmail.objects.get(killmail_id=1)
-        main, eve_id, attacker = killmail.attacker_main(mains)
-        self.assertEqual(main, None)
-        self.assertEqual(eve_id, None)
-        self.assertIsNone(attacker)
-
-    def test_attacker_main(self):
-        # Create mains data with an alt and associated main character
-        main_character = EveCharacter.objects.get(character_id=1001)
-        alt_character = EveCharacter.objects.get(character_id=1005)
-        mains = {1001: {"main": main_character, "alts": [alt_character]}}
-        killmail = Killmail.objects.get(killmail_id=1)
-        main, eve_id, attacker = killmail.attacker_main(mains)
-        self.assertEqual(main, EveCharacter.objects.get(character_id=1001))
-        self.assertEqual(eve_id, 1001)
-        self.assertIsNone(attacker)
-
-    def test_attacker_main_alt(self):
-        # Create mains data with an alt and associated main character
-        main_character = EveCharacter.objects.get(character_id=1001)
-        alt_character = EveCharacter.objects.get(character_id=1005)
-        mains = {1001: {"main": main_character, "alts": [alt_character]}}
-        killmail = Killmail.objects.get(killmail_id=2)
-        main, eve_id, attacker = killmail.attacker_main(mains)
-        self.assertEqual(main, EveCharacter.objects.get(character_id=1001))
-        self.assertEqual(eve_id, 1005)
-        self.assertEqual(attacker, EveCharacter.objects.get(character_id=1005))
+        self.assertTrue(self.killmail.threshold(500_000))
+        self.assertFalse(self.killmail.threshold(150_000_000))
 
     def test_str(self):
-        self.assertEqual(str(self.killmail), "Killmail 1")
+        self.assertEqual(str(self.killmail), "Killmail 119303113")
 
     def test_get_image_url(self):
-        expected_url = eveimageserver._eve_entity_image_url(
-            self.victim.category, self.victim.eve_id, 32
-        )
+        expected_url = "https://images.evetech.net/characters/1001/portrait?size=32"
         self.assertEqual(self.killmail.get_image_url(), expected_url)
+        self.killmail.victim = None
+        excepted_url = ""
+        self.assertEqual(self.killmail.get_image_url(), excepted_url)
+
+    def test_get_victim_name(self):
+        expected_url = "Gneuten"
+        self.assertEqual(self.killmail.get_or_unknown_victim_name(), expected_url)
+
+        self.killmail.victim = None
+        expected_url = "Unknown"
+        self.assertEqual(self.killmail.get_or_unknown_victim_name(), expected_url)
+
+    def test_get_victim_ship_name(self):
+        expected_url = "Victim Ship I"
+        self.assertEqual(self.killmail.get_or_unknown_victim_ship_name(), expected_url)
+
+        self.killmail.victim_ship = None
+        expected_url = "Unknown"
+
+    def test_evaluate_victim_id(self):
+        expected_url = 1001
+        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
+
+        self.killmail.victim = None
+        expected_url = 2001
+        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
+
+        self.killmail.victim_corporation_id = None
+        expected_url = 3001
+        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
+
+        self.killmail.victim_alliance_id = None
+        expected_url = 0
+        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
+
+    def test_evaluate_zkb_link(self):
+        expected_url = "https://zkillboard.com/character/1001/"
+        self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
+
+        self.killmail.victim.category = "corporation"
+        expected_url = "https://zkillboard.com/corporation/2001/"
+        self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
+
+        self.killmail.victim.category = "alliance"
+        expected_url = "https://zkillboard.com/alliance/3001/"
+        self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
+
+    def test_evaluate_portrait(self):
+        expected_url = "https://images.evetech.net/characters/1001/portrait?size=256"
+        self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
+
+        self.killmail.victim.category = "corporation"
+        expected_url = "https://images.evetech.net/corporations/2001/logo?size=256"
+        self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
+
+        self.killmail.victim.category = "alliance"
+        expected_url = "https://images.evetech.net/alliances/3001/logo?size=256"
+        self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
+
+    def test_get_ship_image_url(self):
+        expected_url = "https://images.evetech.net/types/10001/render?size=32"
+        self.assertEqual(self.killmail.get_ship_image_url(), expected_url)
+
+        self.killmail.victim_ship = None
+        expected_url = ""
+        self.assertEqual(self.killmail.get_ship_image_url(), expected_url)

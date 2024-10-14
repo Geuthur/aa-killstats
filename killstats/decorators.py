@@ -1,5 +1,6 @@
 # Standard Library
 import sys
+import time
 from functools import wraps
 
 # Alliance Auth (External Libs)
@@ -34,3 +35,27 @@ def when_esi_is_available(func):
         return func(*args, **kwargs)
 
     return outer
+
+
+def log_timing(logs):
+    """
+    Ein Dekorator, der die Ausführungszeit einer Funktion misst und in die Logdatei schreibt.
+    """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            result = func(*args, **kwargs)
+            end_time = time.time()
+            elapsed_time = round(end_time - start_time, 3)
+            logs.debug(
+                "TIME: %s run for %s seconds with args: %s",
+                func.__name__,
+                elapsed_time,
+                args,
+            )
+            return result
+
+        return wrapper
+
+    return decorator

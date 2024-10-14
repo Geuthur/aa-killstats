@@ -17,7 +17,7 @@ STATICFILES_DIRS = [
     f"{PACKAGE}/static",
 ]
 
-SITE_URL = "http://127.0.0.1:8000"
+SITE_URL = "http://localhost:8000"
 CSRF_TRUSTED_ORIGINS = [SITE_URL]
 
 DISCORD_BOT_TOKEN = "My_Dummy_Token"
@@ -54,8 +54,6 @@ DATABASES["default"] = {
 # Add any additional apps to this list.
 INSTALLED_APPS += [
     #'allianceauth.theme.bootstrap',
-    "allianceauth.corputils",
-    "corpstats",
     PACKAGE,
     "eveuniverse",
 ]

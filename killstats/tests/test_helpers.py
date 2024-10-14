@@ -1,18 +1,12 @@
-import sys
-from unittest.mock import MagicMock, patch
-
-from corpstats.models import CorpMember as ExpectedCorpMember
+from unittest.mock import patch
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import RequestFactory, TestCase
-from esi.models import Token
 
-from allianceauth.corputils.models import CorpMember, CorpStats
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
 from killstats.api.account_manager import AccountManager
-from killstats.errors import KillstatsImportError
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 
 MODULE_PATH = "killstats.api.account_manager"
@@ -53,13 +47,6 @@ class TestApiHelpers(TestCase):
         mains = {}
         request = self.factory.get("/")
         request.user = self.user
-        corp_stats = CorpStats.objects.create(
-            token=Token.objects.get(user=self.user),
-            corp=self.corp,
-        )
-        CorpMember.objects.create(
-            character_id=1005, character_name="Gerthd", corpstats=corp_stats
-        )
         chars = EveCharacter.objects.filter(
             corporation_id__in=[self.corp.corporation_id]
         )
@@ -73,31 +60,7 @@ class TestApiHelpers(TestCase):
         self.assertEqual(data, excepted_data)
 
     @patch(MODULE_PATH + ".EveCharacter.objects.select_related")
-    def test_get_main_and_alts_all_process_corpmember(self, mock_select_related):
-        # given
-        mock_char = MagicMock()
-        mock_char.character_id = 1005
-        mock_char.character_name = "Gerthd"
-        mock_select_related.return_value.get.return_value = mock_char
-
-        request = self.factory.get("/")
-        request.user = self.user
-        corp_stats = CorpStats.objects.create(
-            token=Token.objects.get(user=self.user),
-            corp=self.corp,
-        )
-        CorpMember.objects.create(
-            character_id=9999, character_name="Test9999", corpstats=corp_stats
-        )
-        account = AccountManager(corporations=[self.corp.corporation_id])
-        # when
-        data, _ = account.get_mains_alts()
-        # then
-        mock_select_related.assert_called()
-        self.assertIn("MagicMock", str(data.values()))
-
-    @patch(MODULE_PATH + ".EveCharacter.objects.select_related")
-    def test_get_main_and_alts_all_process_corpmember_object_does_not_exist(
+    def test_get_main_and_alts_all_process_object_does_not_exist(
         self, mock_select_related
     ):
         # Setup mock EveCharacter instance to simulate ObjectDoesNotExist
@@ -107,13 +70,6 @@ class TestApiHelpers(TestCase):
         mains = {}
         request = self.factory.get("/")
         request.user = self.user
-        corp_stats = CorpStats.objects.create(
-            token=Token.objects.get(user=self.user),
-            corp=self.corp,
-        )
-        CorpMember.objects.create(
-            character_id=9999, character_name="Test9999", corpstats=corp_stats
-        )
         chars = EveCharacter.objects.filter(
             corporation_id__in=[self.corp.corporation_id]
         )
@@ -122,12 +78,6 @@ class TestApiHelpers(TestCase):
         account = AccountManager(corporations=[self.corp.corporation_id])
         # when
         data, _ = account.get_mains_alts()
-
-    @patch(MODULE_PATH + ".app_settings.KILLSTATS_CORPSTATS_TWO", True)
-    def test_get_corp_models_and_string(self):
-        account = AccountManager()
-        CorpMember = account.get_corp_models_and_string()
-        self.assertIs(CorpMember, ExpectedCorpMember)
 
     def test_process_character(self):
         # Create mock main character
@@ -193,25 +143,3 @@ class TestApiHelpers(TestCase):
         missing_chars = set()
 
         account._process_character(char, characters, chars_list, missing_chars)
-
-
-class TestApiHelperCorpStatsImport(TestCase):
-    def setUp(self):
-        self.original_sys_modules = sys.modules.copy()
-
-    def tearDown(self):
-        sys.modules = self.original_sys_modules
-
-    @patch(MODULE_PATH + ".app_settings.KILLSTATS_CORPSTATS_TWO", True)
-    @patch(MODULE_PATH + ".logger")
-    def test_packages_are_not_installed(self, mock_logger):
-        with patch.dict(
-            sys.modules,
-            {k: None for k in list(sys.modules) if k.startswith("corpstats")},
-        ):
-            with self.assertRaises(KillstatsImportError):
-                account = AccountManager()
-                _ = account.get_corp_models_and_string()
-            mock_logger.error.assert_called_with(
-                "Corpstats is enabled but not installed"
-            )

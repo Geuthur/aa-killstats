@@ -1,8 +1,5 @@
 """API"""
 
-# Standard Library
-from typing import List
-
 from ninja import NinjaAPI
 
 # AA Killstats
@@ -30,17 +27,16 @@ class KillboardCorporationApiEndpoints:
             response={200: dict, 403: str},
             tags=self.tags,
         )
-        def get_corporation_killmails(
-            request, month, year, corporation_id: int, mode, page_size: int = 100
-        ):
+        # pylint: disable=too-many-positional-arguments
+        def get_corporation_killmails(request, month, year, corporation_id: int, mode):
             return get_killmails_data(
-                request, month, year, corporation_id, mode, page_size, "corporation"
+                request, month, year, corporation_id, mode, "corporation"
             )
 
         # Hall of Fame/Shame
         @api.get(
             "halls/month/{month}/year/{year}/corporation/{corporation_id}/",
-            response={200: List[schema.KillboardHall], 403: str},
+            response={200: list[schema.KillboardHall], 403: str},
             tags=self.tags,
         )
         def get_corporation_halls(request, month, year, corporation_id: int):
@@ -51,7 +47,7 @@ class KillboardCorporationApiEndpoints:
         # Stats
         @api.get(
             "stats/month/{month}/year/{year}/corporation/{corporation_id}/",
-            response={200: List[schema.KillboardStats], 403: str},
+            response={200: list[schema.KillboardStats], 403: str},
             tags=self.tags,
         )
         def get_corporation_killstats(request, month, year, corporation_id: int):
@@ -61,7 +57,7 @@ class KillboardCorporationApiEndpoints:
 
         @api.get(
             "killboard/corporation/admin/",
-            response={200: List[schema.CorporationAdmin], 403: str},
+            response={200: list[schema.CorporationAdmin], 403: str},
             tags=self.tags,
         )
         def get_corporation_admin(request):

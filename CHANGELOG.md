@@ -1,5 +1,41 @@
 # Changelog
 
+## \[0.5.0\] - 2024-10-14
+
+> \[!IMPORTANT\]
+> With the new Version we need to delete all Killmails.
+> The Migration can take a while if Killmail DB is big
+> We prefer to clear the Killstats `killstats_killmail`
+
+### Added
+
+- Added Attacker model isntead of Json Field
+- Log timing for performance tests
+
+### Chamged
+
+- Installation Description for README
+- Get EVE Data from django eveuniverse
+- Significant Performance boost in Stats Process
+- Killmails are now create atomic
+- Killmail Datatable Search supports now Type, Character, Total Value, Date
+- Design Improvments
+
+### Fixed
+
+- API Fetch Error if Ship not exist
+- Overview Action button title is edit instead of show
+- Tasks create killmails that already exists
+- zKB Cache cached wrong on first 2 pages
+
+### Removed
+
+- EveEntity model
+- Stats Manager now handled directly from QuerySet
+- Attacker JSON Field from Killmail
+- Temporarily removed filter Hall of Fame accept only 1 kill per Character cause performance issues
+- Corp Utils, CorpStats Two support not needed anymore
+
 ## \[0.1.9\] - 2024-09-05
 
 ### Fixed
