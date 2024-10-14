@@ -84,10 +84,10 @@ python manage.py migrate
 
 With the Following IDs you can set up the permissions for the KILLSTATS
 
-| ID             | Description                                  |                                                               |
-| :------------- | :------------------------------------------- | :------------------------------------------------------------ |
-| `basic_access` | Can access the Killstats module              | All Members with the Permission can access the Killstats App. |
-| `admin_access` | Can Add Corporations & Alliance to Killstats | Can Add Corporations to Killstats                             |
+| ID             | Description                     |                                                                  |
+| :------------- | :------------------------------ | :--------------------------------------------------------------- |
+| `basic_access` | Can access this app, Killstats. | All Members with the Permission can access the Killstats App.    |
+| `admin_access` | Has access to all killstats.    | Has access to all Killstats Views, Can add Corporation/Alliance. |
 
 ### Step 6 - (Optional) Setting up Compatibilies<a name="step6"></a>
 
@@ -96,8 +96,6 @@ The Following Settings can be setting up in the `local.py`
 - KILLSTATS_APP_NAME:          `"YOURNAME"`     - Set the name of the APP
 
 - KILLSTATS_LOGGER_USE:        `True / False`   - Set to use own Logger File
-
-- KILLSTATS_CORPSTATS_TWO:     `True / False`   - Set to use Corp Stats Two APP to Fetch Members that are not registred
 
 If you set up KILLSTATS_LOGGER_USE to `True` you need to add the following code below:
 
