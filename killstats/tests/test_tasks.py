@@ -145,3 +145,35 @@ class TestTasks(TestCase):
         mock_logger.warning.assert_called_once_with(
             "%s: Failed to store killmail, because it already exists", killmail_id
         )
+
+    @patch(MODULE_PATH + ".KillmailManager.get_killmail_data_bulk")
+    @patch(MODULE_PATH + ".Killmail.objects.all")
+    @patch(MODULE_PATH + ".logger")
+    def test_killmail_update_corp_existing_kms(
+        self, mock_logger, mock_existing, mock_get_killmail_data_bulk
+    ):
+        # given
+        corp = CorporationsAudit.objects.get(corporation__corporation_id=2001)
+        existing_kms = [119324952, 119324561, 119271433]
+        mock_get_killmail_data_bulk.return_value = _load_get_bulk_data()
+        mock_existing.return_value.values_list.return_value = existing_kms
+        # when
+        killmail_update_corp(corp.corporation.corporation_id)
+        # then
+        mock_logger.debug.assert_called_with("No new Killmail found.")
+
+    @patch(MODULE_PATH + ".KillmailManager.get_killmail_data_bulk")
+    @patch(MODULE_PATH + ".Killmail.objects.all")
+    @patch(MODULE_PATH + ".logger")
+    def test_killmail_update_ally_existing_kms(
+        self, mock_logger, mock_existing, mock_get_killmail_data_bulk
+    ):
+        # given
+        ally = AlliancesAudit.objects.get(alliance__alliance_id=3001)
+        existing_kms = [119324952, 119324561, 119271433]
+        mock_get_killmail_data_bulk.return_value = _load_get_bulk_data()
+        mock_existing.return_value.values_list.return_value = existing_kms
+        # when
+        killmail_update_ally(ally.alliance.alliance_id)
+        # then
+        mock_logger.debug.assert_called_with("No new Killmail found.")

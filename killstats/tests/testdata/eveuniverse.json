@@ -277,6 +277,39 @@
             "position_y": 4.273309719085835e+16,
             "position_z": 6568509050290774.0,
             "security_status": 0.38548383116722107
+        },
+        {
+            "enabled_sections": 0,
+            "eve_constellation_id": 20000372,
+            "eve_star_id": null,
+            "id": 30002594,
+            "name": "Javrendei",
+            "position_x": -1.280818422914163e+17,
+            "position_y": 4.273309719085835e+16,
+            "position_z": 6568509050290774.0,
+            "security_status": 0.38548383116722107
+        },
+        {
+            "enabled_sections": 0,
+            "eve_constellation_id": 20000372,
+            "eve_star_id": null,
+            "id": 30002596,
+            "name": "Test System 2",
+            "position_x": -1.280818422914163e+17,
+            "position_y": 4.273309719085835e+16,
+            "position_z": 6568509050290774.0,
+            "security_status": 0.38548383116722107
+        },
+        {
+            "enabled_sections": 0,
+            "eve_constellation_id": 20000372,
+            "eve_star_id": null,
+            "id": 30002126,
+            "name": "Test System",
+            "position_x": -1.280818422914163e+17,
+            "position_y": 4.273309719085835e+16,
+            "position_z": 6568509050290774.0,
+            "security_status": 0.38548383116722107
         }
     ],
     "EveType": [

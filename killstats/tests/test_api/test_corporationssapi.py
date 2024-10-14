@@ -121,8 +121,6 @@ class ManageApiCorporationEndpointsTest(TestCase):
         # when
         response = self.client.get(url)
 
-        print(response.json())
-
         # then
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
