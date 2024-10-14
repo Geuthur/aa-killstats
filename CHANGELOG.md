@@ -1,11 +1,11 @@
 # Changelog
 
-## \[0.5.0\] - 2024-09-26
+## \[0.5.0\] - 2024-10-14
 
 > \[!IMPORTANT\]
 > With the new Version we need to delete all Killmails.
 > The Migration can take a while if Killmail DB is big
-> We prefer to clear the Killstats Killmail table
+> We prefer to clear the Killstats `killstats_killmail`
 
 ### Added
 
@@ -34,7 +34,7 @@
 - Stats Manager now handled directly from QuerySet
 - Attacker JSON Field from Killmail
 - Temporarily removed filter Hall of Fame accept only 1 kill per Character cause performance issues
-- Corp Utils, CorpStats Two support
+- Corp Utils, CorpStats Two support not needed anymore
 
 ## \[0.1.9\] - 2024-09-05
 
