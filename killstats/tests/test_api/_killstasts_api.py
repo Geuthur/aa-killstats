@@ -501,3 +501,30 @@ Killstats_Losses_Entry = {
     ],
     "totalvalue": [171140549],
 }
+
+Killstats_Search_Entry = {
+    "draw": 1,
+    "recordsTotal": 1,
+    "recordsFiltered": 1,
+    "data": [
+        {
+            "killmail_id": 119303113,
+            "killmail_date": "2024-07-07T21:38:59Z",
+            "victim": {"id": 1001, "name": "Gneuten"},
+            "victim_ship": {"id": 10001, "name": "Victim Ship I"},
+            "victim_corporation_id": 2001,
+            "victim_alliance_id": 3001,
+            "hash": "VictimHash1",
+            "victim_total_value": 76734851,
+            "victim_fitted_value": 72603992,
+            "victim_destroyed_value": 64460362,
+            "victim_dropped_value": 12274488,
+            "victim_region_id": 10000059,
+            "victim_solar_system_id": 30004668,
+            "victim_position_x": -74459026975.88434,
+            "victim_position_y": -4921955322.159037,
+            "victim_position_z": -8888754631.141735,
+        }
+    ],
+    "totalvalue": [171140549],
+}

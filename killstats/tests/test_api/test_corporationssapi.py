@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from ninja import NinjaAPI
 
+from django.db.models import Q
 from django.test import TestCase
 
 from allianceauth.eveonline.models import EveCorporationInfo
@@ -11,6 +12,8 @@ from killstats.api.killboard import KillboardCorporationApiEndpoints
 from killstats.tests.test_api import _killstasts_api
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
+
+MODULE_PATH = "killstats.api.killboard.killboard_helper"
 
 
 class ManageApiCorporationEndpointsTest(TestCase):
@@ -105,6 +108,22 @@ class ManageApiCorporationEndpointsTest(TestCase):
         response = self.client.get(url)
         # then
         expected_data = _killstasts_api.Killstats_Losses_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_killmail_api_search(self):
+        # given
+        self.client.force_login(self.user)
+
+        url = "/killstats/api/killmail/month/7/year/2024/corporation/2001/losses/?search[value]=Gneuten"
+        expected_data = _killstasts_api.Killstats_Search_Entry
+
+        # when
+        response = self.client.get(url)
+
+        print(response.json())
+
+        # then
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
