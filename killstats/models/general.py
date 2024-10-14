@@ -20,7 +20,7 @@ class General(models.Model):
         default_permissions = ()
         permissions = (
             ("basic_access", "Can access this app, Killstats."),
-            ("admin_access", "Has access to all killboards."),
+            ("admin_access", "Has access to all killstats."),
         )
 
     @classmethod
