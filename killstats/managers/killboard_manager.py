@@ -99,46 +99,6 @@ class KillmailQueryCore(models.QuerySet):
         """Filter Killmails are in Threshold."""
         return self.filter(victim_total_value__gt=threshold)
 
-    def filter_top_killer(self, mains):
-        """Returns Topkiller from Killmail as dict."""
-        # pylint: disable=import-outside-toplevel
-        from killstats.models.killboard import Attacker
-
-        # Fetch all attackers related to the killmails in self
-        attackers = Attacker.objects.filter(killmail__in=self).select_related(
-            "killmail"
-        )
-
-        topkiller = {}
-        for attacker in attackers:
-            character_id, alt_char = self._find_main_or_alt(attacker, mains)
-            if not character_id:
-                continue
-            self._update_topkiller(topkiller, character_id, attacker.killmail, alt_char)
-
-        return topkiller
-
-    def _find_main_or_alt(self, attacker, mains):
-        """Finds the main character or alt character based on attacker info."""
-        character_id = attacker.character_id
-        if character_id in mains:
-            main_data = mains[character_id]
-            return main_data["main"].character_id, None
-        for main_data in mains.values():
-            for alt in main_data["alts"]:
-                if character_id == alt.character_id:
-                    return main_data["main"].character_id, alt
-        return None, None
-
-    def _update_topkiller(self, topkiller, character_id, killmail, alt_char):
-        """Updates the topkiller dictionary with the highest value killmail."""
-        current_highest_value, _ = topkiller.get(character_id, (None, None))
-        if (
-            current_highest_value is None
-            or killmail.victim_total_value > current_highest_value.victim_total_value
-        ):
-            topkiller[character_id] = (killmail, alt_char)
-
 
 class KillmailQueryMining(KillmailQueryCore):
     def filter_barge(self):
