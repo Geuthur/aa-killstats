@@ -7,7 +7,6 @@ from killstats.api import schema
 from killstats.api.killboard.killboard_helper import (
     get_killmails_data,
     get_killstats_halls,
-    get_killstats_stats,
 )
 from killstats.hooks import get_extension_logger
 from killstats.models.killstatsaudit import CorporationsAudit
@@ -41,17 +40,6 @@ class KillboardCorporationApiEndpoints:
         )
         def get_corporation_halls(request, month, year, corporation_id: int):
             return get_killstats_halls(
-                request, month, year, corporation_id, "corporation"
-            )
-
-        # Stats
-        @api.get(
-            "stats/month/{month}/year/{year}/corporation/{corporation_id}/",
-            response={200: list[schema.KillboardStats], 403: str},
-            tags=self.tags,
-        )
-        def get_corporation_killstats(request, month, year, corporation_id: int):
-            return get_killstats_stats(
                 request, month, year, corporation_id, "corporation"
             )
 

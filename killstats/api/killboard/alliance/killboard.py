@@ -7,7 +7,6 @@ from killstats.api import schema
 from killstats.api.killboard.killboard_helper import (
     get_killmails_data,
     get_killstats_halls,
-    get_killstats_stats,
 )
 from killstats.hooks import get_extension_logger
 from killstats.models.killstatsaudit import AlliancesAudit
@@ -40,16 +39,6 @@ class KillboardAllianceApiEndpoints:
         # pylint: disable=too-many-positional-arguments
         def get_halls(request, month, year, alliance_id: int):
             return get_killstats_halls(request, month, year, alliance_id, "alliance")
-
-        # Stats
-        @api.get(
-            "stats/month/{month}/year/{year}/alliance/{alliance_id}/",
-            response={200: list[schema.KillboardStats], 403: str},
-            tags=self.tags,
-        )
-        # pylint: disable=too-many-positional-arguments
-        def get_killstats(request, month, year, alliance_id: int):
-            return get_killstats_stats(request, month, year, alliance_id, "alliance")
 
         # Admin
         @api.get(
