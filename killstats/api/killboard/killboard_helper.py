@@ -1,9 +1,16 @@
 from django.db.models import Q, Sum
 
 from killstats.api.account_manager import AccountManager
-from killstats.api.helpers import KillboardDate, get_alliances, get_corporations
-from killstats.api.killboard_manager import killboard_dashboard, killboard_hall
+from killstats.api.helpers import get_alliances, get_corporations
+from killstats.api.killboard_manager import (
+    format_killmail,
+    format_killmail_details,
+    killboard_hall,
+)
+from killstats.hooks import get_extension_logger
 from killstats.models.killboard import Killmail
+
+logger = get_extension_logger(__name__)
 
 KILLMAIL_MAPPING = {
     0: "killmail_id",
@@ -146,7 +153,7 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
     return halls
 
 
-def get_killstats_stats(request, month, year, entity_id: int, entity_type: str):
+def get_entities(request, entity_id: int, entity_type: str):
     if entity_id == 0:
         if entity_type == "alliance":
             entities = get_alliances(request)
@@ -159,21 +166,193 @@ def get_killstats_stats(request, month, year, entity_id: int, entity_type: str):
     if any(entity > 10000000 for entity in entities):
         entities = [entity for entity in entities if entity >= 10000000]
 
+    return entities
+
+
+def get_top_victim(request, month, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    top_victim_querry = killmail_year.get_top_victim_stats(entities)
+
+    if not top_victim_querry:
+        return {}
+
+    top_victim_dict = format_killmail_details(
+        top_victim_querry,
+        title="Top Victim:",
+        count=top_victim_querry.kill_count,
+        stats_type="character",
+    )
+
+    return top_victim_dict
+
+
+def get_top_killer(request, month, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    top_killer_querry = killmail_year.get_top_killer_stats(entities)
+
+    if not top_killer_querry:
+        return {}
+
+    top_killer_dict = format_killmail_details(
+        top_killer_querry,
+        title="Top Killer:",
+        count=top_killer_querry.kill_count,
+        stats_type="character",
+    )
+
+    return top_killer_dict
+
+
+def get_alltime_victim(request, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
         .filter(killmail_date__year=year)
         .order_by("-killmail_date")
     ).filter_entities(entities)
 
-    date = KillboardDate(month, year)
+    alltime_victim_querry = killmail_year.get_top_victim_stats(entities)
 
-    stats = killboard_dashboard(killmail_year, date, entities)
+    if not alltime_victim_querry:
+        return {}
 
-    output = []
-    output.append(
-        {
-            "stats": stats,
-        }
+    alltime_victim_dict = format_killmail_details(
+        alltime_victim_querry,
+        title="Alltime Victim:",
+        count=alltime_victim_querry.kill_count,
+        stats_type="character",
     )
 
-    return output
+    return alltime_victim_dict
+
+
+def get_alltime_killer(request, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    alltime_killer_querry = killmail_year.get_top_killer_stats(entities)
+
+    if not alltime_killer_querry:
+        return {}
+
+    alltime_killer_dict = format_killmail_details(
+        alltime_killer_querry,
+        title="Alltime Killer:",
+        count=alltime_killer_querry.kill_count,
+        stats_type="character",
+    )
+
+    return alltime_killer_dict
+
+
+def get_worst_ship(request, month, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    worst_ship_querry = killmail_year.get_worst_ship_stats(entities)
+
+    if not worst_ship_querry:
+        return {}
+
+    worst_ship_dict = format_killmail_details(
+        worst_ship_querry,
+        loss=True,
+        title="Worst Ship:",
+        count=worst_ship_querry.ship_count,
+        stats_type="ship",
+    )
+
+    return worst_ship_dict
+
+
+def get_top_ship(request, month, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    top_ship_querry = killmail_year.get_top_ship_stats(entities)
+
+    if not top_ship_querry:
+        return {}
+
+    top_ship_dict = format_killmail_details(
+        top_ship_querry,
+        title="Top Ship:",
+        count=top_ship_querry.ship_count,
+        stats_type="ship",
+    )
+
+    return top_ship_dict
+
+
+def get_top_kill(request, month, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    top_kill_querry = killmail_year.get_highest_kill_stats(entities)
+
+    if not top_kill_querry:
+        return {}
+
+    top_kill_dict = format_killmail(
+        top_kill_querry,
+        title="Top Kill:",
+    )
+
+    return top_kill_dict
+
+
+def get_top_loss(request, month, year, entity_id: int, entity_type: str) -> dict:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail_year = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    top_loss_querry = killmail_year.get_highest_loss_stats(entities)
+
+    if not top_loss_querry:
+        return {}
+
+    top_loss_dict = format_killmail(
+        top_loss_querry,
+        title="Top Loss:",
+    )
+
+    return top_loss_dict
