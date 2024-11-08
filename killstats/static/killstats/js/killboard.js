@@ -22,15 +22,22 @@ function generateUrl(type, entity, entityPk, selectedMonth, selectedYear) {
 
 function getUrls(entity, entityPk, selectedMonth, selectedYear) {
     return {
+        urlHalls: generateUrl('halls', entity, entityPk, selectedMonth, selectedYear),
+
+        urlKills: generateUrl('killmail', entity, entityPk, selectedMonth, selectedYear) + 'kills/',
+        urlLosses: generateUrl('killmail', entity, entityPk, selectedMonth, selectedYear) + 'losses/',
+
         urlVictim: generateUrl('stats/top/victim', entity, entityPk, selectedMonth, selectedYear),
         urlAllVictim: generateUrl('stats/top/alltime_victim', entity, entityPk, selectedMonth, selectedYear),
+
         urlKiller: generateUrl('stats/top/killer', entity, entityPk, selectedMonth, selectedYear),
         urlAllKiller: generateUrl('stats/top/alltime_killer', entity, entityPk, selectedMonth, selectedYear),
+
         urlWorstShip: generateUrl('stats/ship/worst', entity, entityPk, selectedMonth, selectedYear),
         urlTopShip: generateUrl('stats/ship/top', entity, entityPk, selectedMonth, selectedYear),
-        urlHalls: generateUrl('halls', entity, entityPk, selectedMonth, selectedYear),
-        urlKills: generateUrl('killmail', entity, entityPk, selectedMonth, selectedYear) + 'kills/',
-        urlLosses: generateUrl('killmail', entity, entityPk, selectedMonth, selectedYear) + 'losses/'
+
+        urlHighestKill: generateUrl('stats/top/kill', entity, entityPk, selectedMonth, selectedYear),
+        urlHighestLoss: generateUrl('stats/top/loss', entity, entityPk, selectedMonth, selectedYear),
     };
 }
 
@@ -249,7 +256,7 @@ function updateFame(fameData) {
 }
 
 // Funktion zum Aktualisieren der Stats-Daten
-function updateStats(stat) {
+function updateStats(stat, container) {
     // Überprüfen, ob Statistikdaten vorhanden sind
 
     // Prüfe, ob stats Daten enthält und zeige den entsprechenden Container an oder aus
@@ -260,7 +267,6 @@ function updateStats(stat) {
         return;
     }
 
-    var statsContainer = $('#stats');
     var template = $('#stat-template').clone().removeAttr('id').show();
 
     // Füge den <a>-Tag hinzu, wenn character_id vorhanden ist
@@ -281,13 +287,13 @@ function updateStats(stat) {
     }
 
     // Fügen Sie das erstellte HTML in das Container-Element ein
-    statsContainer.append(template);
+    container.append(template);
 
     // Setze den aktiven Tab
     setActiveTab();
 }
 
-function loadStats(url) {
+function loadStats(url, container) {
     stats = $.ajax({
         url: url,
         method: 'GET',
@@ -295,7 +301,7 @@ function loadStats(url) {
         success: function (data) {
             $('#killboard').show();
             $('#loadingIndicator').addClass('d-none');
-            updateStats(data[0].stats);
+            updateStats(data[0].stats, container);
         }
     });
 }
@@ -310,7 +316,7 @@ function updateData(selectedMonth, selectedYear) {
         urls = getUrls('corporation', corporationPk, selectedMonth, selectedYear);
     }
 
-    const { urlVictim, urlAllVictim, urlKiller, urlAllKiller, urlWorstShip, urlTopShip, urlKills, urlLosses, urlHalls } = urls;
+    const { urlHalls, urlKills, urlLosses, urlVictim, urlAllVictim, urlKiller, urlAllKiller, urlWorstShip, urlTopShip, urlHighestKill, urlHighestLoss } = urls;
 
     $('#killboard').hide();
     $('#hall').hide();
@@ -347,13 +353,22 @@ function updateData(selectedMonth, selectedYear) {
         }
     });
 
-    // AJAX-Anfrage für Stats
-    loadStats(urlWorstShip);
-    loadStats(urlTopShip);
-    loadStats(urlVictim);
-    loadStats(urlAllVictim);
-    loadStats(urlKiller);
-    loadStats(urlAllKiller);
+    // Predefined order for the stats
+    var statsOrder = [
+        { url: urlWorstShip, container: $('#stats'), id: 'worst-ship' },
+        { url: urlTopShip, container: $('#stats'), id: 'top-ship' },
+        { url: urlVictim, container: $('#stats'), id: 'victim' },
+        { url: urlKiller, container: $('#stats'), id: 'killer' },
+        { url: urlAllVictim, container: $('#stats'), id: 'all-victim' },
+        { url: urlAllKiller, container: $('#stats'), id: 'all-killer' },
+        { url: urlHighestKill, container: $('#stats'), id: 'highest-kill' },
+        { url: urlHighestLoss, container: $('#stats'), id: 'highest-loss' }
+    ];
+
+    // Load stats in the predefined order
+    statsOrder.forEach(function (stat) {
+        loadStats(stat.url, stat.container);
+    });
 }
 
 $('#monthDropdown li').click(function() {
@@ -365,5 +380,6 @@ $('#monthDropdown li').click(function() {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    var activeTab = getActiveTab();
     updateData(selectedMonth, selectedYear);
 });
