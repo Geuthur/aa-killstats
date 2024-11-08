@@ -5,42 +5,41 @@ var alliancePk = corporationsettings.alliance_pk;
 var selectedMonth, selectedYear;
 var monthText;
 var halls, stats;
+var urls, urlVictim, urlAllVictim, urlKiller, urlAllKiller, urlWorstShip, urlTopShip, urlHalls, urlKills, urlLosses;
 
 // Aktuelles Datumobjekt erstellen
 var currentDate = new Date();
 var killsTable, lossesTable;
-var urlStats, urlHalls, urlKills, urlLosses;
 
 // Aktuelles Jahr und Monat abrufen
 selectedYear = currentDate.getFullYear();
 selectedMonth = currentDate.getMonth() + 1; // +1, um 1-basierten Monat zu erhalten
 monthText = getMonthName(selectedMonth);
 
-if (alliancePk) {
-    urlStats = '/killstats/api/stats/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/';
-    urlHalls = '/killstats/api/halls/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/';
-    urlKills = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/kills/';
-    urlLosses = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/losses/';
-} else {
-    urlStats = '/killstats/api/stats/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
-    urlHalls = '/killstats/api/halls/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
-    urlKills = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/kills/';
-    urlLosses = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/losses/';
+function generateUrl(type, entity, entityPk, selectedMonth, selectedYear) {
+    return `/killstats/api/${type}/month/${selectedMonth}/year/${selectedYear}/${entity}/${entityPk}/`;
+}
+
+function getUrls(entity, entityPk, selectedMonth, selectedYear) {
+    return {
+        urlVictim: generateUrl('stats/top/victim', entity, entityPk, selectedMonth, selectedYear),
+        urlAllVictim: generateUrl('stats/top/alltime_victim', entity, entityPk, selectedMonth, selectedYear),
+        urlKiller: generateUrl('stats/top/killer', entity, entityPk, selectedMonth, selectedYear),
+        urlAllKiller: generateUrl('stats/top/alltime_killer', entity, entityPk, selectedMonth, selectedYear),
+        urlWorstShip: generateUrl('stats/ship/worst', entity, entityPk, selectedMonth, selectedYear),
+        urlTopShip: generateUrl('stats/ship/top', entity, entityPk, selectedMonth, selectedYear),
+        urlHalls: generateUrl('halls', entity, entityPk, selectedMonth, selectedYear),
+        urlKills: generateUrl('killmail', entity, entityPk, selectedMonth, selectedYear) + 'kills/',
+        urlLosses: generateUrl('killmail', entity, entityPk, selectedMonth, selectedYear) + 'losses/'
+    };
 }
 
 function getUrl() {
     if (alliancePk) {
-        urlStats = '/killstats/api/stats/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/';
-        urlHalls = '/killstats/api/halls/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/';
-        urlKills = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/kills/';
-        urlLosses = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/alliance/' + alliancePk + '/losses/';
+        return getUrls('alliance', alliancePk, selectedMonth, selectedYear);
     } else {
-        urlStats = '/killstats/api/stats/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
-        urlHalls = '/killstats/api/halls/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/';
-        urlKills = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/kills/';
-        urlLosses = '/killstats/api/killmail/month/' + selectedMonth + '/year/' + selectedYear + '/corporation/' + corporationPk + '/losses/';
+        return getUrls('corporation', corporationPk, selectedMonth, selectedYear);
     }
-    return { urlKills, urlLosses, urlStats, urlHalls };
 }
 
 function getMonthName(monthNumber) {
@@ -250,96 +249,89 @@ function updateFame(fameData) {
 }
 
 // Funktion zum Aktualisieren der Stats-Daten
-function updateStats(statsData) {
+function updateStats(stat) {
     // Überprüfen, ob Statistikdaten vorhanden sind
 
     // Prüfe, ob stats Daten enthält und zeige den entsprechenden Container an oder aus
-    if (statsData && statsData.length > 0) {
+    if (stat) {
         $('#stats').show(); // Container für Statistiken anzeigen
     } else {
         $('#stats').hide(); // Container für Statistiken ausblenden
+        return;
     }
 
-    if (statsData) {
-        var statsContainer = $('.stats .row');
-        var statsHtml = '';
+    var statsContainer = $('#stats');
+    var template = $('#stat-template').clone().removeAttr('id').show();
 
-        // Iterieren Sie über die Statistikdaten und erstellen Sie das HTML
-        statsData.forEach(function (stat) {
-            // Erstelle das HTML für jede Statistik basierend auf dem Typ
-            statsHtml += `
-            <div class="col-md-3 mb-2">
-                <div class="row g-0 bg-secondary rounded">`;
-
-            // Füge den <a>-Tag hinzu, wenn character_id vorhanden ist
-            if (stat.count) {
-                if (stat.character_id) {
-                    statsHtml += `
-                            <div class="col-md-4">
-                                <a href="${stat.zkb_link}" target="_blank">
-                                    <img class="card-img-zoom img-fluid rounded-start w-100 h-100" src="${stat.portrait}">
-                                </a>
-                            </div>`;
-                } else {
-                    statsHtml += `
-                            <div class="col-md-4">
-                                <img class="card-img img-fluid rounded-start w-100 h-100" src="${stat.portrait}">
-                            </div>`;
-                }
-            } else {
-                statsHtml += `
-                            <div class="col-md-4">
-                                <a href="https://zkillboard.com/kill/${stat.killmail_id}" target="_blank">
-                                    <img class="card-img-zoom img-fluid rounded-start w-100 h-100" src="${stat.portrait}">
-                                </a>
-                            </div>`;
-            }
-
-            statsHtml += `
-                    <div class="col-md-8 px-2 py-2">
-                        <div class="card-body">
-                            <h5 class="card-title text-truncate">${stat.title} ${stat.ship_name ? stat.ship_name : ''}</h5>`;
-
-            if (stat.type === 'count') {
-                statsHtml += `<p class="text-truncate">${stat.loss ? 'Deaths' : 'Kills'}: ${stat.count}</p>`;
-            } else {
-                statsHtml += `<p class="text-truncate">${stat.totalValue.toLocaleString()} ISK</p>`;
-            }
-
-            statsHtml += `
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        });
-
-        // Fügen Sie das erstellte HTML in das Container-Element ein
-        statsContainer.html(statsHtml);
+    // Füge den <a>-Tag hinzu, wenn character_id vorhanden ist
+    if (stat.character_id) {
+        template.find('.stat-link').attr('href', stat.zkb_link);
+        template.find('.stat-portrait').attr('src', stat.portrait);
+    } else {
+        template.find('.stat-link').removeAttr('href');
+        template.find('.stat-portrait').attr('src', stat.portrait);
     }
+
+    template.find('.stat-title').text(`${stat.title} ${stat.ship_name ? stat.ship_name : ''}`);
+
+    if (stat.type === 'count') {
+        template.find('.stat-info').text(`${stat.loss ? 'Deaths' : 'Kills'}: ${stat.count}`);
+    } else {
+        template.find('.stat-info').text(`${stat.totalValue.toLocaleString()} ISK`);
+    }
+
+    // Fügen Sie das erstellte HTML in das Container-Element ein
+    statsContainer.append(template);
+
     // Setze den aktiven Tab
     setActiveTab();
 }
 
-$('#monthDropdown li').click(function() {
-    selectedMonth = $(this).find('a').data('bs-month-id');
-    monthText = getMonthName(selectedMonth);
+function loadStats(url) {
+    stats = $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#killboard').show();
+            $('#loadingIndicator').addClass('d-none');
+            updateStats(data[0].stats);
+        }
+    });
+}
+
+function updateData(selectedMonth, selectedYear) {
+    var urls;
     var activeTab = getActiveTab();
-    const { urlStats, urlKills, urlLosses, urlHalls } = getUrl();
+
+    if (alliancePk) {
+        urls = getUrls('alliance', alliancePk, selectedMonth, selectedYear);
+    } else {
+        urls = getUrls('corporation', corporationPk, selectedMonth, selectedYear);
+    }
+
+    const { urlVictim, urlAllVictim, urlKiller, urlAllKiller, urlWorstShip, urlTopShip, urlKills, urlLosses, urlHalls } = urls;
+
     $('#killboard').hide();
     $('#hall').hide();
     $('#stats').hide();
     $('#loadingIndicator').removeClass('d-none');
 
-    // AJAX-Anfrage für Kills
-    killsTable.ajax.url(urlKills).load(function() {
-        $('#killboard').show();
-        $('#loadingIndicator').addClass('d-none');
-    });
+    // Entferne alle Statistiken im #stats-Container
+    $('#stats').empty();
 
-    // AJAX-Anfrage für Losses
-    lossesTable.ajax.url(urlLosses).load(function() {
-        $('#loadingIndicator').addClass('d-none');
-    });
+    // Initialisiere die DataTables nur, wenn sie noch nicht initialisiert sind
+    if (!$.fn.DataTable.isDataTable('#kills')) {
+        killsTable = initializeDataTable('#kills', urlKills, '#total-value-kills');
+    } else {
+        killsTable.ajax.url(urlKills).load();
+    }
+
+    if (!$.fn.DataTable.isDataTable('#losses')) {
+        lossesTable = initializeDataTable('#losses', urlLosses, '#total-value-losses');
+    } else {
+        lossesTable.ajax.url(urlLosses).load();
+    }
 
     // AJAX-Anfrage für Halls
     halls = $.ajax({
@@ -356,58 +348,22 @@ $('#monthDropdown li').click(function() {
     });
 
     // AJAX-Anfrage für Stats
-    stats = $.ajax({
-        url: urlStats,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            $('#killboard').show();
-            $('#loadingIndicator').addClass('d-none');
-            updateStats(data[0].stats);
-        }
-    });
+    loadStats(urlWorstShip);
+    loadStats(urlTopShip);
+    loadStats(urlVictim);
+    loadStats(urlAllVictim);
+    loadStats(urlKiller);
+    loadStats(urlAllKiller);
+}
+
+$('#monthDropdown li').click(function() {
+    selectedMonth = $(this).find('a').data('bs-month-id');
+    monthText = getMonthName(selectedMonth);
+    updateData(selectedMonth, selectedYear);
 
     $('#currentMonthLink').text('Killboard Month - ' + monthText);
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    // AJAX-Anfrage für Statsq
-    stats = $.ajax({
-        url: urlStats,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            // Zeige den Killboard-Container an
-            $('#killboard').show();
-            $('#loadingIndicator').addClass('d-none');
-            // Daten für Stats aktualisieren
-            updateStats(data[0].stats);
-        },
-        error: function (xhr, status, error) {
-            console.error('AJAX Error:', error);
-            // Hier können Sie Fehlerbehandlung implementieren
-        }
-    });
-    // AJAX-Anfrage für Stats
-    halls = $.ajax({
-        url: urlHalls,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            // Zeige den Killboard-Container an
-            $('#killboard').show();
-            $('#loadingIndicator').addClass('d-none');
-            // Daten für Hall of Shame aktualisieren
-            updateShame(data[0].shame);
-            // Daten für Hall of Fame aktualisieren
-            updateFame(data[0].fame);
-        }
-    });
-
-    // Initialisieren Sie die DataTable für kills
-    killsTable = initializeDataTable('#kills', urlKills, '#total-value-kills');
-
-    // Initialisieren Sie die DataTable für losses
-    lossesTable = initializeDataTable('#losses', urlLosses, '#total-value-losses');
-
+    updateData(selectedMonth, selectedYear);
 });
