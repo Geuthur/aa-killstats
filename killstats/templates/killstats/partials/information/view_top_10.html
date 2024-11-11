@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+{% load evelinks %}
+
+<div class="modal-content">
+    <button type="button" class="btn-close py-3 px-3" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"></button>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modalTitle">{% trans "Top 10 Killers" %}</h4>
+    </div>
+    <div class="card-body">
+        {% if top10 %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">{% trans "Character Icon" %}</th>
+                        <th scope="col">{% trans "Character Name" %}</th>
+                        <th scope="col">{% trans "Kill Count" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for character in top10 %}
+                    <tr>
+                        <td><img src="{{ character.character_id|character_portrait_url:32 }}" class="rounded-circle" alt="{{ character.character_name }}"></td>
+                        <td>{{ character.character_name }}</td>
+                        <td>{{ character.kill_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>{% trans "No data found..." %}</p>
+        {% endif %}
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

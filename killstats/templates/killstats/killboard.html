@@ -32,13 +32,15 @@
 {% endblock extra_css %}
 
 {% block killstats_block %}
+	<!--Modal-->
+	{% include 'killstats/partials/modal.html' with name="ViewTop10Killer" %}
 	<!--Dashboard-->
 	{% include 'killstats/partials/dashboard.html' with stats=stats %}
 	<br>
 	<!--Killstats-->
 	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center">
 		<h3 id="currentMonthLink" class="page-header text-center">Killstats - {{ value|current_month }}</h3>
-		<div class="dropdown px-2">
+		<div class="dropdown px-2" id="overview">
 			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 			Month
 			</button>
@@ -57,6 +59,7 @@
 				<li><a class="dropdown-item" data-bs-month-id="12" href="#">{% trans "December" %}</a></li>
 			</ul>
 		</div>
+		<div id="top10"></div>
 	</div>
 	<br>
 	{% include 'killstats/partials/stats.html' %}
@@ -90,6 +93,15 @@
 {% endblock killstats_block %}
 
 {% block extra_javascript %}
+<script type="application/javascript">
+    $('#modalViewTop10KillerContainer').on('show.bs.modal', function (event) {
+        let button = $(event.relatedTarget)
+        let ajax_url = button.data('ajax_url');
+
+        $("#modalViewTop10KillerContent").load(ajax_url)
+    });
+</script>
+
 <script type="application/javascript">
     let corporationsettings = {
         corporation_pk: {{ corporation_pk }},
