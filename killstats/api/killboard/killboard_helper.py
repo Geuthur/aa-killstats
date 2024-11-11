@@ -1,4 +1,5 @@
 from django.db.models import Q, Sum
+from eveuniverse.models import EveEntity
 
 from killstats.api.account_manager import AccountManager
 from killstats.api.helpers import get_alliances, get_corporations
@@ -22,8 +23,7 @@ KILLMAIL_MAPPING = {
 }
 
 
-# pylint: disable=too-many-locals, too-many-positional-arguments
-def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: str):
+def get_entities(request, entity_id: int, entity_type: str):
     if entity_id == 0:
         if entity_type == "alliance":
             entities = get_alliances(request)
@@ -31,6 +31,17 @@ def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: 
             entities = get_corporations(request)
     else:
         entities = [entity_id]
+
+    # Ensure that only Corporation/Alliance Kills are shown
+    if any(entity > 10000000 for entity in entities):
+        entities = [entity for entity in entities if entity >= 10000000]
+
+    return entities
+
+
+# pylint: disable=too-many-locals, too-many-positional-arguments
+def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: str):
+    entities = get_entities(request, entity_id, entity_type)
 
     # Datatables parameters
     start = int(request.GET.get("start", 0))
@@ -111,17 +122,7 @@ def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: 
 
 
 def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
-    if entity_id == 0:
-        if entity_type == "alliance":
-            entities = get_alliances(request)
-        else:
-            entities = get_corporations(request)
-    else:
-        entities = [entity_id]
-
-    # Ensure that only Corporation Kills are shown
-    if any(entity > 10000000 for entity in entities):
-        entities = [entity for entity in entities if entity >= 10000000]
+    entities = get_entities(request, entity_id, entity_type)
 
     if entity_type == "alliance":
         account = AccountManager(alliances=entities)
@@ -151,22 +152,6 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
     )
 
     return halls
-
-
-def get_entities(request, entity_id: int, entity_type: str):
-    if entity_id == 0:
-        if entity_type == "alliance":
-            entities = get_alliances(request)
-        else:
-            entities = get_corporations(request)
-    else:
-        entities = [entity_id]
-
-    # Ensure that only Corporation Kills are shown
-    if any(entity > 10000000 for entity in entities):
-        entities = [entity for entity in entities if entity >= 10000000]
-
-    return entities
 
 
 def get_top_victim(request, month, year, entity_id: int, entity_type: str) -> dict:
@@ -356,3 +341,48 @@ def get_top_loss(request, month, year, entity_id: int, entity_type: str) -> dict
     )
 
     return top_loss_dict
+
+
+def get_top_10(request, month, year, entity_id: int, entity_type: str) -> list:
+    entities = get_entities(request, entity_id, entity_type)
+
+    killmail = (
+        Killmail.objects.prefetch_related("victim", "victim_ship")
+        .filter(killmail_date__year=year, killmail_date__month=month)
+        .order_by("-killmail_date")
+    ).filter_entities(entities)
+
+    km_ids = killmail.values_list("killmail_id", flat=True)
+
+    top_10_querry = killmail.get_top_10_killers(entities, km_ids)
+
+    if not top_10_querry:
+        return {}
+
+    if entity_type == "alliance":
+        account = AccountManager(alliances=entities)
+    else:
+        account = AccountManager(corporations=entities)
+
+    mains_dict, _ = account.get_mains_alts()
+
+    # Convert QuerySet to list
+    top_10_list = list(top_10_querry)
+
+    # Add character_name to each entry
+    for entry in top_10_list:
+        character_id = entry["character_id"]
+        try:
+            character = EveEntity.objects.get(id=character_id)
+            entry["character_name"] = character.name
+
+            # Check if the character is an alt and add the main character's name
+            for main_id, alts in mains_dict.items():
+                if character_id in alts and character_id != main_id:
+                    main_character = EveEntity.objects.get(id=main_id)
+                    entry["character_name"] += f" ({main_character.name})"
+                    break
+        except EveEntity.DoesNotExist:
+            entry["character_name"] = "Unknown"
+
+    return top_10_list
