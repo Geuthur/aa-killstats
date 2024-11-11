@@ -38,6 +38,8 @@ function getUrls(entity, entityPk, selectedMonth, selectedYear) {
 
         urlHighestKill: generateUrl('stats/top/kill', entity, entityPk, selectedMonth, selectedYear),
         urlHighestLoss: generateUrl('stats/top/loss', entity, entityPk, selectedMonth, selectedYear),
+
+        urlTop10: generateUrl('stats/top/10', entity, entityPk, selectedMonth, selectedYear)
     };
 }
 
@@ -316,7 +318,7 @@ function updateData(selectedMonth, selectedYear) {
         urls = getUrls('corporation', corporationPk, selectedMonth, selectedYear);
     }
 
-    const { urlHalls, urlKills, urlLosses, urlVictim, urlAllVictim, urlKiller, urlAllKiller, urlWorstShip, urlTopShip, urlHighestKill, urlHighestLoss } = urls;
+    const { urlHalls, urlKills, urlLosses, urlVictim, urlAllVictim, urlKiller, urlAllKiller, urlWorstShip, urlTopShip, urlHighestKill, urlHighestLoss, urlTop10 } = urls;
 
     $('#killboard').hide();
     $('#hall').hide();
@@ -369,6 +371,7 @@ function updateData(selectedMonth, selectedYear) {
     statsOrder.forEach(function (stat) {
         loadStats(stat.url, stat.container);
     });
+    $('#top10').html('<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalViewTop10KillerContainer" data-ajax_url="' + urlTop10 + '">Top 10</button>');
 }
 
 $('#monthDropdown li').click(function() {
