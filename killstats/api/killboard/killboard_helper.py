@@ -377,12 +377,15 @@ def get_top_10(request, month, year, entity_id: int, entity_type: str) -> list:
             entry["character_name"] = character.name
 
             # Check if the character is an alt and add the main character's name
-            for main_id, alts in mains_dict.items():
+            for main_id, data in mains_dict.items():
+                alts = [alt.character_id for alt in data["alts"]]
                 if character_id in alts and character_id != main_id:
-                    main_character = EveEntity.objects.get(id=main_id)
-                    entry["character_name"] += f" ({main_character.name})"
+                    main_character = data["main"]
+                    entry["character_name"] += f" ({main_character.character_name})"
                     break
         except EveEntity.DoesNotExist:
+            entry["character_name"] = "Unknown"
+        except AttributeError:
             entry["character_name"] = "Unknown"
 
     return top_10_list
