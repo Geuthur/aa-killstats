@@ -262,6 +262,25 @@ class KillmailQueryStats(KillmailQueryMining):
 
         return self._get_highest_value(km_ids)
 
+    def get_top_10_killers(self, entities, km_ids):
+        """Get top 10 characters for the given entities."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
+        top_characters = (
+            Attacker.objects.filter(
+                models.Q(corporation_id__in=entities)
+                | models.Q(alliance_id__in=entities)
+                | models.Q(character_id__in=entities),
+                killmail_id__in=km_ids,
+            )
+            .values("character_id")
+            .annotate(kill_count=models.Count("character_id"))
+            .order_by("-kill_count", "character__name")[:10]
+        )
+
+        return top_characters
+
 
 class KillmailQuerySet(KillmailQueryStats):
     def visible_to(self, user):
