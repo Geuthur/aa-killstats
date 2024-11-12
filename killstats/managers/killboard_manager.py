@@ -128,13 +128,14 @@ class KillmailQueryStats(KillmailQueryMining):
                 killmail_id__in=km_ids,
             )
             .values("ship__id")
-            .annotate(count=models.Count("ship__id"))
-            .order_by("-count")
-        ).first()
+            .annotate(unique_killmails=models.Count("killmail_id", distinct=True))
+            .order_by("-unique_killmails")
+            .first()
+        )
 
         if topship:
             top_ship = EveType.objects.get(id=topship["ship__id"])
-            top_ship.ship_count = topship["count"]
+            top_ship.ship_count = topship["unique_killmails"]
             return top_ship
         return None
 
