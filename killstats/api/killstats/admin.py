@@ -4,45 +4,20 @@ from ninja import NinjaAPI
 
 # AA Killstats
 from killstats.api import schema
-from killstats.api.killboard.killboard_helper import (
-    get_killmails_data,
-    get_killstats_halls,
-)
 from killstats.hooks import get_extension_logger
-from killstats.models.killstatsaudit import CorporationsAudit
+from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 logger = get_extension_logger(__name__)
 
 
-class KillboardCorporationApiEndpoints:
-    tags = ["Killboard"]
+class KillboardAdminApiEndpoints:
+    tags = ["KillboardAdmin"]
 
     # pylint: disable=too-many-locals
     def __init__(self, api: NinjaAPI):
+        self.register_endpoints(api)
 
-        # Killmails
-        @api.get(
-            "killmail/month/{month}/year/{year}/corporation/{corporation_id}/{mode}/",
-            response={200: dict, 403: str},
-            tags=self.tags,
-        )
-        # pylint: disable=too-many-positional-arguments
-        def get_corporation_killmails(request, month, year, corporation_id: int, mode):
-            return get_killmails_data(
-                request, month, year, corporation_id, mode, "corporation"
-            )
-
-        # Hall of Fame/Shame
-        @api.get(
-            "halls/month/{month}/year/{year}/corporation/{corporation_id}/",
-            response={200: list[schema.KillboardHall], 403: str},
-            tags=self.tags,
-        )
-        def get_corporation_halls(request, month, year, corporation_id: int):
-            return get_killstats_halls(
-                request, month, year, corporation_id, "corporation"
-            )
-
+    def register_endpoints(self, api: NinjaAPI):
         @api.get(
             "killboard/corporation/admin/",
             response={200: list[schema.CorporationAdmin], 403: str},
@@ -68,5 +43,33 @@ class KillboardCorporationApiEndpoints:
 
             output = []
             output.append({"corporation": corporation_dict})
+
+            return output
+
+        @api.get(
+            "killboard/alliance/admin/",
+            response={200: list[schema.AllianceAdmin], 403: str},
+            tags=self.tags,
+        )
+        def get_alliance_admin(request):
+            alliances = AlliancesAudit.objects.visible_to(request.user)
+
+            if alliances is None:
+                return 403, "Permission Denied"
+
+            alliance_dict = {}
+
+            for alliance in alliances:
+                # pylint: disable=broad-exception-caught
+                try:
+                    alliance_dict[alliance.alliance.alliance_id] = {
+                        "alliance_id": alliance.alliance.alliance_id,
+                        "alliance_name": alliance.alliance.alliance_name,
+                    }
+                except Exception:
+                    continue
+
+            output = []
+            output.append({"alliance": alliance_dict})
 
             return output

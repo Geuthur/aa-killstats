@@ -23,7 +23,7 @@ KILLMAIL_MAPPING = {
 }
 
 
-def get_entities(request, entity_id: int, entity_type: str):
+def get_entities(request, entity_type: str, entity_id: int):
     if entity_id == 0:
         if entity_type == "alliance":
             entities = get_alliances(request)
@@ -40,8 +40,8 @@ def get_entities(request, entity_id: int, entity_type: str):
 
 
 # pylint: disable=too-many-locals, too-many-positional-arguments
-def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: str):
-    entities = get_entities(request, entity_id, entity_type)
+def get_killmails_data(request, month, year, entity_type: str, entity_id: int, mode):
+    entities = get_entities(request, entity_type, entity_id)
 
     # Datatables parameters
     start = int(request.GET.get("start", 0))
@@ -121,8 +121,8 @@ def get_killmails_data(request, month, year, entity_id: int, mode, entity_type: 
     }
 
 
-def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
-    entities = get_entities(request, entity_id, entity_type)
+def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
+    entities = get_entities(request, entity_type, entity_id)
 
     if entity_type == "alliance":
         account = AccountManager(alliances=entities)
@@ -154,8 +154,8 @@ def get_killstats_halls(request, month, year, entity_id: int, entity_type: str):
     return halls
 
 
-def get_top_victim(request, month, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_top_victim(request, month, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -178,8 +178,8 @@ def get_top_victim(request, month, year, entity_id: int, entity_type: str) -> di
     return top_victim_dict
 
 
-def get_top_killer(request, month, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_top_killer(request, month, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -202,8 +202,8 @@ def get_top_killer(request, month, year, entity_id: int, entity_type: str) -> di
     return top_killer_dict
 
 
-def get_alltime_victim(request, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_alltime_victim(request, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -226,8 +226,8 @@ def get_alltime_victim(request, year, entity_id: int, entity_type: str) -> dict:
     return alltime_victim_dict
 
 
-def get_alltime_killer(request, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_alltime_killer(request, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -250,8 +250,8 @@ def get_alltime_killer(request, year, entity_id: int, entity_type: str) -> dict:
     return alltime_killer_dict
 
 
-def get_worst_ship(request, month, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_worst_ship(request, month, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -275,8 +275,8 @@ def get_worst_ship(request, month, year, entity_id: int, entity_type: str) -> di
     return worst_ship_dict
 
 
-def get_top_ship(request, month, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_top_ship(request, month, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -299,8 +299,8 @@ def get_top_ship(request, month, year, entity_id: int, entity_type: str) -> dict
     return top_ship_dict
 
 
-def get_top_kill(request, month, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_top_kill(request, month, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -321,8 +321,8 @@ def get_top_kill(request, month, year, entity_id: int, entity_type: str) -> dict
     return top_kill_dict
 
 
-def get_top_loss(request, month, year, entity_id: int, entity_type: str) -> dict:
-    entities = get_entities(request, entity_id, entity_type)
+def get_top_loss(request, month, year, entity_type: str, entity_id: int) -> dict:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail_year = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -343,8 +343,8 @@ def get_top_loss(request, month, year, entity_id: int, entity_type: str) -> dict
     return top_loss_dict
 
 
-def get_top_10(request, month, year, entity_id: int, entity_type: str) -> list:
-    entities = get_entities(request, entity_id, entity_type)
+def get_top_10(request, month, year, entity_type: str, entity_id: int) -> list:
+    entities = get_entities(request, entity_type, entity_id)
 
     killmail = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
