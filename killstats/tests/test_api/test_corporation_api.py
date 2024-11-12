@@ -8,12 +8,12 @@ from django.test import TestCase
 from allianceauth.eveonline.models import EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
-from killstats.api.killboard import KillboardCorporationApiEndpoints
+from killstats.api.killstats import KillboardApiEndpoints
 from killstats.tests.test_api import _killstasts_api
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
-MODULE_PATH = "killstats.api.killboard.killboard_helper"
+MODULE_PATH = "killstats.api.killstats.api_helper"
 
 
 class ManageApiCorporationEndpointsTest(TestCase):
@@ -35,52 +35,27 @@ class ManageApiCorporationEndpointsTest(TestCase):
             ],
         )
         cls.api = NinjaAPI()
-        cls.manage_api_endpoints = KillboardCorporationApiEndpoints(api=cls.api)
+        cls.manage_api_endpoints = KillboardApiEndpoints(api=cls.api)
 
-    def test_killboard_api_no_entry(self):
+    def test_corp_halls_api(self):
         # given
         self.client.force_login(self.user)
-        url = "/killstats/api/stats/month/7/year/2020/corporation/0/"
-        # when
-        response = self.client.get(url)
-        # then
-        expected_data = _killstasts_api.Killstats_Stats
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_data)
-
-    def test_killboard_api(self):
-        # given
-        self.client.force_login(self.user)
-        url = "/killstats/api/stats/month/7/year/2024/corporation/0/"
-        # when
-        response = self.client.get(url)
-        # then
-        expected_data = _killstasts_api.Killstats_Stats_Entry
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_data)
+        self.maxDiff = None
 
         # Hall of Fame
         url = "/killstats/api/halls/month/7/year/2024/corporation/0/"
         # when
         response = self.client.get(url)
+
         # then
         expected_data = _killstasts_api.Killstats_Halls_Entry
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
-    def test_killboard_api_single(self):
+    def test_corp_halls_api_single(self):
         # given
         self.client.force_login(self.user)
         self.maxDiff = None
-
-        # Stats
-        url = "/killstats/api/stats/month/7/year/2024/corporation/2001/"
-        # when
-        response = self.client.get(url)
-        # then
-        expected_data = _killstasts_api.Killstats_Stats_Single
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_data)
 
         # Hall of Fame
         url = "/killstats/api/halls/month/7/year/2024/corporation/2001/"
@@ -141,9 +116,7 @@ class ManageApiCorporationEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), excepted_data)
 
-    @patch(
-        "killstats.api.killboard.corporation.killboard.CorporationsAudit.objects.visible_to"
-    )
+    @patch("killstats.api.killstats.admin.CorporationsAudit.objects.visible_to")
     def test_get_corporation_admin_no_visible(self, mock_visible_to):
         self.client.force_login(self.user2)
         url = "/killstats/api/killboard/corporation/admin/"
@@ -155,9 +128,7 @@ class ManageApiCorporationEndpointsTest(TestCase):
         # then
         self.assertContains(response, "Permission Denied", status_code=403)
 
-    @patch(
-        "killstats.api.killboard.corporation.killboard.CorporationsAudit.objects.visible_to"
-    )
+    @patch("killstats.api.killstats.admin.CorporationsAudit.objects.visible_to")
     def test_get_corporation_admin_exception(self, mock_visible_to):
         self.client.force_login(self.user)
         url = "/killstats/api/killboard/corporation/admin/"
