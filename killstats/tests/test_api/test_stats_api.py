@@ -12,7 +12,7 @@ from killstats.tests.testdata.load_killstats import load_killstats_all
 MODULE_PATH = "killstats.api.killstats.api_helper"
 
 
-class ManageApiCorporationEndpointsTest(TestCase):
+class Test_ApiStatsEndpoints(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -172,3 +172,70 @@ class ManageApiCorporationEndpointsTest(TestCase):
         expected_data = _stats_api.top_loss
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
+
+    def test_alltime_killer_api(self):
+        # given
+        self.client.force_login(self.user)
+        self.maxDiff = None
+
+        # Corporation
+        url = "/killstats/api/stats/top/alltime_killer/month/7/year/2024/corporation/0/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _stats_api.alltime_killer
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        # Alliance
+        url = "/killstats/api/stats/top/alltime_killer/month/7/year/2024/alliance/3001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _stats_api.alltime_killer
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_alltime_victim_api(self):
+        # given
+        self.client.force_login(self.user)
+        self.maxDiff = None
+
+        # Corporation
+        url = "/killstats/api/stats/top/alltime_victim/month/7/year/2024/corporation/0/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _stats_api.alltime_victim
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        # Alliance
+        url = "/killstats/api/stats/top/alltime_victim/month/7/year/2024/alliance/3001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = _stats_api.alltime_victim
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_top_10_api(self):
+        # given
+        self.client.force_login(self.user)
+        self.maxDiff = None
+
+        # Corporation
+        url = "/killstats/api/stats/top/10/month/7/year/2024/corporation/0/"
+        # when
+        response = self.client.get(url)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Top 10 Killers")
+
+        # Alliance
+        url = "/killstats/api/stats/top/10/month/7/year/2024/alliance/3001/"
+        # when
+        response = self.client.get(url)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Top 10 Killers")

@@ -97,3 +97,33 @@ top_loss = [
         }
     }
 ]
+
+alltime_killer = [
+    {
+        "stats": {
+            "title": "Alltime Killer: Gneuten",
+            "type": "count",
+            "character_id": 1001,
+            "character_name": "Gneuten",
+            "portrait": "https://images.evetech.net/characters/1001/portrait?size=256",
+            "count": 3,
+            "loss": False,
+            "zkb_link": "https://zkillboard.com/character/1001/",
+        }
+    }
+]
+
+alltime_victim = [
+    {
+        "stats": {
+            "title": "Alltime Victim: Garthd",
+            "type": "count",
+            "character_id": 1004,
+            "character_name": "Garthd",
+            "portrait": "https://images.evetech.net/characters/1004/portrait?size=256",
+            "count": 1,
+            "loss": False,
+            "zkb_link": "https://zkillboard.com/character/1004/",
+        }
+    }
+]

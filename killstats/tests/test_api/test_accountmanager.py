@@ -6,7 +6,7 @@ from killstats.api.account_manager import AccountManager
 MODULE_PATH = "killstats.api.account_manager"
 
 
-class TestAccountManager(unittest.TestCase):
+class Test_AccountManager(unittest.TestCase):
     def setUp(self):
         self.account_manager = AccountManager()
         self.account_manager.corporations = {1, 2, 3}

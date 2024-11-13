@@ -13,7 +13,7 @@ from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
 
-class ManageApiAllianceEndpointsTest(TestCase):
+class Test_AllianceEndpoints(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

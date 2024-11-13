@@ -11,7 +11,7 @@ from killstats.tests.testdata.load_killstats import load_killstats_all
 MODULE_PATH = "killstats.api.killstats.api_helper"
 
 
-class ManageApiCorporationEndpointsTest(TestCase):
+class Test_KillboardEndpoints(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
