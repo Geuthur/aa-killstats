@@ -58,6 +58,17 @@ class Test_ApiHelper(TestCase):
 
         self.assertEqual(response, expected_data)
 
+    def test_top10_empty(self):
+        request = self.request.get(reverse("killstats:index"))
+        request.user = self.user
+        response = get_top_10(
+            request, month=7, year=1999, entity_type="alliance", entity_id=3001
+        )
+
+        expected_data = {}
+
+        self.assertEqual(response, expected_data)
+
     @patch(MODULE_PATH + ".EveEntity.objects.get")
     def test_get_top_10_does_not_exist(self, mock_get):
         mock_get.side_effect = EveEntity.DoesNotExist
