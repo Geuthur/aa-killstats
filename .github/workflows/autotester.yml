@@ -62,6 +62,7 @@ jobs:
           - '3.10'
           - '3.11'
           - '3.12'
+          - '3.13'
         # MySQL versions to test against
         database:
           # https://endoflife.date/mysql
@@ -69,7 +70,7 @@ jobs:
           # https://endoflife.date/mariadb and https://mariadb.com/kb/en/mariadb-server-release-dates/
           - mariadb:10.11 # [LTS] Maintained until: February 2028
 
-#    continue-on-error: ${{ matrix.python-version == '3.12' }}
+#    continue-on-error: ${{ matrix.python-version == '3.13' }}
 
     # Set up services
     services:
