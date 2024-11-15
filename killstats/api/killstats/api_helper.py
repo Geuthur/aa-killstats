@@ -31,11 +31,6 @@ def get_entities(request, entity_type: str, entity_id: int):
             entities = get_corporations(request)
     else:
         entities = [entity_id]
-
-    # Ensure that only Corporation/Alliance Kills are shown
-    if any(entity > 10000000 for entity in entities):
-        entities = [entity for entity in entities if entity >= 10000000]
-
     return entities
 
 
@@ -123,11 +118,8 @@ def get_killmails_data(request, month, year, entity_type: str, entity_id: int, m
 
 def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
     entities = get_entities(request, entity_type, entity_id)
-
-    if entity_type == "alliance":
-        account = AccountManager(alliances=entities)
-    else:
-        account = AccountManager(corporations=entities)
+    account = AccountManager(entities=entities)
+    mains, _ = account.get_mains_alts()
 
     killmails = (
         Killmail.objects.prefetch_related("victim", "victim_ship").filter(
@@ -135,11 +127,6 @@ def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
             killmail_date__month=month,
         )
     ).filter_entities(entities)
-
-    if entity_id == 0:
-        mains, _ = account.get_mains_alts()
-    else:
-        mains = []
 
     shame, fame = killboard_hall(killmails, entities, mains)
 
@@ -345,6 +332,8 @@ def get_top_loss(request, month, year, entity_type: str, entity_id: int) -> dict
 
 def get_top_10(request, month, year, entity_type: str, entity_id: int) -> list:
     entities = get_entities(request, entity_type, entity_id)
+    account = AccountManager(entities=entities)
+    mains_dict, _ = account.get_mains_alts()
 
     killmail = (
         Killmail.objects.prefetch_related("victim", "victim_ship")
@@ -358,13 +347,6 @@ def get_top_10(request, month, year, entity_type: str, entity_id: int) -> list:
 
     if not top_10_querry:
         return {}
-
-    if entity_type == "alliance":
-        account = AccountManager(alliances=entities)
-    else:
-        account = AccountManager(corporations=entities)
-
-    mains_dict, _ = account.get_mains_alts()
 
     # Convert QuerySet to list
     top_10_list = list(top_10_querry)
