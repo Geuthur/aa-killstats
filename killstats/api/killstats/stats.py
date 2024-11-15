@@ -4,20 +4,9 @@ from ninja import NinjaAPI
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
 
 # AA Killstats
-from killstats.api.killstats.api_helper import (
-    get_alltime_killer,
-    get_alltime_victim,
-    get_top_10,
-    get_top_kill,
-    get_top_killer,
-    get_top_loss,
-    get_top_ship,
-    get_top_victim,
-    get_worst_ship,
-)
+from killstats.api.killstats import api_helper
 from killstats.hooks import get_extension_logger
 
 logger = get_extension_logger(__name__)
@@ -36,9 +25,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_top_victim_api(request, month, year, entity_type: str, entity_id: int):
-            top_victim = get_top_victim(
+            top_victim = api_helper.get_top_victim(
                 request=request,
                 month=month,
                 year=year,
@@ -59,9 +47,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_top_killer_api(request, month, year, entity_type: str, entity_id: int):
-            top_killer = get_top_killer(
+            top_killer = api_helper.get_top_killer(
                 request=request,
                 month=month,
                 year=year,
@@ -82,12 +69,11 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         # pylint: disable=unused-argument
         def get_alltime_victim_api(
             request, month, year, entity_type: str, entity_id: int
         ):
-            alltime_victim = get_alltime_victim(
+            alltime_victim = api_helper.get_alltime_victim(
                 request=request,
                 year=year,
                 entity_type=entity_type,
@@ -107,12 +93,11 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         # pylint: disable=unused-argument
         def get_alltime_killer_api(
             request, month, year, entity_type: str, entity_id: int
         ):
-            alltime_killer = get_alltime_killer(
+            alltime_killer = api_helper.get_alltime_killer(
                 request=request,
                 year=year,
                 entity_type=entity_type,
@@ -132,9 +117,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_worst_ship_api(request, month, year, entity_type: str, entity_id: int):
-            worst_ship = get_worst_ship(
+            worst_ship = api_helper.get_worst_ship(
                 request=request,
                 month=month,
                 year=year,
@@ -155,9 +139,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_top_ship_api(request, month, year, entity_type: str, entity_id: int):
-            top_ship = get_top_ship(
+            top_ship = api_helper.get_top_ship(
                 request=request,
                 month=month,
                 year=year,
@@ -178,9 +161,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_top_kill_api(request, month, year, entity_type: str, entity_id: int):
-            top_kill = get_top_kill(
+            top_kill = api_helper.get_top_kill(
                 request=request,
                 month=month,
                 year=year,
@@ -201,9 +183,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_top_loss_api(request, month, year, entity_type: str, entity_id: int):
-            top_loss = get_top_loss(
+            top_loss = api_helper.get_top_loss(
                 request=request,
                 month=month,
                 year=year,
@@ -224,9 +205,8 @@ class KillboardStatsApiEndpoints:
             response={200: list[dict], 403: str},
             tags=self.tags,
         )
-        @cache_page(60 * 10)
         def get_top_10_api(request, month, year, entity_type: str, entity_id: int):
-            top_10 = get_top_10(
+            top_10 = api_helper.get_top_10(
                 request=request,
                 month=month,
                 year=year,
