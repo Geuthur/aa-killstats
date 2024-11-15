@@ -28,10 +28,11 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 
 - Graphical Overview
 - Corporation & Alliance Overview
-- Kills from alts count to Main Character
+- Kills/Losses
+- Main Character and Alts combined ([explanation](/killstats/docs/explanation.md))
 - Hall of Fame, Hall of Shame
 - Killstats like Top Kill, Top Killer, Top Loss, Alltime Killer, etc.
-- Kills/Losses
+- Top 10 list for each Month
 
 ## Upcoming<a name="upcoming"></a>
 
@@ -124,7 +125,9 @@ LOGGING["loggers"].update(LOGGING_KILLSTATS["loggers"])
 
 ## Highlights<a name="highlights"></a>
 
-![Screenshot 2024-06-26 144010](https://github.com/Geuthur/aa-killstats/assets/761682/edc23d4d-719a-4519-b96a-ffbb950d28ca)
+![Stats](/killstats/docs/img/killstats1.png)
+![Hall](/killstats/docs/img/killstats2.png)
+![Kills](/killstats/docs/img/killstats3.png)
 
 > \[!NOTE\]
 > Contributing
