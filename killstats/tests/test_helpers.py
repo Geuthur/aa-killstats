@@ -2,11 +2,13 @@ from unittest.mock import patch
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import RequestFactory, TestCase
+from django.urls import reverse
 
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
 from killstats.api.account_manager import AccountManager
+from killstats.api.killstats.api_helper import get_alliances, get_corporations
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 
 MODULE_PATH = "killstats.api.account_manager"
@@ -40,7 +42,7 @@ class TestApiHelpers(TestCase):
         cls.user5, _ = create_user_from_evecharacter(
             1005,
         )
-        cls.corp = EveCorporationInfo.objects.get(corporation_id=2001)
+        cls.corp = EveCorporationInfo.objects.get(corporation_id=20000001)
 
     def test_get_main_and_alts_all_char_in_chars(self):
         # given
@@ -53,7 +55,7 @@ class TestApiHelpers(TestCase):
         for char in chars:
             mains[char.character_id] = {"main": char, "alts": [char]}
         excepted_data = mains
-        account = AccountManager(corporations=[self.corp.corporation_id])
+        account = AccountManager(entities=[self.corp.corporation_id])
         # when
         data, _ = account.get_mains_alts()
         # then
@@ -75,71 +77,85 @@ class TestApiHelpers(TestCase):
         )
         for char in chars:
             mains[char.character_id] = {"main": char, "alts": [char]}
-        account = AccountManager(corporations=[self.corp.corporation_id])
+        account = AccountManager(entities=[self.corp.corporation_id])
         # when
         data, _ = account.get_mains_alts()
 
     def test_process_character(self):
         # Create mock main character
-        main_char = EveCharacter(character_id=1002, corporation_id=2002)
+        main_char = EveCharacter(character_id=1002, corporation_id=20000002)
 
         # Mock char with a main character
-        char = EveCharacter(character_id=1001, corporation_id=2001)
+        char = EveCharacter(character_id=1001, corporation_id=20000001)
         char.character_ownership = self.char_owner
         char.character_ownership.user.profile.main_character = main_char
 
         # Test main not in characters
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
-        account = AccountManager(corporations=[2001])
+        account = AccountManager(entities=[20000001])
 
-        account._process_character(char, characters, chars_list, missing_chars)
+        account._process_character(char, characters, chars_list)
 
         # Test main in characters
         characters = {1002: {"main": main_char, "alts": []}}
         chars_list = set()
-        missing_chars = set()
 
-        account._process_character(char, characters, chars_list, missing_chars)
+        account._process_character(char, characters, chars_list)
 
         # Test Corporation exist
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
-        account._process_character(char, characters, chars_list, missing_chars)
+        account._process_character(
+            char,
+            characters,
+            chars_list,
+        )
 
         # Test Corporation not exist
-        char = EveCharacter(character_id=1001, corporation_id=2001)
+        char = EveCharacter(character_id=1001, corporation_id=20000001)
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
-        account._process_character(char, characters, chars_list, missing_chars)
+        account._process_character(char, characters, chars_list)
 
         # Test Attribute Error
-        error = EveCorporationInfo.objects.get(corporation_id=2001)
+        error = EveCorporationInfo.objects.get(corporation_id=20000001)
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
-        account._process_character(error, characters, chars_list, missing_chars)
+        account._process_character(error, characters, chars_list)
 
         # Test Missing character
-        char = EveCharacter(character_id=9999, corporation_id=2001)
+        char = EveCharacter(character_id=9999, corporation_id=20000001)
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
-        account._process_character(char, characters, chars_list, missing_chars)
+        account._process_character(char, characters, chars_list)
 
         # Test Corporation & Alliance Empty
         account = AccountManager()
-        char = EveCharacter(character_id=1001, corporation_id=2001)
+        char = EveCharacter(character_id=1001, corporation_id=20000001)
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
-        account._process_character(char, characters, chars_list, missing_chars)
+        account._process_character(char, characters, chars_list)
+
+    def test_no_corp_or_ally(self):
+
+        request = self.factory.get(reverse("killstats:index"))
+        request.user = self.user
+
+        corp_list = get_corporations(request)
+
+        expected_data = []
+
+        self.assertEqual(corp_list, expected_data)
+
+        ally_list = get_alliances(request)
+
+        expected_data = []
+
+        self.assertEqual(ally_list, expected_data)

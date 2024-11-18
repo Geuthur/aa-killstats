@@ -39,7 +39,7 @@ class Test_ApiHelper(TestCase):
         request = self.request.get(reverse("killstats:index"))
         request.user = self.user
         response = get_top_10(
-            request, month=7, year=2024, entity_type="corporation", entity_id=2001
+            request, month=7, year=2024, entity_type="corporation", entity_id=20000001
         )
 
         expected_data = _api_helper.top10
@@ -51,7 +51,7 @@ class Test_ApiHelper(TestCase):
         request = self.request.get(reverse("killstats:index"))
         request.user = self.user
         response = get_top_10(
-            request, month=7, year=2024, entity_type="alliance", entity_id=3001
+            request, month=7, year=2024, entity_type="alliance", entity_id=30000001
         )
 
         expected_data = _api_helper.top10_alt
@@ -62,7 +62,7 @@ class Test_ApiHelper(TestCase):
         request = self.request.get(reverse("killstats:index"))
         request.user = self.user
         response = get_top_10(
-            request, month=7, year=1999, entity_type="alliance", entity_id=3001
+            request, month=7, year=1999, entity_type="alliance", entity_id=30000001
         )
 
         expected_data = {}
@@ -79,7 +79,7 @@ class Test_ApiHelper(TestCase):
         expected_data = _api_helper.top10_unknown
 
         response = get_top_10(
-            request, month=7, year=2024, entity_type="corporation", entity_id=2001
+            request, month=7, year=2024, entity_type="corporation", entity_id=20000001
         )
         self.assertEqual(response, expected_data)
 
@@ -91,7 +91,7 @@ class Test_ApiHelper(TestCase):
         request.user = self.user
 
         result = get_top_10(
-            request, month=7, year=2024, entity_type="corporation", entity_id=2001
+            request, month=7, year=2024, entity_type="corporation", entity_id=20000001
         )
 
         expected_data = _api_helper.top10_unknown

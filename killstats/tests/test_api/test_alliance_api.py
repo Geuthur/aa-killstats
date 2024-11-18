@@ -51,7 +51,7 @@ class Test_AllianceEndpoints(TestCase):
         # given
         self.client.force_login(self.user)
 
-        url = "/killstats/api/killmail/month/7/year/2024/alliance/3001/kills/"
+        url = "/killstats/api/killmail/month/7/year/2024/alliance/30000001/kills/"
         # when
         response = self.client.get(url)
         # then
@@ -73,7 +73,7 @@ class Test_AllianceEndpoints(TestCase):
         self.client.force_login(self.user)
 
         # Halls of Fame/Shame - Single
-        url = "/killstats/api/halls/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/halls/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -90,7 +90,10 @@ class Test_AllianceEndpoints(TestCase):
         excepted_data = [
             {
                 "alliance": {
-                    "3001": {"alliance_id": 3001, "alliance_name": "Voices of War"}
+                    "30000001": {
+                        "alliance_id": 30000001,
+                        "alliance_name": "Voices of War",
+                    }
                 }
             }
         ]
@@ -114,7 +117,7 @@ class Test_AllianceEndpoints(TestCase):
         self.client.force_login(self.user)
         url = "/killstats/api/killboard/alliance/admin/"
 
-        corp = EveAllianceInfo.objects.get(alliance_id=3001)
+        corp = EveAllianceInfo.objects.get(alliance_id=30000001)
 
         mock_visible_to.return_value = [corp, "test"]
 

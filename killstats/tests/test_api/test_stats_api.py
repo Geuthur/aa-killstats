@@ -49,7 +49,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/ship/top/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/ship/top/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
 
@@ -59,7 +59,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/ship/top/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/ship/top/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -82,7 +82,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/ship/worst/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/ship/worst/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -91,7 +91,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/ship/worst/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/ship/worst/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -114,7 +114,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/top/killer/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/killer/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -123,7 +123,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/top/killer/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/killer/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -146,7 +146,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/top/victim/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/victim/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -155,7 +155,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/top/victim/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/victim/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -178,7 +178,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/top/kill/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/kill/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -187,7 +187,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/top/kill/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/kill/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -210,7 +210,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/top/loss/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/loss/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -219,7 +219,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/top/loss/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/loss/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -242,7 +242,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/top/alltime_killer/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/alltime_killer/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -251,7 +251,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/top/alltime_killer/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/alltime_killer/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -274,7 +274,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Alliance
-        url = "/killstats/api/stats/top/alltime_victim/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/alltime_victim/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -283,7 +283,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
-        url = "/killstats/api/stats/top/alltime_victim/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/alltime_victim/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -305,7 +305,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertContains(response, "Top 10 Killers")
 
         # Alliance
-        url = "/killstats/api/stats/top/10/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/stats/top/10/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -313,7 +313,7 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertContains(response, "Top 10 Killers")
 
         # Empty Entry
-        url = "/killstats/api/stats/top/10/month/7/year/1999/alliance/3001/"
+        url = "/killstats/api/stats/top/10/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
 

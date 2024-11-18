@@ -50,7 +50,7 @@ class KillstatsAuditTest(TestCase):
     def test_view_single(self):
         request = self.factory.get(reverse("killstats:index"))
         request.user = self.user
-        response = killboard_index(request, 2001)
+        response = killboard_index(request, 20000001)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_view_corporation_admin(self):
@@ -278,7 +278,7 @@ class KillstatsAllianceAuditTest(TestCase):
         token.corporation_ticker = self.character_ownership.character.corporation_ticker
 
         ally = EveAllianceInfo.objects.get(
-            alliance_id=3001,
+            alliance_id=30000001,
         )
         AlliancesAudit.objects.update_or_create(
             alliance=ally, owner=self.character_ownership.character

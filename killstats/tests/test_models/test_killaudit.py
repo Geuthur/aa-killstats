@@ -14,9 +14,9 @@ class TestKillstatsAuditModel(TestCase):
         load_killstats_all()
 
     def test_str(self):
-        self.audit = CorporationsAudit.objects.get(corporation__corporation_id=2001)
+        self.audit = CorporationsAudit.objects.get(corporation__corporation_id=20000001)
         self.assertEqual(str(self.audit), "Hell RiderZ's Killstats Data")
 
     def test_alliance_str(self):
-        self.audit = AlliancesAudit.objects.get(alliance__alliance_id=3002)
+        self.audit = AlliancesAudit.objects.get(alliance__alliance_id=30000002)
         self.assertEqual(str(self.audit), "Eulen Sigma's Killstats Data")

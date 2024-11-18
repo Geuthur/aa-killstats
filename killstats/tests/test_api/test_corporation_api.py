@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 from ninja import NinjaAPI
 
-from django.db.models import Q
 from django.test import TestCase
 
 from allianceauth.eveonline.models import EveCorporationInfo
@@ -58,9 +57,10 @@ class Test_CorporationEndpoints(TestCase):
         self.maxDiff = None
 
         # Hall of Fame
-        url = "/killstats/api/halls/month/7/year/2024/corporation/2001/"
+        url = "/killstats/api/halls/month/7/year/2024/corporation/20000001/"
         # when
         response = self.client.get(url)
+
         # then
         expected_data = _killstasts_api.Killstats_Halls_Single
         self.assertEqual(response.status_code, 200)
@@ -70,7 +70,7 @@ class Test_CorporationEndpoints(TestCase):
         # given
         self.client.force_login(self.user)
 
-        url = "/killstats/api/killmail/month/7/year/2024/corporation/3001/kills/"
+        url = "/killstats/api/killmail/month/7/year/2024/corporation/30000001/kills/"
         # when
         response = self.client.get(url)
         # then
@@ -90,7 +90,7 @@ class Test_CorporationEndpoints(TestCase):
         # given
         self.client.force_login(self.user)
 
-        url = "/killstats/api/killmail/month/7/year/2024/corporation/2001/losses/?search[value]=Gneuten"
+        url = "/killstats/api/killmail/month/7/year/2024/corporation/20000001/losses/?search[value]=Gneuten"
         expected_data = _killstasts_api.Killstats_Search_Entry
 
         # when
@@ -109,7 +109,10 @@ class Test_CorporationEndpoints(TestCase):
         excepted_data = [
             {
                 "corporation": {
-                    "2002": {"corporation_id": 2002, "corporation_name": "Eulenclub"}
+                    "20000002": {
+                        "corporation_id": 20000002,
+                        "corporation_name": "Eulenclub",
+                    }
                 }
             }
         ]
@@ -133,7 +136,7 @@ class Test_CorporationEndpoints(TestCase):
         self.client.force_login(self.user)
         url = "/killstats/api/killboard/corporation/admin/"
 
-        corp = EveCorporationInfo.objects.get(corporation_id=2001)
+        corp = EveCorporationInfo.objects.get(corporation_id=20000001)
 
         mock_visible_to.return_value = [corp, "test"]
 

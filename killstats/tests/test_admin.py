@@ -61,7 +61,7 @@ class TestKillstatsAuditAdmin(TestCase):
             self.killstats_audit_admin._corporation__corporation_id(
                 self.killstats_audit
             ),
-            2001,
+            20000001,
         )
 
     def test_last_update(self):
@@ -192,7 +192,7 @@ class TestAlliancesAuditAdmin(TestCase):
         request.user = user
         self.assertEqual(
             self.killstats_audit_admin._alliance__alliance_id(self.killstats_audit),
-            3001,
+            30000001,
         )
 
     def test_last_update(self):

@@ -3,8 +3,8 @@
         {
             "killmail_id":"119303113",
             "killmail_date":"2024-07-07 21:38:59",
-            "victim_corporation_id":"2001",
-            "victim_alliance_id":"3001",
+            "victim_corporation_id":"20000001",
+            "victim_alliance_id":"30000001",
             "hash":"VictimHash1",
             "victim_total_value":"76734851",
             "victim_fitted_value":"72603992",
@@ -31,8 +31,8 @@
         {
             "killmail_id":"119303073",
             "killmail_date":"2024-07-07 21:36:58",
-            "victim_corporation_id":"2001",
-            "victim_alliance_id":"3001",
+            "victim_corporation_id":"20000001",
+            "victim_alliance_id":"30000001",
             "hash":"VictimHash2",
             "victim_total_value":"94395699",
             "victim_fitted_value":"80172608",
@@ -59,8 +59,8 @@
         {
             "killmail_id":"119303075",
             "killmail_date":"2024-07-07 21:38:58",
-            "victim_corporation_id":"2001",
-            "victim_alliance_id":"3001",
+            "victim_corporation_id":"20000001",
+            "victim_alliance_id":"30000001",
             "hash":"VictimHash3",
             "victim_total_value":"9999",
             "victim_fitted_value":"9888",
@@ -74,16 +74,16 @@
             "attackers": [
                 {
                     "character_id": 1001,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20001,
                     "damage_done": 8056,
                     "final_blow": false
                 },
                 {
                     "character_id": 1002,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20001,
                     "damage_done": 2788,
                     "final_blow": true
@@ -110,16 +110,16 @@
             "attackers": [
                 {
                     "character_id": 1001,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 8056,
                     "final_blow": false
                 },
                 {
                     "character_id": 1002,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 2788,
                     "final_blow": true
@@ -146,16 +146,16 @@
             "attackers": [
                 {
                     "character_id": 1001,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 8056,
                     "final_blow": false
                 },
                 {
                     "character_id": 1002,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 2788,
                     "final_blow": true
@@ -182,16 +182,16 @@
             "attackers": [
                 {
                     "character_id": 1004,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 8056,
                     "final_blow": false
                 },
                 {
                     "character_id": 1005,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 2788,
                     "final_blow": true
@@ -218,16 +218,16 @@
             "attackers": [
                 {
                     "character_id": 1012,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 8056,
                     "final_blow": false
                 },
                 {
                     "character_id": 1013,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 2788,
                     "final_blow": true
@@ -254,16 +254,16 @@
             "attackers": [
                 {
                     "character_id": 1010,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 8056,
                     "final_blow": false
                 },
                 {
                     "character_id": 1011,
-                    "corporation_id": 2001,
-                    "alliance_id": 3001,
+                    "corporation_id": 20000001,
+                    "alliance_id": 30000001,
                     "ship_type_id": 20002,
                     "damage_done": 2788,
                     "final_blow": true
