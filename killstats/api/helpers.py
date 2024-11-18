@@ -7,7 +7,7 @@ logger = get_extension_logger(__name__)
 
 
 # NOTE: not implemented yet
-def get_permission(request, entity_type: str):
+def get_permission(request, entity_type: str):  # pragma: no cover
     """Get permission for the entity"""
     if entity_type == "corporation":
         entities = get_corporations(request)
@@ -67,6 +67,7 @@ def get_alliances(request):
     visible = models.AlliancesAudit.objects.visible_to(request.user)
 
     common_corps = main_corp.intersection(visible)
+
     if not common_corps.exists():
         return []
 
