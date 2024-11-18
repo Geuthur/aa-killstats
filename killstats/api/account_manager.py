@@ -32,25 +32,27 @@ class AccountManager:
             .order_by("character_name")
         )
 
-    def _process_character(
-        self, char: EveCharacter, characters: dict, chars_list: set, missing_chars: set
-    ):
+    def _process_character(self, char: EveCharacter, characters: dict, chars_list: set):
         try:
             main = char.character_ownership.user.profile.main_character
             if main and main.character_id not in characters:
                 characters[main.character_id] = {"main": main, "alts": []}
-            if char.corporation_id or char.alliance_id in self.entities:
+            if (
+                char.corporation_id in self.entities
+                or char.alliance_id in self.entities
+            ):
                 characters[main.character_id]["alts"].append(char)
                 chars_list.add(char.character_id)
         except ObjectDoesNotExist:
             if EveCharacter.objects.filter(character_id=char.character_id).exists():
                 char = EveCharacter.objects.get(character_id=char.character_id)
                 characters[char.character_id] = {"main": char, "alts": []}
-                if char.corporation_id or char.alliance_id in self.entities:
+                if (
+                    char.corporation_id in self.entities
+                    or char.alliance_id in self.entities
+                ):
                     chars_list.add(char.character_id)
                     characters[char.character_id]["alts"].append(char)
-            # Not implemented yet
-            missing_chars.add(char.character_id)
         except AttributeError:
             pass
 
@@ -58,10 +60,9 @@ class AccountManager:
         """Get all members for given corporations/alliances"""
         characters = {}
         chars_list = set()
-        missing_chars = set()
 
         linked_chars = self._get_linked_characters()
 
         for char in linked_chars:
-            self._process_character(char, characters, chars_list, missing_chars)
+            self._process_character(char, characters, chars_list)
         return characters, list(chars_list)
