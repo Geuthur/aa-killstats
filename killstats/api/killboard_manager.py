@@ -44,12 +44,9 @@ def _get_character_details_attacker(killmail: Killmail, mains, entities, unique_
     )
 
     for attacker in attackers:
-        if mains:
-            character_id, character_name = process_attacker(
-                attacker, mains, unique_killer
-            )
-            if character_id is not None:
-                return character_id, character_name
+        character_id, character_name = process_attacker(attacker, mains, unique_killer)
+        if character_id is not None:
+            return character_id, character_name
 
     return None, None
 
