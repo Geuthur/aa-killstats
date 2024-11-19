@@ -36,7 +36,7 @@ def set_cache_key(cache_key, output, timeout=KILLBOARD_API_CACHE_LIFETIME):
     cache.set(
         key=cache_key,
         value=output,
-        timeout=timeout,
+        timeout=60 * timeout,
     )
     return True
 
