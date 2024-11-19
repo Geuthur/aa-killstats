@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from ninja import NinjaAPI
 
+from django.core.cache import cache
 from django.test import TestCase
 
 from allianceauth.eveonline.models import EveCorporationInfo
@@ -21,6 +22,7 @@ class Test_CorporationEndpoints(TestCase):
         super().setUpClass()
         load_allianceauth()
         load_killstats_all()
+        cache.clear()
 
         cls.user, _ = create_user_from_evecharacter(
             1001,
@@ -42,6 +44,16 @@ class Test_CorporationEndpoints(TestCase):
         self.maxDiff = None
 
         # Hall of Fame
+        url = "/killstats/api/halls/month/7/year/2024/corporation/0/"
+        # when
+        response = self.client.get(url)
+
+        # then
+        expected_data = _killstasts_api.Killstats_Halls_Entry
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        # Cached Hall of Fame
         url = "/killstats/api/halls/month/7/year/2024/corporation/0/"
         # when
         response = self.client.get(url)

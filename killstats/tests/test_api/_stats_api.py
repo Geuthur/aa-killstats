@@ -73,7 +73,7 @@ top_kill = [
             "date": "2024-07-07T21:38:58+00:00",
             "title": "Top Kill:",
             "portrait": "https://images.evetech.net/types/10002/icon?size=256",
-            "zkb_link": "https://zkillboard.com/character/1004/",
+            "zkb_link": "https://zkillboard.com/kill/119303075/",
         }
     }
 ]
@@ -93,7 +93,7 @@ top_loss = [
             "date": "2024-07-07T21:36:58+00:00",
             "title": "Top Loss:",
             "portrait": "https://images.evetech.net/types/10001/icon?size=256",
-            "zkb_link": "https://zkillboard.com/character/1002/",
+            "zkb_link": "https://zkillboard.com/kill/119303073/",
         }
     }
 ]

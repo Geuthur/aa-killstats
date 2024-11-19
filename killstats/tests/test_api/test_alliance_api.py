@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from ninja import NinjaAPI
 
+from django.core.cache import cache
 from django.test import TestCase
 
 from allianceauth.eveonline.models import EveAllianceInfo
@@ -19,6 +20,7 @@ class Test_AllianceEndpoints(TestCase):
         super().setUpClass()
         load_allianceauth()
         load_killstats_all()
+        cache.clear()
 
         cls.user, _ = create_user_from_evecharacter(
             1001,

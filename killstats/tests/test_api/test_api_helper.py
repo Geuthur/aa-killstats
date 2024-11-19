@@ -7,7 +7,7 @@ from eveuniverse.models import EveEntity
 from allianceauth.eveonline.models import EveCharacter
 from app_utils.testing import add_character_to_user, create_user_from_evecharacter
 
-from killstats.api.killstats.api_helper import get_top_10
+from killstats.api.killstats.api_helper import cache_sytem, get_top_10, set_cache_key
 from killstats.tests.test_api import _api_helper
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
@@ -97,3 +97,40 @@ class Test_ApiHelper(TestCase):
         expected_data = _api_helper.top10_unknown
 
         self.assertEqual(result, expected_data)
+
+    def test_cache_system(self):
+        request = self.request.get(reverse("killstats:index"))
+        request.user = self.user
+
+        cache_key_name = "test_cache"
+
+        # Test No Cache
+        cache, cache_key = cache_sytem(request, cache_key_name, entity_id=20000001)
+
+        expected_data = "test_cache_20000001"
+
+        self.assertEqual(cache_key, expected_data)
+        self.assertIsNone(cache)
+
+        # Test Cache
+        set_cache_key(cache_key, "test")
+
+        cache, cache_key = cache_sytem(request, cache_key_name, entity_id=20000001)
+
+        self.assertIsNone(cache_key)
+        self.assertEqual(cache, "test")
+
+        # Test Cache Hashed
+        set_cache_key(cache_key, "test")
+
+        cache, cache_key = cache_sytem(request, cache_key_name, entity_id=0)
+
+        self.assertEqual(cache_key, "test_cache_f8183f422d05dda8d390178394e2b670")
+        self.assertIsNone(cache)
+
+    def test_set_cache_key_false(self):
+        request = self.request.get(reverse("killstats:index"))
+        request.user = self.user
+
+        result = set_cache_key(None, "test")
+        self.assertFalse(result)

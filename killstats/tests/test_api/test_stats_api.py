@@ -1,5 +1,6 @@
 from ninja import NinjaAPI
 
+from django.core.cache import cache
 from django.test import TestCase
 
 from app_utils.testing import create_user_from_evecharacter
@@ -18,6 +19,7 @@ class Test_ApiStatsEndpoints(TestCase):
         super().setUpClass()
         load_allianceauth()
         load_killstats_all()
+        cache.clear()
 
         cls.user, _ = create_user_from_evecharacter(
             1001,
@@ -67,6 +69,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Cached
+        url = "/killstats/api/stats/ship/top/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
     def test_worst_ship_api(self):
         # given
         self.client.force_login(self.user)
@@ -91,6 +102,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
+        url = "/killstats/api/stats/ship/worst/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        # Cached
         url = "/killstats/api/stats/ship/worst/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
@@ -131,6 +151,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Cached
+        url = "/killstats/api/stats/top/killer/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
     def test_victim_api(self):
         # given
         self.client.force_login(self.user)
@@ -139,6 +168,13 @@ class Test_ApiStatsEndpoints(TestCase):
         # Corporation
         url = "/killstats/api/stats/top/victim/month/7/year/2024/corporation/0/"
         # when
+        response = self.client.get(url)
+        # then
+        expected_data = _stats_api.top_victim
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        # Cached
         response = self.client.get(url)
         # then
         expected_data = _stats_api.top_victim
@@ -195,6 +231,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Cached
+        url = "/killstats/api/stats/top/kill/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
     def test_top_loss_api(self):
         # given
         self.client.force_login(self.user)
@@ -219,6 +264,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.json(), expected_data)
 
         # Empty Entry
+        url = "/killstats/api/stats/top/loss/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
+        # Cached
         url = "/killstats/api/stats/top/loss/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
@@ -259,6 +313,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Cached
+        url = "/killstats/api/stats/top/alltime_killer/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
     def test_alltime_victim_api(self):
         # given
         self.client.force_login(self.user)
@@ -291,6 +354,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Cached
+        url = "/killstats/api/stats/top/alltime_victim/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+        # then
+        expected_data = [{"stats": {}}]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
+
     def test_top_10_api(self):
         # given
         self.client.force_login(self.user)
@@ -313,6 +385,15 @@ class Test_ApiStatsEndpoints(TestCase):
         self.assertContains(response, "Top 10 Killers")
 
         # Empty Entry
+        url = "/killstats/api/stats/top/10/month/7/year/1999/alliance/30000001/"
+        # when
+        response = self.client.get(url)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Top 10 Killers")
+
+        # Cached
         url = "/killstats/api/stats/top/10/month/7/year/1999/alliance/30000001/"
         # when
         response = self.client.get(url)
