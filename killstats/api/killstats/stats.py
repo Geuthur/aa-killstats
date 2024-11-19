@@ -19,6 +19,7 @@ class KillboardStatsApiEndpoints:
     def __init__(self, api: NinjaAPI):
         self.register_endpoints(api)
 
+    # pylint: disable=too-many-statements
     def register_endpoints(self, api: NinjaAPI):
         @api.get(
             "stats/top/victim/month/{month}/year/{year}/{entity_type}/{entity_id}/",
@@ -26,20 +27,26 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_top_victim_api(request, month, year, entity_type: str, entity_id: int):
-            top_victim = api_helper.get_top_victim(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"top_victim_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": top_victim,
-                }
-            )
+            if cache_key:
+                top_victim = api_helper.get_top_victim(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": top_victim,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -48,20 +55,26 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_top_killer_api(request, month, year, entity_type: str, entity_id: int):
-            top_killer = api_helper.get_top_killer(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"top_killer_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": top_killer,
-                }
-            )
+            if cache_key:
+                top_killer = api_helper.get_top_killer(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": top_killer,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -73,19 +86,25 @@ class KillboardStatsApiEndpoints:
         def get_alltime_victim_api(
             request, month, year, entity_type: str, entity_id: int
         ):
-            alltime_victim = api_helper.get_alltime_victim(
-                request=request,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"alltime_victim_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": alltime_victim,
-                }
-            )
+            if cache_key:
+                alltime_victim = api_helper.get_alltime_victim(
+                    request=request,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": alltime_victim,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -97,19 +116,25 @@ class KillboardStatsApiEndpoints:
         def get_alltime_killer_api(
             request, month, year, entity_type: str, entity_id: int
         ):
-            alltime_killer = api_helper.get_alltime_killer(
-                request=request,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"alltime_killer_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": alltime_killer,
-                }
-            )
+            if cache_key:
+                alltime_killer = api_helper.get_alltime_killer(
+                    request=request,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": alltime_killer,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -118,20 +143,26 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_worst_ship_api(request, month, year, entity_type: str, entity_id: int):
-            worst_ship = api_helper.get_worst_ship(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"worst_ship_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": worst_ship,
-                }
-            )
+            if cache_key:
+                worst_ship = api_helper.get_worst_ship(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": worst_ship,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -140,20 +171,26 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_top_ship_api(request, month, year, entity_type: str, entity_id: int):
-            top_ship = api_helper.get_top_ship(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"top_ship_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": top_ship,
-                }
-            )
+            if cache_key:
+                top_ship = api_helper.get_top_ship(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": top_ship,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -162,20 +199,26 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_top_kill_api(request, month, year, entity_type: str, entity_id: int):
-            top_kill = api_helper.get_top_kill(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"top_kill_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": top_kill,
-                }
-            )
+            if cache_key:
+                top_kill = api_helper.get_top_kill(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": top_kill,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -184,20 +227,26 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_top_loss_api(request, month, year, entity_type: str, entity_id: int):
-            top_loss = api_helper.get_top_loss(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"top_loss_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
-            output = []
-            output.append(
-                {
-                    "stats": top_loss,
-                }
-            )
+            if cache_key:
+                top_loss = api_helper.get_top_loss(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = []
+                output.append(
+                    {
+                        "stats": top_loss,
+                    }
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)
 
         @api.get(
@@ -206,16 +255,23 @@ class KillboardStatsApiEndpoints:
             tags=self.tags,
         )
         def get_top_10_api(request, month, year, entity_type: str, entity_id: int):
-            top_10 = api_helper.get_top_10(
-                request=request,
-                month=month,
-                year=year,
-                entity_type=entity_type,
-                entity_id=entity_id,
-            )
+            cache_name = f"top_10_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
 
+            if cache_key:
+                top_10 = api_helper.get_top_10(
+                    request=request,
+                    month=month,
+                    year=year,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                )
+
+                output = {"top10": top_10}
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return render(
                 request,
                 "killstats/partials/information/view_top_10.html",
-                {"top10": top_10},
+                output,
             )

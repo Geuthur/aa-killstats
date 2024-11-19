@@ -43,7 +43,13 @@ class KillboardApiEndpoints:
         def get_corporation_halls(
             request, month, year, entity_type: str, entity_id: int
         ):
-            output = api_helper.get_killstats_halls(
-                request, month, year, entity_type, entity_id
-            )
+            cache_name = f"hall_{month}_{year}_{entity_type}_{entity_id}"
+            output, cache_key = api_helper.cache_sytem(request, cache_name, entity_id)
+
+            if cache_key:
+                output = api_helper.get_killstats_halls(
+                    request, month, year, entity_type, entity_id
+                )
+                # Cache the output
+                api_helper.set_cache_key(cache_key, output)
             return JsonResponse(output, safe=False)

@@ -1,3 +1,6 @@
+import hashlib
+
+from django.core.cache import cache
 from django.db.models import Q, Sum
 from eveuniverse.models import EveEntity
 
@@ -8,8 +11,10 @@ from killstats.api.killboard_manager import (
     format_killmail_details,
     killboard_hall,
 )
+from killstats.app_settings import KILLBOARD_API_CACHE_LIFETIME
 from killstats.hooks import get_extension_logger
 from killstats.models.killboard import Killmail
+from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 logger = get_extension_logger(__name__)
 
@@ -21,6 +26,53 @@ KILLMAIL_MAPPING = {
     4: "victim_total_value",
     5: "killmail_date",
 }
+
+
+def set_cache_key(cache_key, output, timeout=KILLBOARD_API_CACHE_LIFETIME):
+    if not cache_key:
+        return False
+
+    logger.debug("Cache Set: %s", cache_key)
+    cache.set(
+        key=cache_key,
+        value=output,
+        timeout=timeout,
+    )
+    return True
+
+
+def cache_sytem(request, cache_name, entity_id) -> tuple:
+    cache_id = get_unique_id(request, entity_id)
+
+    cache_key = f"{cache_name}_{cache_id}"
+    output = cache.get(cache_key)
+
+    if output is not None:
+        logger.debug("Cache hit: %s", cache_key)
+        return output, None
+    return None, cache_key
+
+
+def get_unique_id(request, entity_id) -> str:
+    if entity_id != 0:
+        return entity_id
+
+    corp = get_corporations(request)
+    ally = get_alliances(request)
+    corp_ids = CorporationsAudit.objects.filter(
+        corporation__corporation_id__in=corp
+    ).values_list("corporation__corporation_id", flat=True)
+    ally_ids = AlliancesAudit.objects.filter(
+        alliance__alliance_id__in=ally
+    ).values_list("alliance__alliance_id", flat=True)
+    entities = list(corp_ids) + list(ally_ids)
+
+    # Combine all IDs into a single string
+    combined_ids = "_".join(map(str, sorted(entities)))
+
+    # Create a unique ID from the combined IDs
+    unique_id = hashlib.md5(combined_ids.encode()).hexdigest()
+    return unique_id
 
 
 def get_entities(request, entity_type: str, entity_id: int):
