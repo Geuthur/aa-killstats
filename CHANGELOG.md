@@ -1,5 +1,24 @@
 # Changelog
 
+## \[IN DEVELOPMENT\] - 2024-xx-xx
+
+### Added
+
+- Top 10 Information Sheet
+- Explanation MD
+- Cache System (10 min) default, can be change with `KILLBOARD_API_CACHE_LIFETIME`
+
+### Changed
+
+- API Adressing now only have 1 endpoint for each type
+- Top Kill & Top Loss linked to killmail instead of character page
+
+### Fixed
+
+- Long loading time for Dashboard
+- Wrong Top Ship Killcount (counted for each ship in one killmail)
+- Hall of Fame not showing on Alliance Overview
+
 ## \[0.5.0\] - 2024-10-14
 
 > \[!IMPORTANT\]
