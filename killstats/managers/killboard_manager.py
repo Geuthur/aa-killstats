@@ -7,8 +7,6 @@ from typing import Any
 from django.db import models, transaction
 from eveuniverse.models import EveEntity, EveType
 
-from killstats.decorators import log_timing
-
 # AA Voices of War
 from killstats.hooks import get_extension_logger
 from killstats.managers.killmail_core import KillmailManager
@@ -17,7 +15,6 @@ logger = get_extension_logger(__name__)
 
 
 class KillmailQueryCore(models.QuerySet):
-    @log_timing(logger)
     def filter_entities(self, entities):
         """Filter Kills and Losses from Entities List (Corporations or Alliances)."""
         # pylint: disable=import-outside-toplevel
@@ -45,7 +42,6 @@ class KillmailQueryCore(models.QuerySet):
 
         return self.filter(killmail_id__in=combined_kms_ids)
 
-    @log_timing(logger)
     def filter_entities_kills(self, entities):
         """Filter Kills from Entities List (Corporations or Alliances)."""
         # pylint: disable=import-outside-toplevel
@@ -68,7 +64,6 @@ class KillmailQueryCore(models.QuerySet):
 
         return self.filter(killmail_id__in=kms)
 
-    @log_timing(logger)
     def filter_entities_losses(self, entities):
         """Filter Losses from Entities List (Corporations or Alliances)."""
         kms = []
@@ -114,7 +109,6 @@ class KillmailQueryMining(KillmailQueryCore):
 
 
 class KillmailQueryStats(KillmailQueryMining):
-    @log_timing(logger)
     def _get_top_ship(self, entities, km_ids):
         """Get the top ship for the given entities."""
         # pylint: disable=import-outside-toplevel
@@ -139,7 +133,6 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_ship
         return None
 
-    @log_timing(logger)
     def _get_worst_ship(self, entities, km_ids):
         """Get the worst ship for the given entities."""
         losses = self.filter(
@@ -166,7 +159,6 @@ class KillmailQueryStats(KillmailQueryMining):
 
         return None
 
-    @log_timing(logger)
     def _get_top_victim(self, entities, km_ids):
         """Get the top victim for the given entities."""
         victim = (
@@ -187,7 +179,6 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_victim
         return None
 
-    @log_timing(logger)
     def _get_top_killer(self, entities, km_ids):
         """Get the top killer for the given entities."""
         # pylint: disable=import-outside-toplevel
@@ -211,7 +202,6 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_attacker
         return None
 
-    @log_timing(logger)
     def _get_highest_value(self, km_ids):
         """Get the highest loss for the given entities."""
 
