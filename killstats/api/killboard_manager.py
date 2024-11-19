@@ -170,7 +170,7 @@ def format_killmail(killmail: Killmail, title):
         "date": killmail.killmail_date.isoformat(),
         "title": title,
         "portrait": f"https://images.evetech.net/types/{killmail.victim_ship.id}/icon?size=256",
-        "zkb_link": f"https://zkillboard.com/character/{killmail.victim.id}/",
+        "zkb_link": f"https://zkillboard.com/kill/{killmail.killmail_id}/",
     }
 
 
