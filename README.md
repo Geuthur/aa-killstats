@@ -94,9 +94,11 @@ With the Following IDs you can set up the permissions for the KILLSTATS
 
 The Following Settings can be setting up in the `local.py`
 
-- KILLSTATS_APP_NAME:          `"YOURNAME"`     - Set the name of the APP
-
-- KILLSTATS_LOGGER_USE:        `True / False`   - Set to use own Logger File
+| Setting                        | Configuration(default)     | Description                                  |
+| :----------------------------- | :------------------------- | :------------------------------------------- |
+| `KILLSTATS_APP_NAME`           | `"YOURNAME"` ("Killstats") | Set the name of the APP.                     |
+| `KILLSTATS_LOGGER_USE`         | `True / False` (False)     | Set to use own Logger File.                  |
+| `KILLBOARD_API_CACHE_LIFETIME` | `5` (10)                   | Set Cache Lifetime for Killstats in Minutes. |
 
 If you set up KILLSTATS_LOGGER_USE to `True` you need to add the following code below:
 
