@@ -159,6 +159,32 @@ class KillstatsAuditTest(TestCase):
         self.assertEqual(response.url, reverse("killstats:index"))
         mock_messages.error.assert_called_once()
 
+    @patch(MODULE_PATH + ".messages")
+    @patch(MODULE_PATH + ".EveCharacter.objects.get_character_by_id")
+    def test_npc_corporation(self, mock_char, mock_messages):
+        self.client.force_login(self.user)
+        token = Mock(spec=Token)
+        token.character_id = self.character_ownership.character.character_id
+        token.corporation_id = 999_999
+
+        mock_char.return_value = self.character_ownership.character
+        mock_char.return_value.corporation_id = 999_999
+
+        request = self.factory.get(reverse("killstats:add_corp"))
+        request.user = self.user
+        request.token = token
+
+        middleware = SessionMiddleware(Mock())
+        middleware.process_request(request)
+        # given
+        orig_view = add_corp.__wrapped__.__wrapped__
+        # when
+        response = orig_view(request, token)
+        # then
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertTrue(mock_messages.error.called)
+
 
 class KillstatsAllianceAuditTest(TestCase):
     @classmethod
@@ -219,6 +245,31 @@ class KillstatsAllianceAuditTest(TestCase):
         request = self.factory.get(reverse("killstats:add_alliance"))
         request.user = self.user
         request.token = token
+        middleware = SessionMiddleware(Mock())
+        middleware.process_request(request)
+        # given
+        orig_view = add_alliance.__wrapped__.__wrapped__
+        # when
+        response = orig_view(request, token)
+        # then
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertTrue(mock_messages.error.called)
+
+    @patch(MODULE_PATH + ".messages")
+    @patch(MODULE_PATH + ".EveCharacter.objects.get_character_by_id")
+    def test_no_alliance(self, mock_char, mock_messages):
+        self.client.force_login(self.user)
+        token = Mock(spec=Token)
+        token.character_id = self.character_ownership.character.character_id
+
+        mock_char.return_value = self.character_ownership.character
+        mock_char.return_value.alliance_id = None
+
+        request = self.factory.get(reverse("killstats:add_alliance"))
+        request.user = self.user
+        request.token = token
+
         middleware = SessionMiddleware(Mock())
         middleware.process_request(request)
         # given
