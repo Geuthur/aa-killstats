@@ -30,7 +30,7 @@ def get_corporations(request):
 
     # Get all corporations and ensure they are not NPC corporations
     corporations = (
-        chars.filter(corporation_id__gt=10000000)
+        chars.filter(corporation_id__gt=10_000_000)
         .values_list("corporation_id", flat=True)
         .distinct()
     )
