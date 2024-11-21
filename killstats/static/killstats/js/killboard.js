@@ -369,7 +369,11 @@ function updateData(selectedMonth, selectedYear) {
 
     // Load stats in the predefined order
     statsOrder.forEach(function (stat) {
-        loadStats(stat.url, stat.container);
+        // Create a container for each stat if it doesn't exist
+        if ($('#' + stat.id).length === 0) {
+            stat.container.append('<div id="' + stat.id + '" class="col"></div>');
+        }
+        loadStats(stat.url, $('#' + stat.id));
     });
     $('#top10').html('<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalViewTop10KillerContainer" data-ajax_url="' + urlTop10 + '">Top 10</button>');
 }
