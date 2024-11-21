@@ -1,9 +1,9 @@
 """App Views"""
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
 
 # Django
-from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, render
 from esi.decorators import token_required
 
@@ -16,7 +16,7 @@ from allianceauth.eveonline.models import (
 # AA Killstats
 from killstats import __title__
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
-from killstats.tasks import killmail_update_corp
+from killstats.tasks import killmail_update_ally, killmail_update_corp
 
 from .hooks import get_extension_logger
 
@@ -39,6 +39,12 @@ def killboard_index(request, corporation_pk=0, alliance_pk=0):
 def add_corp(request, token):
     char = EveCharacter.objects.get_character_by_id(token.character_id)
     if char:
+        # Check if it is a NPC Corporation
+        if char.corporation_id < 10_000_000:
+            msg = "Cannot add NPC Corporation to Killboard"
+            messages.error(request, msg)
+            return redirect("killstats:index")
+
         corp, _ = EveCorporationInfo.objects.get_or_create(
             corporation_id=char.corporation_id,
             defaults={
@@ -68,6 +74,10 @@ def add_corp(request, token):
 def add_alliance(request, token):
     char = EveCharacter.objects.get_character_by_id(token.character_id)
     if char:
+        if char.alliance_id is None:
+            msg = "Character is not in an Alliance"
+            messages.error(request, msg)
+            return redirect("killstats:index")
         try:
             alliance = EveAllianceInfo.objects.get(alliance_id=char.alliance_id)
         except EveAllianceInfo.DoesNotExist:
@@ -80,8 +90,7 @@ def add_alliance(request, token):
                 alliance=alliance, owner=char
             )
             if created:
-                pass
-                # killmail_update_ally.apply_async(args=[char.alliance_id], priority=6)
+                killmail_update_ally.apply_async(args=[char.alliance_id], priority=6)
             msg = f"{char.alliance_name} successfully added/updated to Killboard"
             messages.info(request, msg)
             return redirect("killstats:index")
