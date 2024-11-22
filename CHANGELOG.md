@@ -12,6 +12,8 @@
 
 - All Stats Types have now own Endpoint
 - Top Kill & Top Loss linked to killmail instead of character page
+- Database changed killmail_id, weapon_item_id, victim_alliance_id, victim_corporation_id, victim_region_id, victim_solar_system_id from PositiveBigIntegerField to PositiveIntegerField
+- Database changed killmail_date from Datetime(6) to Datetime(0)
 
 ### Fixed
 
