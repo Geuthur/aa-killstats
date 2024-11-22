@@ -14,12 +14,12 @@ logger = get_extension_logger(__name__)
 
 
 class Killmail(models.Model):
-    killmail_id = models.PositiveBigIntegerField(primary_key=True)
-    killmail_date = models.DateTimeField(null=True, blank=True)
+    killmail_id = models.PositiveIntegerField(primary_key=True)
+    killmail_date = models.DateTimeField(null=True, blank=True, max_length=0)
     victim = models.ForeignKey(EveEntity, on_delete=models.CASCADE, null=True)
     victim_ship = models.ForeignKey(EveType, on_delete=models.CASCADE, null=True)
-    victim_corporation_id = models.PositiveBigIntegerField()
-    victim_alliance_id = models.PositiveBigIntegerField(null=True, blank=True)
+    victim_corporation_id = models.PositiveIntegerField()
+    victim_alliance_id = models.PositiveIntegerField(null=True, blank=True)
     hash = models.CharField(max_length=255, unique=True)
     # Value Infos
     victim_total_value = models.PositiveBigIntegerField(null=True, blank=True)
@@ -27,8 +27,8 @@ class Killmail(models.Model):
     victim_destroyed_value = models.PositiveBigIntegerField(null=True, blank=True)
     victim_dropped_value = models.PositiveBigIntegerField(null=True, blank=True)
     # Location Infos
-    victim_region_id = models.PositiveBigIntegerField(null=True, blank=True)
-    victim_solar_system_id = models.PositiveBigIntegerField(null=True, blank=True)
+    victim_region_id = models.PositiveIntegerField(null=True, blank=True)
+    victim_solar_system_id = models.PositiveIntegerField(null=True, blank=True)
     victim_position_x = models.FloatField(null=True, blank=True)
     victim_position_y = models.FloatField(null=True, blank=True)
     victim_position_z = models.FloatField(null=True, blank=True)
@@ -162,7 +162,7 @@ class Attacker(models.Model):
     )
     damage_done = models.IntegerField(null=True, blank=True)
     final_blow = models.BooleanField(null=True, blank=True)
-    weapon_type_id = models.PositiveBigIntegerField(null=True, blank=True)
+    weapon_type_id = models.PositiveIntegerField(null=True, blank=True)
     security_status = models.FloatField(null=True, blank=True)
 
     def get_or_unknown_ship_name(self):

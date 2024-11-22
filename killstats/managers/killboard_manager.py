@@ -7,8 +7,6 @@ from typing import Any
 from django.db import models, transaction
 from eveuniverse.models import EveEntity, EveType
 
-from killstats.decorators import log_timing
-
 # AA Voices of War
 from killstats.hooks import get_extension_logger
 from killstats.managers.killmail_core import KillmailManager
@@ -22,34 +20,27 @@ class KillmailQueryCore(models.QuerySet):
         # pylint: disable=import-outside-toplevel
         from killstats.models.killboard import Attacker
 
-        kms = []
-
         # Get all Killmail IDs
         km_ids = self.values_list("killmail_id", flat=True)
 
-        # Get all Attackers from Entities
-        kms_data = Attacker.objects.filter(
+        # Get all Attackers and Victims from Entities
+        attacker_kms_ids = Attacker.objects.filter(
             models.Q(corporation_id__in=entities)
             | models.Q(alliance_id__in=entities)
             | models.Q(character_id__in=entities),
             killmail_id__in=km_ids,
-        ).values_list("killmail_id", "corporation_id", "alliance_id")
+        ).values_list("killmail_id", flat=True)
 
-        for killmail_id, corporation_id, alliance_id in kms_data:
-            if corporation_id in entities or alliance_id in entities:
-                kms.append(killmail_id)
-
-        # Include Victim Kills
         victim_kms_ids = self.filter(
             models.Q(victim_id__in=entities)
             | models.Q(victim_corporation_id__in=entities)
             | models.Q(victim_alliance_id__in=entities)
         ).values_list("killmail_id", flat=True)
 
-        for killmail_id in victim_kms_ids:
-            kms.append(killmail_id)
+        # Combine and deduplicate Killmail IDs
+        combined_kms_ids = set(attacker_kms_ids).union(victim_kms_ids)
 
-        return self.filter(killmail_id__in=kms)
+        return self.filter(killmail_id__in=combined_kms_ids)
 
     def filter_entities_kills(self, entities):
         """Filter Kills from Entities List (Corporations or Alliances)."""
@@ -66,11 +57,10 @@ class KillmailQueryCore(models.QuerySet):
             | models.Q(alliance_id__in=entities)
             | models.Q(character_id__in=entities),
             killmail_id__in=km_ids,
-        ).values_list("killmail_id", "corporation_id", "alliance_id")
+        ).values_list("killmail_id", flat=True)
 
-        for killmail_id, corporation_id, alliance_id in kms_data:
-            if corporation_id in entities or alliance_id in entities:
-                kms.append(killmail_id)
+        for killmail_id in kms_data:
+            kms.append(killmail_id)
 
         return self.filter(killmail_id__in=kms)
 
@@ -82,10 +72,10 @@ class KillmailQueryCore(models.QuerySet):
             models.Q(victim_id__in=entities)
             | models.Q(victim_corporation_id__in=entities)
             | models.Q(victim_alliance_id__in=entities)
-        )
+        ).values_list("killmail_id", flat=True)
 
-        for killmail in victim_kms:
-            kms.append(killmail.killmail_id)
+        for killmail_id in victim_kms:
+            kms.append(killmail_id)
 
         return self.filter(killmail_id__in=kms)
 
@@ -119,7 +109,6 @@ class KillmailQueryMining(KillmailQueryCore):
 
 
 class KillmailQueryStats(KillmailQueryMining):
-    @log_timing(logger)
     def _get_top_ship(self, entities, km_ids):
         """Get the top ship for the given entities."""
         # pylint: disable=import-outside-toplevel
@@ -133,17 +122,17 @@ class KillmailQueryStats(KillmailQueryMining):
                 killmail_id__in=km_ids,
             )
             .values("ship__id")
-            .annotate(count=models.Count("ship__id"))
-            .order_by("-count")
-        ).first()
+            .annotate(unique_killmails=models.Count("killmail_id", distinct=True))
+            .order_by("-unique_killmails")
+            .first()
+        )
 
         if topship:
             top_ship = EveType.objects.get(id=topship["ship__id"])
-            top_ship.ship_count = topship["count"]
+            top_ship.ship_count = topship["unique_killmails"]
             return top_ship
         return None
 
-    @log_timing(logger)
     def _get_worst_ship(self, entities, km_ids):
         """Get the worst ship for the given entities."""
         losses = self.filter(
@@ -170,7 +159,6 @@ class KillmailQueryStats(KillmailQueryMining):
 
         return None
 
-    @log_timing(logger)
     def _get_top_victim(self, entities, km_ids):
         """Get the top victim for the given entities."""
         victim = (
@@ -191,7 +179,6 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_victim
         return None
 
-    @log_timing(logger)
     def _get_top_killer(self, entities, km_ids):
         """Get the top killer for the given entities."""
         # pylint: disable=import-outside-toplevel
@@ -215,72 +202,75 @@ class KillmailQueryStats(KillmailQueryMining):
             return top_attacker
         return None
 
-    @log_timing(logger)
-    def get_killboard_stats(self, entities, date):
-        """Get all killboard stats for the given entities."""
-        stats = {}
+    def _get_highest_value(self, km_ids):
+        """Get the highest loss for the given entities."""
 
-        month, year = date.month, date.year
+        highest_value = (
+            self.filter(killmail_id__in=km_ids)
+            .order_by("-victim_total_value", "-victim_fitted_value")
+            .first()
+        )
+        return highest_value
 
-        # Common queries
-        losses = self.filter_entities_losses(entities)
+    def get_top_killer_stats(self, entities):
+        """Get top killer for the given entities."""
         kills = self.filter_entities_kills(entities)
+        km_ids = kills.values_list("killmail_id", flat=True)
+        return self._get_top_killer(entities, km_ids)
 
-        # Get the highest loss
-        highest_loss = (
-            losses.filter(killmail_date__year=year, killmail_date__month=month)
-            .annotate(total_value=models.F("victim_total_value"))
-            .order_by("-total_value", "-victim_fitted_value")
-            .first()
+    def get_top_victim_stats(self, entities):
+        """Get top victim for the given entities."""
+        losses = self.filter_entities_losses(entities)
+        km_ids = losses.values_list("killmail_id", flat=True)
+
+        return self._get_top_victim(entities, km_ids)
+
+    def get_top_ship_stats(self, entities):
+        """Get top ship for the given entities."""
+        kills = self.filter_entities_kills(entities)
+        km_ids = kills.values_list("killmail_id", flat=True)
+
+        return self._get_top_ship(entities, km_ids)
+
+    def get_worst_ship_stats(self, entities):
+        """Get worst ship for the given entities."""
+        losses = self.filter_entities_losses(entities)
+        km_ids = losses.values_list("killmail_id", flat=True)
+
+        return self._get_worst_ship(entities, km_ids)
+
+    def get_highest_kill_stats(self, entities):
+        """Get highest kill for the given entities."""
+        kills = self.filter_entities_kills(entities)
+        km_ids = kills.values_list("killmail_id", flat=True)
+
+        return self._get_highest_value(km_ids)
+
+    def get_highest_loss_stats(self, entities):
+        """Get highest loss for the given entities."""
+        losses = self.filter_entities_losses(entities)
+        km_ids = losses.values_list("killmail_id", flat=True)
+
+        return self._get_highest_value(km_ids)
+
+    def get_top_10_killers(self, entities, km_ids):
+        """Get top 10 characters for the given entities."""
+        # pylint: disable=import-outside-toplevel
+        from killstats.models.killboard import Attacker
+
+        top_characters = (
+            Attacker.objects.filter(
+                models.Q(corporation_id__in=entities)
+                | models.Q(alliance_id__in=entities)
+                | models.Q(character_id__in=entities),
+                killmail_id__in=km_ids,
+            )
+            .values("character_id")
+            .annotate(kill_count=models.Count("character_id"))
+            .order_by("-kill_count", "character__name")[:10]
         )
-        stats["highest_loss"] = highest_loss
 
-        # Get the highest kill
-        highest_kill = (
-            kills.filter(killmail_date__year=year, killmail_date__month=month)
-            .annotate(total_value=models.F("victim_total_value"))
-            .order_by("-total_value", "-victim_fitted_value")
-            .first()
-        )
-        stats["highest_kill"] = highest_kill
-
-        # Get Killmail IDs for the given year
-        km_ids_year = kills.filter(killmail_date__year=year).values_list(
-            "killmail_id", flat=True
-        )
-        # Get Killmail IDs for the given month
-        km_ids = km_ids_year.filter(
-            killmail_date__year=year,
-            killmail_date__month=month,
-        ).values_list("killmail_id", flat=True)
-        # Get Loss Killmail IDs for the given year
-        km_ids_loss_year = losses.filter(killmail_date__year=year).values_list(
-            "killmail_id", flat=True
-        )
-        # Get Loss Killmail IDs for the given month
-        km_ids_loss = km_ids_loss_year.filter(
-            killmail_date__year=year,
-            killmail_date__month=month,
-        ).values_list("killmail_id", flat=True)
-
-        # Get the worst ship
-        stats["worst_ship"] = self._get_worst_ship(entities, km_ids_loss)
-
-        stats["top_ship"] = self._get_top_ship(entities, km_ids)
-
-        # Get the top killer Month
-        stats["top_killer"] = self._get_top_killer(entities, km_ids)
-
-        # Get the top killer Year
-        stats["alltime_killer"] = self._get_top_killer(entities, km_ids_year)
-
-        # Get the top victim Month
-        stats["top_loss"] = self._get_top_victim(entities, km_ids_loss)
-
-        # Get the top victim Year
-        stats["alltime_loss"] = self._get_top_victim(entities, km_ids_loss_year)
-
-        return stats
+        return top_characters
 
 
 class KillmailQuerySet(KillmailQueryStats):

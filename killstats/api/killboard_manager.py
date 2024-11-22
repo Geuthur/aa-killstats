@@ -44,12 +44,9 @@ def _get_character_details_attacker(killmail: Killmail, mains, entities, unique_
     )
 
     for attacker in attackers:
-        if mains:
-            character_id, character_name = process_attacker(
-                attacker, mains, unique_killer
-            )
-            if character_id is not None:
-                return character_id, character_name
+        character_id, character_name = process_attacker(attacker, mains, unique_killer)
+        if character_id is not None:
+            return character_id, character_name
 
     return None, None
 
@@ -137,80 +134,6 @@ def _hall_killmail(
     return stats
 
 
-def killboard_dashboard(
-    killmail_year: Killmail,
-    date,
-    entities,
-):
-    stats = []
-
-    statsdata = killmail_year.get_killboard_stats(entities, date)
-
-    if statsdata["highest_loss"]:
-        stats.append(format_killmail(statsdata["highest_loss"], title="Top Loss:"))
-    if statsdata["worst_ship"]:
-        stats.append(
-            format_killmail_details(
-                statsdata["worst_ship"],
-                loss=True,
-                title="Worst Ship:",
-                count=statsdata["worst_ship"].ship_count,
-                stats_type="ship",
-            )
-        )
-    if statsdata["top_loss"]:
-        stats.append(
-            format_killmail_details(
-                statsdata["top_loss"],
-                loss=True,
-                title="Top Victim:",
-                count=statsdata["top_loss"].kill_count,
-                stats_type="character",
-            )
-        )
-    if statsdata["alltime_loss"]:
-        stats.append(
-            format_killmail_details(
-                statsdata["alltime_loss"],
-                loss=True,
-                title="Alltime Victim:",
-                count=statsdata["alltime_loss"].kill_count,
-                stats_type="character",
-            )
-        )
-    if statsdata["highest_kill"]:
-        stats.append(format_killmail(statsdata["highest_kill"], title="Top Kill:"))
-    if statsdata["top_ship"]:
-        stats.append(
-            format_killmail_details(
-                statsdata["top_ship"],
-                title="Top Ship:",
-                count=statsdata["top_ship"].ship_count,
-                stats_type="ship",
-            )
-        )
-    if statsdata["top_killer"]:
-        stats.append(
-            format_killmail_details(
-                statsdata["top_killer"],
-                title="Top Killer:",
-                count=statsdata["top_killer"].kill_count,
-                stats_type="character",
-            )
-        )
-    if statsdata["alltime_killer"]:
-        stats.append(
-            format_killmail_details(
-                statsdata["alltime_killer"],
-                title="Alltime Killer:",
-                count=statsdata["alltime_killer"].kill_count,
-                stats_type="character",
-            )
-        )
-
-    return stats
-
-
 # pylint: disable=too-many-locals
 def killboard_hall(killmail_month: Killmail, entities, mains):
     # Ensure that the killmails are sorted by total value
@@ -247,7 +170,7 @@ def format_killmail(killmail: Killmail, title):
         "date": killmail.killmail_date.isoformat(),
         "title": title,
         "portrait": f"https://images.evetech.net/types/{killmail.victim_ship.id}/icon?size=256",
-        "zkb_link": f"https://zkillboard.com/character/{killmail.victim.id}/",
+        "zkb_link": f"https://zkillboard.com/kill/{killmail.killmail_id}/",
     }
 
 

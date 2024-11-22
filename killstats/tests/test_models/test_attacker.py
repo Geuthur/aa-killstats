@@ -30,7 +30,7 @@ class TestAttackertModel(TestCase):
         self.attacker.character = None
         self.assertEqual(self.attacker.evaluate_attacker(), (1000125, "CONCORD"))
         self.attacker.corporation = None
-        self.attacker.alliance = EveEntity.objects.get(id=3001)
-        self.assertEqual(self.attacker.evaluate_attacker(), (3001, "Voices of War"))
+        self.attacker.alliance = EveEntity.objects.get(id=30000001)
+        self.assertEqual(self.attacker.evaluate_attacker(), (30000001, "Voices of War"))
         self.attacker.alliance = None
         self.assertEqual(self.attacker.evaluate_attacker(), (0, "Unknown"))

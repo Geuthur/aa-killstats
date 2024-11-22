@@ -28,10 +28,11 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 
 - Graphical Overview
 - Corporation & Alliance Overview
-- Kills from alts count to Main Character
+- Kills/Losses
+- Main Character and Alts combined ([explanation](/killstats/docs/explanation.md))
 - Hall of Fame, Hall of Shame
 - Killstats like Top Kill, Top Killer, Top Loss, Alltime Killer, etc.
-- Kills/Losses
+- Top 10 list for each Month
 
 ## Upcoming<a name="upcoming"></a>
 
@@ -93,9 +94,11 @@ With the Following IDs you can set up the permissions for the KILLSTATS
 
 The Following Settings can be setting up in the `local.py`
 
-- KILLSTATS_APP_NAME:          `"YOURNAME"`     - Set the name of the APP
-
-- KILLSTATS_LOGGER_USE:        `True / False`   - Set to use own Logger File
+| Setting                        | Configuration(default)     | Description                                  |
+| :----------------------------- | :------------------------- | :------------------------------------------- |
+| `KILLSTATS_APP_NAME`           | `"YOURNAME"` ("Killstats") | Set the name of the APP.                     |
+| `KILLSTATS_LOGGER_USE`         | `True / False` (False)     | Set to use own Logger File.                  |
+| `KILLBOARD_API_CACHE_LIFETIME` | `5` (10)                   | Set Cache Lifetime for Killstats in Minutes. |
 
 If you set up KILLSTATS_LOGGER_USE to `True` you need to add the following code below:
 
@@ -124,7 +127,9 @@ LOGGING["loggers"].update(LOGGING_KILLSTATS["loggers"])
 
 ## Highlights<a name="highlights"></a>
 
-![Screenshot 2024-06-26 144010](https://github.com/Geuthur/aa-killstats/assets/761682/edc23d4d-719a-4519-b96a-ffbb950d28ca)
+![Stats](/killstats/docs/img/killstats1.png)
+![Hall](/killstats/docs/img/killstats2.png)
+![Kills](/killstats/docs/img/killstats3.png)
 
 > \[!NOTE\]
 > Contributing

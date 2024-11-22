@@ -23,27 +23,27 @@ class TestKillboardtModel(TestCase):
             killmail_date=timezone.now(),
             victim=EveEntity.objects.get(id=1001),
             victim_ship=EveType.objects.get(id=670),
-            victim_corporation_id=2001,
-            victim_alliance_id=3001,
+            victim_corporation_id=20000001,
+            victim_alliance_id=30000001,
             hash="hash",
             victim_total_value=1000,
             victim_fitted_value=500,
             victim_destroyed_value=500,
             victim_dropped_value=500,
             victim_region_id=1001,
-            victim_solar_system_id=2001,
+            victim_solar_system_id=20000001,
             victim_position_x=1.0,
             victim_position_y=1.0,
             victim_position_z=1.0,
         )
 
     def test_is_corp(self):
-        self.assertTrue(self.killmail.is_corp([2001]))
-        self.assertFalse(self.killmail2.is_corp([3001]))
+        self.assertTrue(self.killmail.is_corp([20000001]))
+        self.assertFalse(self.killmail2.is_corp([30000001]))
 
     def test_is_ally(self):
-        self.assertFalse(self.killmail.is_alliance([2001]))
-        self.assertTrue(self.killmail2.is_alliance([3001]))
+        self.assertFalse(self.killmail.is_alliance([20000001]))
+        self.assertTrue(self.killmail2.is_alliance([30000001]))
 
     def test_is_structure(self):
         self.killmail.victim_ship.eve_group.eve_category_id = 65
@@ -106,11 +106,11 @@ class TestKillboardtModel(TestCase):
         self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
 
         self.killmail.victim = None
-        expected_url = 2001
+        expected_url = 20000001
         self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
 
         self.killmail.victim_corporation_id = None
-        expected_url = 3001
+        expected_url = 30000001
         self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
 
         self.killmail.victim_alliance_id = None
@@ -122,11 +122,11 @@ class TestKillboardtModel(TestCase):
         self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
 
         self.killmail.victim.category = "corporation"
-        expected_url = "https://zkillboard.com/corporation/2001/"
+        expected_url = "https://zkillboard.com/corporation/20000001/"
         self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
 
         self.killmail.victim.category = "alliance"
-        expected_url = "https://zkillboard.com/alliance/3001/"
+        expected_url = "https://zkillboard.com/alliance/30000001/"
         self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
 
     def test_evaluate_portrait(self):
@@ -134,11 +134,11 @@ class TestKillboardtModel(TestCase):
         self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
 
         self.killmail.victim.category = "corporation"
-        expected_url = "https://images.evetech.net/corporations/2001/logo?size=256"
+        expected_url = "https://images.evetech.net/corporations/20000001/logo?size=256"
         self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
 
         self.killmail.victim.category = "alliance"
-        expected_url = "https://images.evetech.net/alliances/3001/logo?size=256"
+        expected_url = "https://images.evetech.net/alliances/30000001/logo?size=256"
         self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
 
     def test_get_ship_image_url(self):

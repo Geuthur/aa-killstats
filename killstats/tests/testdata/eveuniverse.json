@@ -111,17 +111,17 @@
             "category": "character"
         },
         {
-            "id": 2001,
+            "id": 20000001,
             "name": "Hell RiderZ",
             "category": "corporation"
         },
         {
-            "id": 2002,
+            "id": 20000002,
             "name": "Eulenclub",
             "category": "corporation"
         },
         {
-            "id": 2003,
+            "id": 20000003,
             "name": "Schweinshausen",
             "category": "corporation"
         },
@@ -131,17 +131,17 @@
             "category": "corporation"
         },
         {
-            "id": 3001,
+            "id": 30000001,
             "name": "Voices of War",
             "category": "alliance"
         },
         {
-            "id": 3002,
+            "id": 30000002,
             "name": "Voices of War Inc.",
             "category": "alliance"
         },
         {
-            "id": 3003,
+            "id": 30000003,
             "name": "CCP Industries",
             "category": "alliance"
         }

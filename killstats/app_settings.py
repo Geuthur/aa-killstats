@@ -30,5 +30,8 @@ KILLBOARD_ZKB_CACHE_LIFETIME = clean_setting(
     "KILLBOARD_ZKB_CACHE_LIFETIME", 3_600 * 24 * 1
 )
 
+# Max lifetime of API Cache (10 min)
+KILLBOARD_API_CACHE_LIFETIME = clean_setting("KILLBOARD_API_CACHE_LIFETIME", 10)
+
 # Tasks hard timeout
 KILLBOARD_TASKS_TIMEOUT = clean_setting("KILLBOARD_TASKS_TIMEOUT", 1_800)

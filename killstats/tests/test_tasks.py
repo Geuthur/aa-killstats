@@ -54,7 +54,7 @@ class TestTasks(TestCase):
     @patch(MODULE_PATH + ".logger")
     def test_killmail_update_corp(self, mock_logger, mock_get_killmail_data_bulk):
         # given
-        corp = CorporationsAudit.objects.get(corporation__corporation_id=2001)
+        corp = CorporationsAudit.objects.get(corporation__corporation_id=20000001)
 
         mock_get_killmail_data_bulk.return_value = _load_get_bulk_data()
         # when
@@ -70,7 +70,7 @@ class TestTasks(TestCase):
     @patch(MODULE_PATH + ".logger")
     def test_killmail_update_ally(self, mock_logger, mock_get_killmail_data_bulk):
         # given
-        ally = AlliancesAudit.objects.get(alliance__alliance_id=3001)
+        ally = AlliancesAudit.objects.get(alliance__alliance_id=30000001)
 
         mock_get_killmail_data_bulk.return_value = _load_get_bulk_data()
         # when
@@ -88,7 +88,7 @@ class TestTasks(TestCase):
         self, mock_logger, mock_get_killmail_data_bulk
     ):
         # given
-        corp = CorporationsAudit.objects.get(corporation__corporation_id=2001)
+        corp = CorporationsAudit.objects.get(corporation__corporation_id=20000001)
 
         mock_get_killmail_data_bulk.return_value = None
         # when
@@ -102,7 +102,7 @@ class TestTasks(TestCase):
         self, mock_logger, mock_get_killmail_data_bulk
     ):
         # given
-        ally = AlliancesAudit.objects.get(alliance__alliance_id=3001)
+        ally = AlliancesAudit.objects.get(alliance__alliance_id=30000001)
 
         mock_get_killmail_data_bulk.return_value = None
         # when
@@ -153,7 +153,7 @@ class TestTasks(TestCase):
         self, mock_logger, mock_existing, mock_get_killmail_data_bulk
     ):
         # given
-        corp = CorporationsAudit.objects.get(corporation__corporation_id=2001)
+        corp = CorporationsAudit.objects.get(corporation__corporation_id=20000001)
         existing_kms = [119324952, 119324561, 119271433]
         mock_get_killmail_data_bulk.return_value = _load_get_bulk_data()
         mock_existing.return_value.values_list.return_value = existing_kms
@@ -169,7 +169,7 @@ class TestTasks(TestCase):
         self, mock_logger, mock_existing, mock_get_killmail_data_bulk
     ):
         # given
-        ally = AlliancesAudit.objects.get(alliance__alliance_id=3001)
+        ally = AlliancesAudit.objects.get(alliance__alliance_id=30000001)
         existing_kms = [119324952, 119324561, 119271433]
         mock_get_killmail_data_bulk.return_value = _load_get_bulk_data()
         mock_existing.return_value.values_list.return_value = existing_kms

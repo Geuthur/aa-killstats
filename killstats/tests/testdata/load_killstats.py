@@ -40,12 +40,12 @@ def load_corporationaudit():
     CorporationsAudit.objects.all().delete()
     CorporationsAudit.objects.update_or_create(
         id=1,
-        corporation=EveCorporationInfo.objects.get(corporation_id=2001),
+        corporation=EveCorporationInfo.objects.get(corporation_id=20000001),
         owner=EveCharacter.objects.get(character_id=1001),
     )
     CorporationsAudit.objects.update_or_create(
         id=2,
-        corporation=EveCorporationInfo.objects.get(corporation_id=2002),
+        corporation=EveCorporationInfo.objects.get(corporation_id=20000002),
         owner=EveCharacter.objects.get(character_id=1002),
     )
 
@@ -54,12 +54,12 @@ def load_allianceaudit():
     AlliancesAudit.objects.all().delete()
     AlliancesAudit.objects.update_or_create(
         id=1,
-        alliance=EveAllianceInfo.objects.get(alliance_id=3001),
+        alliance=EveAllianceInfo.objects.get(alliance_id=30000001),
         owner=EveCharacter.objects.get(character_id=1001),
     )
     AlliancesAudit.objects.update_or_create(
         id=2,
-        alliance=EveAllianceInfo.objects.get(alliance_id=3002),
+        alliance=EveAllianceInfo.objects.get(alliance_id=30000002),
         owner=EveCharacter.objects.get(character_id=1002),
     )
 

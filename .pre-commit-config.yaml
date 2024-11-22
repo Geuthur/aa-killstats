@@ -294,7 +294,7 @@ repos:
           - tox==4.15.0  # https://github.com/tox-dev/tox/releases/latest
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.22
+    rev: v0.23
     hooks:
       - id: validate-pyproject
         name: Validate pyproject.toml

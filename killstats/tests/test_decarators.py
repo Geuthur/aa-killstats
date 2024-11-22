@@ -5,6 +5,7 @@ from django.test import TestCase
 from app_utils.esi import EsiDailyDowntime
 
 from killstats.decorators import when_esi_is_available
+from killstats.hooks import get_extension_logger
 
 
 class TestDecorators(TestCase):
@@ -47,3 +48,18 @@ class TestDecorators(TestCase):
         result = trigger_esi_deco()
         # then
         self.assertEqual(result, "Teesting Mode.")
+
+    def test_log_timing(self):
+        # given
+        from killstats.decorators import log_timing
+
+        logger = get_extension_logger(__name__)
+
+        @log_timing(logger)
+        def trigger_log_timing():
+            return "Log Timing"
+
+        # when
+        result = trigger_log_timing()
+        # then
+        self.assertEqual(result, "Log Timing")

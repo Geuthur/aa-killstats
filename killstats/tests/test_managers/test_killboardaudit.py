@@ -49,7 +49,7 @@ class KillstatsAuditQuerySetTest(TestCase):
         )
         # when
         expected_result = CorporationsAudit.objects.filter(
-            corporation=EveCorporationInfo.objects.get(corporation_id=2001)
+            corporation=EveCorporationInfo.objects.get(corporation_id=20000001)
         )
         result = CorporationsAudit.objects.visible_to(self.user)
         # then

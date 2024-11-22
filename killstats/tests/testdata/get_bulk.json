@@ -1433,7 +1433,7 @@
                "alliance_id":99011223,
                "character_id":2113491091,
                "corporation_id":98525766,
-               "damage_done":83001,
+               "damage_done":830000001,
                "final_blow":false,
                "security_status":5.0,
                "ship_type_id":72811,
@@ -1921,7 +1921,7 @@
                "final_blow":false,
                "security_status":4.3,
                "ship_type_id":589,
-               "weapon_type_id":3001,
+               "weapon_type_id":30000001,
                "faction_id": null
             }
          ],

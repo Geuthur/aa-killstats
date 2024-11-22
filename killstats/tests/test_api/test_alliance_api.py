@@ -2,23 +2,25 @@ from unittest.mock import patch
 
 from ninja import NinjaAPI
 
+from django.core.cache import cache
 from django.test import TestCase
 
 from allianceauth.eveonline.models import EveAllianceInfo
 from app_utils.testing import create_user_from_evecharacter
 
-from killstats.api.killboard import KillboardAllianceApiEndpoints
+from killstats.api.killstats import KillboardApiEndpoints
 from killstats.tests.test_api import _alliance_api
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_killstats import load_killstats_all
 
 
-class ManageApiAllianceEndpointsTest(TestCase):
+class Test_AllianceEndpoints(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         load_allianceauth()
         load_killstats_all()
+        cache.clear()
 
         cls.user, _ = create_user_from_evecharacter(
             1001,
@@ -32,32 +34,11 @@ class ManageApiAllianceEndpointsTest(TestCase):
             ],
         )
         cls.api = NinjaAPI()
-        cls.manage_api_endpoints = KillboardAllianceApiEndpoints(api=cls.api)
+        cls.manage_api_endpoints = KillboardApiEndpoints(api=cls.api)
 
-    def test_killstats_killboard_api_no_entry(self):
-        self.maxDiff = None
+    def test_ally_killboard_api_own(self):
         # given
         self.client.force_login(self.user)
-        url = "/killstats/api/stats/month/7/year/2020/alliance/0/"
-        # when
-        response = self.client.get(url)
-        # then
-        expected_data = _alliance_api.Killstats_Stats
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_data)
-
-    def test_killstats_killboard_api(self):
-        # given
-        self.client.force_login(self.user)
-
-        # Stats - Main
-        url = "/killstats/api/stats/month/7/year/2024/alliance/0/"
-        # when
-        response = self.client.get(url)
-        # then
-        expected_data = _alliance_api.Killstats_Stats_Entry
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_data)
 
         # Halls of Fame/Shame - Main
         url = "/killstats/api/halls/month/7/year/2024/alliance/0/"
@@ -68,11 +49,11 @@ class ManageApiAllianceEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
-    def test_killmail_api(self):
+    def test_ally_killmail_api_single(self):
         # given
         self.client.force_login(self.user)
 
-        url = "/killstats/api/killmail/month/7/year/2024/alliance/3001/kills/"
+        url = "/killstats/api/killmail/month/7/year/2024/alliance/30000001/kills/"
         # when
         response = self.client.get(url)
         # then
@@ -80,6 +61,7 @@ class ManageApiAllianceEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
+        # Test Own Alliances
         url = "/killstats/api/killmail/month/7/year/2024/alliance/0/losses/"
         # when
         response = self.client.get(url)
@@ -88,21 +70,12 @@ class ManageApiAllianceEndpointsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
-    def test_killstats_killboard_api_single(self):
+    def test_halls_api_single(self):
         # given
         self.client.force_login(self.user)
 
-        # Stats - Single
-        url = "/killstats/api/stats/month/7/year/2024/alliance/3001/"
-        # when
-        response = self.client.get(url)
-        # then
-        expected_data = _alliance_api.Killstats_Stats_Single
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_data)
-
         # Halls of Fame/Shame - Single
-        url = "/killstats/api/halls/month/7/year/2024/alliance/3001/"
+        url = "/killstats/api/halls/month/7/year/2024/alliance/30000001/"
         # when
         response = self.client.get(url)
         # then
@@ -119,16 +92,17 @@ class ManageApiAllianceEndpointsTest(TestCase):
         excepted_data = [
             {
                 "alliance": {
-                    "3001": {"alliance_id": 3001, "alliance_name": "Voices of War"}
+                    "30000001": {
+                        "alliance_id": 30000001,
+                        "alliance_name": "Voices of War",
+                    }
                 }
             }
         ]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), excepted_data)
 
-    @patch(
-        "killstats.api.killboard.alliance.killboard.AlliancesAudit.objects.visible_to"
-    )
+    @patch("killstats.api.killstats.admin.AlliancesAudit.objects.visible_to")
     def test_get_alliance_admin_no_visible(self, mock_visible_to):
         self.client.force_login(self.user2)
         url = "/killstats/api/killboard/alliance/admin/"
@@ -140,14 +114,12 @@ class ManageApiAllianceEndpointsTest(TestCase):
         # then
         self.assertContains(response, "Permission Denied", status_code=403)
 
-    @patch(
-        "killstats.api.killboard.alliance.killboard.AlliancesAudit.objects.visible_to"
-    )
+    @patch("killstats.api.killstats.admin.AlliancesAudit.objects.visible_to")
     def test_get_alliance_admin_exception(self, mock_visible_to):
         self.client.force_login(self.user)
         url = "/killstats/api/killboard/alliance/admin/"
 
-        corp = EveAllianceInfo.objects.get(alliance_id=3001)
+        corp = EveAllianceInfo.objects.get(alliance_id=30000001)
 
         mock_visible_to.return_value = [corp, "test"]
 

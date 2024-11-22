@@ -1,5 +1,28 @@
 # Changelog
 
+## \[0.5.1\] - 2024-11-22
+
+### Added
+
+- Top 10 Information Sheet
+- Explanation MD
+- Cache System (10 min) default, can be change with `KILLBOARD_API_CACHE_LIFETIME`
+
+### Changed
+
+- All Stats Types have now own Endpoint
+- Top Kill & Top Loss linked to killmail instead of character page
+- Database changed killmail_id, weapon_item_id, victim_alliance_id, victim_corporation_id, victim_region_id, victim_solar_system_id from PositiveBigIntegerField to PositiveIntegerField
+- Database changed killmail_date from Datetime(6) to Datetime(0)
+
+### Fixed
+
+- Long loading time for Stats Dashboard
+- Wrong Top Ship Killcount (counted for each ship in one killmail)
+- Hall of Fame not showing on Alliance Overview
+- NPC Corporation should not be able to be added to Killstats
+- Alliance not updating after Adding it
+
 ## \[0.5.0\] - 2024-10-14
 
 > \[!IMPORTANT\]
