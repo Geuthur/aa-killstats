@@ -1,6 +1,6 @@
 # Changelog
 
-## \[IN DEVELOPMENT\] - 2024-xx-xx
+## \[0.5.1\] - 2024-11-22
 
 ### Added
 
