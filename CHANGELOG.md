@@ -1,6 +1,6 @@
 # Changelog
 
-## \[0.5.1\] - 2024-11-22
+## [0.5.1] - 2024-11-22
 
 ### Added
 
@@ -23,9 +23,9 @@
 - NPC Corporation should not be able to be added to Killstats
 - Alliance not updating after Adding it
 
-## \[0.5.0\] - 2024-10-14
+## [0.5.0] - 2024-10-14
 
-> \[!IMPORTANT\]
+> [!IMPORTANT]
 > With the new Version we need to delete all Killmails.
 > The Migration can take a while if Killmail DB is big
 > We prefer to clear the Killstats `killstats_killmail`
@@ -59,7 +59,7 @@
 - Temporarily removed filter Hall of Fame accept only 1 kill per Character cause performance issues
 - Corp Utils, CorpStats Two support not needed anymore
 
-## \[0.1.9\] - 2024-09-05
+## [0.1.9] - 2024-09-05
 
 ### Fixed
 
@@ -69,7 +69,7 @@
 
 - Killstats Stats moved ip and Header moved down to Hall of Fame Header
 
-## \[0.1.8\] - 2024-08-16
+## [0.1.8] - 2024-08-16
 
 ### Performance
 
@@ -110,7 +110,7 @@
 
 - Threshold Filter in Hall of Fame
 
-## \[0.1.7\] - 2024-08-06
+## [0.1.7] - 2024-08-06
 
 ### Added
 
@@ -124,7 +124,7 @@
 - Classmethod attackers_mains & threshold
 - Python 3.8, 3.8 Support
 
-## \[0.1.6\] - 2024-07-20
+## [0.1.6] - 2024-07-20
 
 ### Fixed
 
@@ -138,7 +138,7 @@
 
 - EveEntity entity_id to eve_id
 
-## \[0.1.5\] - 2024-07-08
+## [0.1.5] - 2024-07-08
 
 ### Fixed
 
@@ -162,7 +162,7 @@
 
 - STRUCTURE Var from app_settings
 
-## \[0.1.4\] - 2024-07-04
+## [0.1.4] - 2024-07-04
 
 ### Added
 
@@ -177,7 +177,7 @@
 
 - Some unnecessary Text
 
-## \[0.1.0-0.1.3\] - 2024-06-28
+## [0.1.0-0.1.3] - 2024-06-28
 
 ### Fixed
 

@@ -41,7 +41,7 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 
 ## Installation<a name="installation"></a>
 
-> \[!NOTE\]
+> [!NOTE]
 > AA Killstats needs at least Alliance Auth v4.0.0
 > Please make sure to update your Alliance Auth before you install this APP
 
@@ -131,7 +131,7 @@ LOGGING["loggers"].update(LOGGING_KILLSTATS["loggers"])
 ![Hall](/killstats/docs/img/killstats2.png)
 ![Kills](/killstats/docs/img/killstats3.png)
 
-> \[!NOTE\]
+> [!NOTE]
 > Contributing
 > You want to improve the project?
 > Just Make a [Pull Request](https://github.com/Geuthur/aa-killstats/pulls) with the Guidelines.
