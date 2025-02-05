@@ -91,6 +91,7 @@ class KillmailAttacker(_KillmailCharacter):
 @dataclass
 class KillmailPosition(_KillmailBase):
     "A position for a killmail."
+
     x: float | None = None
     y: float | None = None
     z: float | None = None
