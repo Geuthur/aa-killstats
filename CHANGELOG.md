@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.5.x] - IN DEVELOPMENT
+## [0.5.2] - IN DEVELOPMENT
 
 ### Added
 

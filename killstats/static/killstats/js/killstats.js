@@ -116,6 +116,7 @@ function updateStats(stats, container) {
             template.find('.stat-info').text(`${stat.ship__name || stat.victim_ship__name}: ${stat.count || stat.top_victim_ship}`);
             template.find('.stat-portrait').attr('src', `https://images.evetech.net/Render/${stat.ship__id || stat.victim_ship_id}_64.png`);
             template.find('.stat-link').removeAttr('href'); // Kein Link für Schiffe
+            template.find('.card-img-zoom').removeClass('card-img-zoom');
         } else if (category.key === 'highest_kill') {
             template.find('.stat-info').text(`Value: ${stat.killmail__victim_total_value.toLocaleString()} ISK`);
             template.find('.stat-portrait').attr('src', `https://images.evetech.net/Render/${stat.killmail__victim_ship__id}_64.png`);
@@ -150,7 +151,7 @@ function initializeDataTable(tableId, url, totalValueId) {
                 'data': 'killmail_id',
                 'render': function(data, type, row) {
                     return '<a href="https://zkillboard.com/kill/' + data + '" target="_blank">' +
-                        '<img class="card-img-zoom" src="https://imageserver.eveonline.com/types/' + row.victim_ship.id + '/icon/?size=64" height="64" width="64"/>' +
+                        '<img class="card-img zoom" src="https://imageserver.eveonline.com/types/' + row.victim_ship.id + '/icon/?size=64" height="64" width="64"/>' +
                         '</a>';
                 }
             },
@@ -184,7 +185,7 @@ function initializeDataTable(tableId, url, totalValueId) {
                         imageHTML += 'corporation/' + row.victim_corporation_id;
                     }
 
-                    imageHTML += '" target="_blank"> <img class="card-img-zoom" src="' + imageUrl + '" height="64" width="64"/></a>';
+                    imageHTML += '" target="_blank"> <img class="card-img zoom" src="' + imageUrl + '" height="64" width="64"/></a>';
 
                     return imageHTML;
                 }
