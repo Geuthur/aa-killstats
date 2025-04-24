@@ -12,6 +12,7 @@
 - Update Modal System
 - Refactor Javascript
 - Refactor Stats System
+- Removed Multi View
 
 ## [0.5.1] - 2024-11-22
 
