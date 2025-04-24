@@ -4,7 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 
 # Django
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext_lazy as _
 from esi.decorators import token_required
 
 from allianceauth.eveonline.models import (
@@ -12,6 +13,7 @@ from allianceauth.eveonline.models import (
     EveCharacter,
     EveCorporationInfo,
 )
+from allianceauth.eveonline.providers import ObjectNotFound, provider
 
 # AA Killstats
 from killstats import __title__
@@ -25,10 +27,42 @@ logger = get_extension_logger(__name__)
 
 @login_required
 @permission_required("killstats.basic_access")
-def killboard_index(request, corporation_pk=0, alliance_pk=0):
+def killboard_index(request):
+    return redirect(
+        "killstats:corporation", request.user.profile.main_character.corporation_id
+    )
+
+
+@login_required
+@permission_required("killstats.basic_access")
+def corporation_view(request, corporation_id=None):
+    if corporation_id is None:
+        corporation_id = request.user.profile.main_character.corporation_id
+
     context = {
-        "corporation_pk": corporation_pk,
-        "alliance_pk": alliance_pk,
+        "title": "Corporation Killboard",
+        "entity_pk": corporation_id,
+        "entity_type": "corporation",
+    }
+    return render(request, "killstats/killboard.html", context=context)
+
+
+@login_required
+@permission_required("killstats.basic_access")
+def alliance_view(request, alliance_id=None):
+    if alliance_id is None:
+        try:
+            alliance_id = request.user.profile.main_character.alliance_id
+            if alliance_id is None:
+                raise AttributeError
+        except AttributeError:
+            messages.error(request, "You do not have an alliance.")
+            return redirect("killstats:index")
+
+    context = {
+        "title": "Alliance Killboard",
+        "entity_pk": alliance_id,
+        "entity_type": "alliance",
     }
     return render(request, "killstats/killboard.html", context=context)
 
@@ -72,31 +106,35 @@ def add_corp(request, token):
 @token_required(scopes=("publicData"))
 @permission_required(["killstats.admin_access"])
 def add_alliance(request, token):
-    char = EveCharacter.objects.get_character_by_id(token.character_id)
-    if char:
-        if char.alliance_id is None:
-            msg = "Character is not in an Alliance"
-            messages.error(request, msg)
-            return redirect("killstats:index")
+    char = get_object_or_404(EveCharacter, character_id=token.character_id)
+
+    try:
+        alliance = EveAllianceInfo.objects.get(alliance_id=char.alliance_id)
+    except EveAllianceInfo.DoesNotExist:
         try:
-            alliance = EveAllianceInfo.objects.get(alliance_id=char.alliance_id)
-        except EveAllianceInfo.DoesNotExist:
-            alliance = EveAllianceInfo.objects.create_alliance(
-                alliance_id=char.alliance_id
+            ally_data = provider.get_alliance(char.alliance_id)
+            alliance, __ = EveAllianceInfo.objects.get_or_create(
+                alliance_id=ally_data.id,
+                defaults={
+                    "alliance_name": ally_data.name,
+                    "alliance_ticker": ally_data.ticker,
+                    "executor_corp_id": ally_data.executor_corp_id,
+                },
             )
-
-        if alliance:
-            _, created = AlliancesAudit.objects.update_or_create(
-                alliance=alliance, owner=char
+        except ObjectNotFound:
+            msg = _("Failed to fetch Alliance data for {alliance_name}").format(
+                alliance_name=char.alliance_name,
             )
-            if created:
-                killmail_update_ally.apply_async(args=[char.alliance_id], priority=6)
-            msg = f"{char.alliance_name} successfully added/updated to Killboard"
-            messages.info(request, msg)
+            messages.warning(request, msg)
             return redirect("killstats:index")
 
-    msg = "Failed to add Alliance to Killboard"
-    messages.error(request, msg)
+    __, created = AlliancesAudit.objects.update_or_create(alliance=alliance, owner=char)
+
+    if created:
+        killmail_update_ally.apply_async(args=[char.alliance_id], priority=6)
+
+    msg = f"{char.alliance_name} successfully added/updated to Killboard"
+    messages.info(request, msg)
     return redirect("killstats:index")
 
 
@@ -106,7 +144,9 @@ def corporation_admin(request):
     """
     Corporation Admin
     """
-    context = {}
+    context = {
+        "title": "Corporation Overview",
+    }
     return render(request, "killstats/admin/corporation_admin.html", context=context)
 
 
@@ -116,5 +156,7 @@ def alliance_admin(request):
     """
     Alliance Admin
     """
-    context = {}
+    context = {
+        "title": "Alliance Overview",
+    }
     return render(request, "killstats/admin/alliance_admin.html", context=context)

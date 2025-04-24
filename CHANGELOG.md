@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.x] - IN DEVELOPMENT
+
+### Added
+
+- Cache Busting by [@ppfeufer](https://github.com/ppfeufer)
+
+### Changed
+
+- Optimized CSS
+- Update Modal System
+- Refactor Javascript
+- Refactor Stats System
+
 ## [0.5.1] - 2024-11-22
 
 ### Added

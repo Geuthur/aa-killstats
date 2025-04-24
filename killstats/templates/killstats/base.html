@@ -5,21 +5,12 @@
 {% block extra_css %}
 {% endblock extra_css %}
 
-{% block page_title %} Killstats {% endblock %}
+{% block page_title %}
+    Killstats
+{% endblock %}
 
 {% block header_nav_brand %}
-    <style>
-    .killstats-link {
-        color: white !important; /* Stellt sicher, dass diese Farbregel Vorrang hat */
-        text-decoration: none !important; /* Entfernt die Unterstreichung */
-        transition: color 0.3s; /* Fügt eine sanfte Übergangsanimation hinzu */
-    }
-
-    .killstats-link:hover {
-        color: rgba(255, 255, 255, 0.4) !important; /* Reduziert die Farbintensität um 60% beim Hover */
-    }
-    </style>
-    <a class="killstats-link" href="{% url 'killstats:index' %}">Killstats</a>
+    <a class="nav-link text-white link-light link-underline link-underline-opacity-0" href="{% url 'killstats:index' %}">Killstats</a>
 {% endblock header_nav_brand %}
 
 {% block header_nav_collapse_left %}
@@ -40,11 +31,11 @@
 {% include 'bundles/datatables-css-bs5.html' %}
 
 <div class="allianceauth-killstats-plugin">
-    <div class="container-fluid" id="killstats_block">
-    {% block killstats_block %}{% endblock %}
-    </div>
+    <div class="card-killstats">
+        {% block killstats_block %}
 
-    <br>
+        {% endblock %}
+    </div>
 </div>
 
 {% endblock content %}
