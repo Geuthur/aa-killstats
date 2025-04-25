@@ -41,16 +41,22 @@
 {% endblock extra_css %}
 
 {% block killstats_block %}
-	<!--Modal-->
-	{% include 'killstats/partials/modal/modal.html' with name="ViewTop10Killer" %}
-	<!--Dashboard-->
-	{% include 'killstats/partials/dashboard.html' with stats=stats %}
 	<!--Killstats-->
 	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center mb-2">
 		<h3 id="currentMonthLink" class="page-header text-center">Killstats</h3>
+		<div class="dropdown px-2">
+			<button id="yearDropDownButton" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+				{% now "Y" %}
+			</button>
+			<ul class="dropdown-menu" id="yearDropdown">
+				{% for year in years %}
+					<li><a class="dropdown-item" data-bs-year-id="{{ year }}" href="#">{{ year }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
 		<div class="dropdown px-2" id="overview">
-			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-			Month
+			<button id="monthDropDownButton" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+			{% now "F" %}
 			</button>
 			<ul class="dropdown-menu" id="monthDropdown">
 				<li><a class="dropdown-item" data-bs-month-id="1" href="#">{% trans "January" %}</a></li>
@@ -67,10 +73,16 @@
 				<li><a class="dropdown-item" data-bs-month-id="12" href="#">{% trans "December" %}</a></li>
 			</ul>
 		</div>
-		<div id="top10"></div>
+		<div id="top10" class="px-2"></div>
 	</div>
+
+	<!--Modal-->
+	{% include 'killstats/partials/modal/modal.html' with name="ViewTop10Killer" %}
+	<!--Dashboard-->
+	{% include 'killstats/partials/dashboard.html' with stats=stats %}
 	<!--Hall-->
 	{% include 'killstats/partials/hall.html' with shame=shame fame=fame %}
+
 	<div id="killboard" class="card d-none">
 		<div class="rounded-top">
 			<ul class="nav nav-tabs" id="killstats-killmail">

@@ -3,6 +3,7 @@
 const entityPk = killstatssettings.entity_pk;
 const entityType = killstatssettings.entity_type;
 
+const yearDropdown = document.getElementById('yearDropdown');
 const monthDropdown = document.getElementById('monthDropdown');
 
 // Current date
@@ -340,6 +341,7 @@ function updateData(selectedMonth, selectedYear) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    yearDropdown.addEventListener('click', event => handleDropdownClick(event, 'year', state));
     monthDropdown.addEventListener('click', event => handleDropdownClick(event, 'month', state));
     var activeTab = getActiveTab();
     updateData(state.selectedMonth, state.selectedYear);

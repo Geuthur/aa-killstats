@@ -49,9 +49,8 @@ function handleDropdownClick(event, dropdownType, state) {
 
         if (dropdownType === 'year') {
             $('#yearDropDownButton').text(event.target.textContent);
-            $('#monthDropDownButton').text(state.translations.monthText);
             state.selectedYear = event.target.dataset.bsYearId;
-            state.selectedviewMode = 'year';
+            state.selectedviewMode = 'month';
         } else if (dropdownType === 'month') {
             $('#monthDropDownButton').text(event.target.textContent);
             state.selectedMonth = event.target.dataset.bsMonthId;
