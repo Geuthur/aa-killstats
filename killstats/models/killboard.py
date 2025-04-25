@@ -3,9 +3,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from eveuniverse.models import EveEntity, EveType
 
-# Alliance Auth
-from allianceauth.eveonline.evelinks import eveimageserver
-
 # AA Killstats
 from killstats.hooks import get_extension_logger
 from killstats.managers.killboard_manager import EveKillmailManager
@@ -42,19 +39,13 @@ class Killmail(models.Model):
         """Return the victim name or Unknown."""
         return self.victim.name if self.victim else _("Unknown")
 
+    def get_or_unknown_victim_ship_id(self):
+        """Return the victim ship ID or Unknown."""
+        return self.victim_ship.id if self.victim_ship else 0
+
     def get_or_unknown_victim_ship_name(self):
         """Return the victim ship name or Unknown."""
         return self.victim_ship.name if self.victim_ship else _("Unknown")
-
-    def evaluate_victim_id(self):
-        """Return the victim ID."""
-        if self.victim is not None:
-            return self.victim.id
-        if self.victim_corporation_id is not None:
-            return self.victim_corporation_id
-        if self.victim_alliance_id is not None:
-            return self.victim_alliance_id
-        return 0
 
     def evaluate_zkb_link(self):
         zkb = f"https://zkillboard.com/character/{self.victim.id}/"
@@ -63,28 +54,6 @@ class Killmail(models.Model):
         if self.victim.category == "alliance":
             zkb = f"https://zkillboard.com/alliance/{self.victim_alliance_id}/"
         return zkb
-
-    def evaluate_portrait(self):
-        portrait = eveimageserver.character_portrait_url(self.victim.id, 256)
-        if self.victim.category == "corporation":
-            portrait = eveimageserver.corporation_logo_url(
-                self.victim_corporation_id, 256
-            )
-        if self.victim.category == "alliance":
-            portrait = eveimageserver.alliance_logo_url(self.victim_alliance_id, 256)
-        return portrait
-
-    def get_ship_image_url(self):
-        if self.victim_ship is not None:
-            return eveimageserver.type_render_url(self.victim_ship.id, 32)
-        return ""
-
-    def get_image_url(self):
-        if self.victim is not None:
-            return eveimageserver._eve_entity_image_url(
-                self.victim.category, self.victim.id, 32
-            )
-        return ""
 
     def is_corp(self, corps: list):
         """Return True if the victim corporation is in the list of corporations."""
@@ -164,10 +133,6 @@ class Attacker(models.Model):
     final_blow = models.BooleanField(null=True, blank=True)
     weapon_type_id = models.PositiveIntegerField(null=True, blank=True)
     security_status = models.FloatField(null=True, blank=True)
-
-    def get_or_unknown_ship_name(self):
-        """Return the ship name or Unknown."""
-        return self.ship.name if self.ship else _("Unknown")
 
     def evaluate_attacker(self) -> tuple:
         """Return the attacker ID and Name."""

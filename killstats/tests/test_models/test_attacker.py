@@ -20,11 +20,6 @@ class TestAttackertModel(TestCase):
         self.killmail = Killmail.objects.get(killmail_id=119303113)
         self.attacker = Attacker.objects.filter(killmail=self.killmail).first()
 
-    def test_get_or_unknown_ship_name(self):
-        self.assertEqual(self.attacker.get_or_unknown_ship_name(), "Attacker Ship I")
-        self.attacker.ship = None
-        self.assertEqual(self.attacker.get_or_unknown_ship_name(), "Unknown")
-
     def test_evaluate_attacker_id(self):
         self.assertEqual(self.attacker.evaluate_attacker(), (1000, "CONCORD"))
         self.attacker.character = None

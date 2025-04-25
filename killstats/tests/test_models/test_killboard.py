@@ -79,13 +79,6 @@ class TestKillboardtModel(TestCase):
     def test_str(self):
         self.assertEqual(str(self.killmail), "Killmail 119303113")
 
-    def test_get_image_url(self):
-        expected_url = "https://images.evetech.net/characters/1001/portrait?size=32"
-        self.assertEqual(self.killmail.get_image_url(), expected_url)
-        self.killmail.victim = None
-        excepted_url = ""
-        self.assertEqual(self.killmail.get_image_url(), excepted_url)
-
     def test_get_victim_name(self):
         expected_url = "Gneuten"
         self.assertEqual(self.killmail.get_or_unknown_victim_name(), expected_url)
@@ -101,22 +94,6 @@ class TestKillboardtModel(TestCase):
         self.killmail.victim_ship = None
         expected_url = "Unknown"
 
-    def test_evaluate_victim_id(self):
-        expected_url = 1001
-        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
-
-        self.killmail.victim = None
-        expected_url = 20000001
-        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
-
-        self.killmail.victim_corporation_id = None
-        expected_url = 30000001
-        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
-
-        self.killmail.victim_alliance_id = None
-        expected_url = 0
-        self.assertEqual(self.killmail.evaluate_victim_id(), expected_url)
-
     def test_evaluate_zkb_link(self):
         expected_url = "https://zkillboard.com/character/1001/"
         self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
@@ -128,23 +105,3 @@ class TestKillboardtModel(TestCase):
         self.killmail.victim.category = "alliance"
         expected_url = "https://zkillboard.com/alliance/30000001/"
         self.assertEqual(self.killmail.evaluate_zkb_link(), expected_url)
-
-    def test_evaluate_portrait(self):
-        expected_url = "https://images.evetech.net/characters/1001/portrait?size=256"
-        self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
-
-        self.killmail.victim.category = "corporation"
-        expected_url = "https://images.evetech.net/corporations/20000001/logo?size=256"
-        self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
-
-        self.killmail.victim.category = "alliance"
-        expected_url = "https://images.evetech.net/alliances/30000001/logo?size=256"
-        self.assertEqual(self.killmail.evaluate_portrait(), expected_url)
-
-    def test_get_ship_image_url(self):
-        expected_url = "https://images.evetech.net/types/10001/render?size=32"
-        self.assertEqual(self.killmail.get_ship_image_url(), expected_url)
-
-        self.killmail.victim_ship = None
-        expected_url = ""
-        self.assertEqual(self.killmail.get_ship_image_url(), expected_url)
