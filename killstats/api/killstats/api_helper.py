@@ -1,19 +1,13 @@
 import hashlib
 
 from django.core.cache import cache
-from django.db.models import Q, Sum
-from eveuniverse.models import EveEntity
+from django.db.models import Count, Q, Sum
 
 from killstats.api.account_manager import AccountManager
 from killstats.api.helpers import get_alliances, get_corporations
-from killstats.api.killboard_manager import (
-    format_killmail,
-    format_killmail_details,
-    killboard_hall,
-)
 from killstats.app_settings import KILLBOARD_API_CACHE_LIFETIME
 from killstats.hooks import get_extension_logger
-from killstats.models.killboard import Killmail
+from killstats.models.killboard import Attacker, Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 logger = get_extension_logger(__name__)
@@ -170,221 +164,114 @@ def get_killmails_data(request, month, year, entity_type: str, entity_id: int, m
 
 def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
     entities = get_entities(request, entity_type, entity_id)
-    account = AccountManager(entities=entities)
+    account = AccountManager()
     mains, _ = account.get_mains_alts()
 
-    killmails = (
-        Killmail.objects.prefetch_related("victim", "victim_ship").filter(
+    shame = (
+        Killmail.objects.filter(
             killmail_date__year=year,
             killmail_date__month=month,
         )
-    ).filter_entities(entities)
+        .filter(
+            Q(victim_corporation_id__in=entities)
+            | Q(victim_alliance_id__in=entities)
+            | Q(victim__id__in=entities)
+        )
+        .order_by("-victim_total_value")[:5]
+    )
 
-    shame, fame = killboard_hall(killmails, entities, mains)
+    fame = (
+        Attacker.objects.filter(
+            killmail__killmail_date__year=year,
+            killmail__killmail_date__month=month,
+        )
+        .filter(
+            Q(corporation_id__in=entities)
+            | Q(alliance_id__in=entities)
+            | Q(character_id__in=entities)
+        )
+        .order_by("-killmail__victim_total_value")[:5]
+    )
+
+    shame_data = []
+    fame_data = []
+
+    logger.info(mains)
+
+    for killmail in shame:
+        zkillboard = killmail.evaluate_zkb_link()
+
+        try:
+            character_id = killmail.victim.id
+            character_name = killmail.victim.name
+            for main_id, data in mains.items():
+                alts = [alt.character_id for alt in data["alts"]]
+                if character_id in alts and character_id != main_id:
+                    main_name = data["main"].character_name
+                    # Hauptcharaktername verwenden
+                    character_name = f"{character_name} ({main_name})"
+                    break
+        except AttributeError:
+            character_id = 0
+            character_name = "Unknown"
+
+        shame_data.append(
+            {
+                "killmail_id": killmail.killmail_id,
+                "character_id": character_id,
+                "character_name": character_name,
+                "ship": killmail.get_or_unknown_victim_ship_id(),
+                "ship_name": killmail.get_or_unknown_victim_ship_name(),
+                "totalValue": killmail.victim_total_value,
+                "portrait": killmail.victim.icon_url(512),
+                "zkb_link": zkillboard,
+            }
+        )
+
+    for killmail in fame:
+        zkillboard = killmail.killmail.evaluate_zkb_link()
+
+        try:
+            character_id = killmail.character.id
+            character_name = killmail.character.name
+            for main_id, data in mains.items():
+                alts = [alt.character_id for alt in data["alts"]]
+                if character_id in alts and character_id != main_id:
+                    main_name = data["main"].character_name
+                    # Hauptcharaktername verwenden
+                    character_name = f"{character_name} ({main_name})"
+                    break
+        except AttributeError:
+            character_id = 0
+            character_name = "Unknown"
+
+        fame_data.append(
+            {
+                "killmail_id": killmail.killmail.killmail_id,
+                "character_id": character_id,
+                "character_name": character_name,
+                "ship": killmail.killmail.get_or_unknown_victim_ship_id(),
+                "ship_name": killmail.killmail.get_or_unknown_victim_ship_name(),
+                "totalValue": killmail.killmail.victim_total_value,
+                "portrait": killmail.character.icon_url(512),
+                "zkb_link": zkillboard,
+            }
+        )
 
     halls = []
     halls.append(
         {
-            "shame": shame,
-            "fame": fame,
+            "shame": shame_data,
+            "fame": fame_data,
         }
     )
 
     return halls
 
 
-def get_top_victim(request, month, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year, killmail_date__month=month)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    top_victim_querry = killmail_year.get_top_victim_stats(entities)
-
-    if not top_victim_querry:
-        return {}
-
-    top_victim_dict = format_killmail_details(
-        top_victim_querry,
-        title="Top Victim:",
-        count=top_victim_querry.kill_count,
-        stats_type="character",
-    )
-
-    return top_victim_dict
-
-
-def get_top_killer(request, month, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year, killmail_date__month=month)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    top_killer_querry = killmail_year.get_top_killer_stats(entities)
-
-    if not top_killer_querry:
-        return {}
-
-    top_killer_dict = format_killmail_details(
-        top_killer_querry,
-        title="Top Killer:",
-        count=top_killer_querry.kill_count,
-        stats_type="character",
-    )
-
-    return top_killer_dict
-
-
-def get_alltime_victim(request, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    alltime_victim_querry = killmail_year.get_top_victim_stats(entities)
-
-    if not alltime_victim_querry:
-        return {}
-
-    alltime_victim_dict = format_killmail_details(
-        alltime_victim_querry,
-        title="Alltime Victim:",
-        count=alltime_victim_querry.kill_count,
-        stats_type="character",
-    )
-
-    return alltime_victim_dict
-
-
-def get_alltime_killer(request, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    alltime_killer_querry = killmail_year.get_top_killer_stats(entities)
-
-    if not alltime_killer_querry:
-        return {}
-
-    alltime_killer_dict = format_killmail_details(
-        alltime_killer_querry,
-        title="Alltime Killer:",
-        count=alltime_killer_querry.kill_count,
-        stats_type="character",
-    )
-
-    return alltime_killer_dict
-
-
-def get_worst_ship(request, month, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year, killmail_date__month=month)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    worst_ship_querry = killmail_year.get_worst_ship_stats(entities)
-
-    if not worst_ship_querry:
-        return {}
-
-    worst_ship_dict = format_killmail_details(
-        worst_ship_querry,
-        loss=True,
-        title="Worst Ship:",
-        count=worst_ship_querry.ship_count,
-        stats_type="ship",
-    )
-
-    return worst_ship_dict
-
-
-def get_top_ship(request, month, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year, killmail_date__month=month)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    top_ship_querry = killmail_year.get_top_ship_stats(entities)
-
-    if not top_ship_querry:
-        return {}
-
-    top_ship_dict = format_killmail_details(
-        top_ship_querry,
-        title="Top Ship:",
-        count=top_ship_querry.ship_count,
-        stats_type="ship",
-    )
-
-    return top_ship_dict
-
-
-def get_top_kill(request, month, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year, killmail_date__month=month)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    top_kill_querry = killmail_year.get_highest_kill_stats(entities)
-
-    if not top_kill_querry:
-        return {}
-
-    top_kill_dict = format_killmail(
-        top_kill_querry,
-        title="Top Kill:",
-    )
-
-    return top_kill_dict
-
-
-def get_top_loss(request, month, year, entity_type: str, entity_id: int) -> dict:
-    entities = get_entities(request, entity_type, entity_id)
-
-    killmail_year = (
-        Killmail.objects.prefetch_related("victim", "victim_ship")
-        .filter(killmail_date__year=year, killmail_date__month=month)
-        .order_by("-killmail_date")
-    ).filter_entities(entities)
-
-    top_loss_querry = killmail_year.get_highest_loss_stats(entities)
-
-    if not top_loss_querry:
-        return {}
-
-    top_loss_dict = format_killmail(
-        top_loss_querry,
-        title="Top Loss:",
-    )
-
-    return top_loss_dict
-
-
 def get_top_10(request, month, year, entity_type: str, entity_id: int) -> list:
     entities = get_entities(request, entity_type, entity_id)
-    account = AccountManager(entities=entities)
+    account = AccountManager()
     mains_dict, _ = account.get_mains_alts()
 
     killmail = (
@@ -395,31 +282,41 @@ def get_top_10(request, month, year, entity_type: str, entity_id: int) -> list:
 
     km_ids = killmail.values_list("killmail_id", flat=True)
 
-    top_10_querry = killmail.get_top_10_killers(entities, km_ids)
+    top_characters = (
+        Attacker.objects.filter(
+            killmail__killmail_date__year=year,
+            killmail__killmail_date__month=month,
+            killmail_id__in=km_ids,
+        )
+        .filter(
+            Q(corporation_id__in=entities)
+            | Q(alliance_id__in=entities)
+            | Q(character_id__in=entities)
+        )
+        .values("character_id", "character__name")
+        .annotate(kill_count=Count("character_id"))
+        .order_by("-kill_count", "character__name")[:10]
+    )
 
-    if not top_10_querry:
+    if not top_characters:
         return {}
 
     # Convert QuerySet to list
-    top_10_list = list(top_10_querry)
+    top_10_list = list(top_characters)
 
     # Add character_name to each entry
     for entry in top_10_list:
         character_id = entry["character_id"]
-        try:
-            character = EveEntity.objects.get(id=character_id)
-            entry["character_name"] = character.name
 
+        try:
             # Check if the character is an alt and add the main character's name
             for main_id, data in mains_dict.items():
                 alts = [alt.character_id for alt in data["alts"]]
                 if character_id in alts and character_id != main_id:
                     main_character = data["main"]
-                    entry["character_name"] += f" ({main_character.character_name})"
+                    entry["character__name"] += f" ({main_character.character_name})"
                     break
-        except EveEntity.DoesNotExist:
-            entry["character_name"] = "Unknown"
         except AttributeError:
-            entry["character_name"] = "Unknown"
+            entry["character__name"] = "Unknown"
 
     return top_10_list
