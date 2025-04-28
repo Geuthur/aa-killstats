@@ -45,7 +45,7 @@ def corporation_view(request, corporation_id=None):
         .values_list("year", flat=True)
         .distinct()
         .order_by("-year")
-    )
+    )[:5]
 
     context = {
         "title": "Corporation Killboard",
@@ -74,7 +74,7 @@ def alliance_view(request, alliance_id=None):
         .values_list("year", flat=True)
         .distinct()
         .order_by("-year")
-    )
+    )[:5]
 
     context = {
         "title": "Alliance Killboard",
