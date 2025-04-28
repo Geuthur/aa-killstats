@@ -2,8 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-
-# Django
+from django.db.models.functions import ExtractYear
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from esi.decorators import token_required
@@ -17,6 +16,7 @@ from allianceauth.eveonline.providers import ObjectNotFound, provider
 
 # AA Killstats
 from killstats import __title__
+from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.tasks import killmail_update_ally, killmail_update_corp
 
@@ -39,8 +39,17 @@ def corporation_view(request, corporation_id=None):
     if corporation_id is None:
         corporation_id = request.user.profile.main_character.corporation_id
 
+    years = (
+        Killmail.objects.filter(victim_corporation_id=corporation_id)
+        .annotate(year=ExtractYear("killmail_date"))
+        .values_list("year", flat=True)
+        .distinct()
+        .order_by("-year")
+    )
+
     context = {
         "title": "Corporation Killboard",
+        "years": years,
         "entity_pk": corporation_id,
         "entity_type": "corporation",
     }
@@ -59,8 +68,17 @@ def alliance_view(request, alliance_id=None):
             messages.error(request, "You do not have an alliance.")
             return redirect("killstats:index")
 
+    years = (
+        Killmail.objects.filter(victim_alliance_id=alliance_id)
+        .annotate(year=ExtractYear("killmail_date"))
+        .values_list("year", flat=True)
+        .distinct()
+        .order_by("-year")
+    )
+
     context = {
         "title": "Alliance Killboard",
+        "years": years,
         "entity_pk": alliance_id,
         "entity_type": "alliance",
     }

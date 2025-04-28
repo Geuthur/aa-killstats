@@ -5,14 +5,34 @@
 ### Added
 
 - Cache Busting by [@ppfeufer](https://github.com/ppfeufer)
+- Year Dropdown Menu
 
 ### Changed
 
-- Optimized CSS
-- Update Modal System
-- Refactor Javascript
 - Refactor Stats System
-- Removed Multi View
+  - Optimized Code
+  - Removed unnecessary Code
+  - Improved Query
+  - Make it more readable
+- Refactor Account Manager
+  - Optimized Code
+- Template
+  - Optimized CSS
+  - Update Modal System
+- Java
+  - Refactor Killstats
+  - Moved common scripts to own file
+- Killstats
+  - Removed Multi View
+  - Use EveEntity functions for portrait instead of create own
+
+### Removed
+
+- Killmail Model
+  - evaluate_victim_id
+  - evaluate_portrait
+  - get_ship_image_url
+  - get_image_url
 
 ## [0.5.1] - 2024-11-22
 
