@@ -42,7 +42,7 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 ## Installation<a name="installation"></a>
 
 > [!NOTE]
-> AA Killstats needs at least Alliance Auth v4.0.0
+> AA Killstats needs at least Alliance Auth v4.6.0
 > Please make sure to update your Alliance Auth before you install this APP
 
 ### Step 0 - Check dependencies are installed<a name="step0"></a>
@@ -68,10 +68,20 @@ Configure your Alliance Auth settings (`local.py`) as follows:
 To set up the Scheduled Tasks add following code to your `local.py`
 
 ```python
-CELERYBEAT_SCHEDULE["killstats_killmail_fetch"] = {
-    "task": "killstats.tasks.killmail_fetch_all",
-    "schedule": crontab(minute=0, hour="*/1"),
+CELERYBEAT_SCHEDULE["killstats_run_zkb_redis"] = {
+    "task": "killstats.tasks.run_zkb_redis",
+    "schedule": crontab(minute="*/1"),
 }
+KILLSTATS_QUEUE_ID = ""
+```
+
+> [!WARNING]
+> Please note that the queue ID must be globally unique for all users of the zKillboard API, so choose carefully.
+> No spaces or special characters allowed.
+> Example
+
+```python
+KILLSTATS_QUEUE_ID = "MyGneutenCorporation2000"
 ```
 
 ### Step 4 - Migration to AA<a name="step4"></a>
