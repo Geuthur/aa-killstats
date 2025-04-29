@@ -64,7 +64,7 @@ def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
             store_killmail.si(killmail.id),
         ).delay()
         logger.debug(
-            "%s: Stored killmail for %s",
+            "%s: Start storing killmail for %s",
             killmail.id,
             corporation.corporation.corporation_name,
         )
@@ -82,7 +82,7 @@ def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
             store_killmail.si(killmail.id),
         ).delay()
         logger.debug(
-            "%s: Stored killmail for %s",
+            "%s: Start storing killmail for %s",
             killmail.id,
             alliance.alliance.alliance_name,
         )
