@@ -320,7 +320,7 @@ class KillmailManager(_KillmailBase):
         """Get or create an entity type from Eve ID."""
         evetype, new_entry = EveType.objects.get_or_create_esi(id=evetype_id)
         if new_entry:
-            logger.debug("Kllboard Manager Entity: %s added", evetype.name)
+            logger.debug("Killstats Manager Entity: %s added", evetype.name)
         return evetype
 
     @staticmethod
@@ -328,7 +328,7 @@ class KillmailManager(_KillmailBase):
         """Get or create an entity from Eve ID."""
         entity, new_entry = EveEntity.objects.get_or_create_esi(id=eve_id)
         if new_entry:
-            logger.debug("Kllboard Manager EveName: %s added", entity.name)
+            logger.debug("Killstats Manager EveName: %s added", entity.name)
         return entity
 
     @staticmethod
@@ -342,7 +342,7 @@ class KillmailManager(_KillmailBase):
         )
         region_id = solar_system.eve_constellation.eve_region
         if new_entry:
-            logger.debug("%s added to System", region_id.name)
+            logger.debug("Killstats Manager EveName: %s added", region_id.name)
         return region_id.id
 
     def create_attackers(self, killmail, killmanager):
