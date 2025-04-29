@@ -138,16 +138,16 @@ class KillmailBaseManager(models.Manager):
             attackers_list = []
 
             corporation_id = killmail.victim.corporation_id
-            region_id = killmail.get_region_id(killmail.solar_system_id)
-            victim_ship = killmail.get_ship_name(killmail.victim.ship_type_id)
+            region_id = killmail.get_or_create_region_id(killmail.solar_system_id)
+            victim_ship = killmail.get_or_create_evetype(killmail.victim.ship_type_id)
             victim = None
 
             if killmail.victim.character_id:
-                victim = killmail.get_entity_name(killmail.victim.character_id)
+                victim = killmail.get_or_create_entity(killmail.victim.character_id)
             elif killmail.victim.alliance_id:
-                victim = killmail.get_entity_name(killmail.victim.alliance_id)
+                victim = killmail.get_or_create_entity(killmail.victim.alliance_id)
             elif killmail.victim.corporation_id:
-                victim = killmail.get_entity_name(killmail.victim.corporation_id)
+                victim = killmail.get_or_create_entity(killmail.victim.corporation_id)
 
             for attacker in killmail.attackers:
                 if attacker.character_id:

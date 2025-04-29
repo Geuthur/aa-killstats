@@ -18,6 +18,7 @@ from django.core.cache import cache
 # Django
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.dateparse import parse_datetime
+from eveuniverse.models import EveEntity, EveType
 
 # Alliance Auth (External Libs)
 from app_utils.allianceauth import get_redis_client
@@ -309,41 +310,35 @@ class KillmailManager(_KillmailBase):
         cache.delete(self._storage_key(self.id))
 
     def create_names_bulk(self, eve_ids: list):
-        # pylint: disable=import-outside-toplevel
-        from eveuniverse.models import EveEntity
-
         if len(eve_ids) > 0:
             EveEntity.objects.bulk_create_esi(eve_ids)
             return True
         return False
 
     @staticmethod
-    def get_ship_name(ship_type: int):
-        # pylint: disable=import-outside-toplevel
-        from eveuniverse.models import EveType
-
-        ship_name, new_entry = EveType.objects.get_or_create_esi(id=ship_type)
+    def get_or_create_evetype(evetype_id: int) -> EveType:
+        """Get or create an entity type from Eve ID."""
+        evetype, new_entry = EveType.objects.get_or_create_esi(id=evetype_id)
         if new_entry:
-            logger.debug("Kllboard Manager Ship: %s added", ship_name.name)
-        return ship_name
+            logger.debug("Kllboard Manager Entity: %s added", evetype.name)
+        return evetype
 
     @staticmethod
-    def get_entity_name(eve_id: int):
-        # pylint: disable=import-outside-toplevel
-        from eveuniverse.models import EveEntity
-
+    def get_or_create_entity(eve_id: int) -> EveEntity:
+        """Get or create an entity from Eve ID."""
         entity, new_entry = EveEntity.objects.get_or_create_esi(id=eve_id)
         if new_entry:
             logger.debug("Kllboard Manager EveName: %s added", entity.name)
         return entity
 
     @staticmethod
-    def get_region_id(solar_system: int):
+    def get_or_create_region_id(solar_system_id: int) -> int:
+        """Get or create region ID from solar system ID."""
         # pylint: disable=import-outside-toplevel
         from eveuniverse.models import EveSolarSystem
 
         solar_system, new_entry = EveSolarSystem.objects.get_or_create_esi(
-            id=solar_system
+            id=solar_system_id
         )
         region_id = solar_system.eve_constellation.eve_region
         if new_entry:
@@ -357,19 +352,19 @@ class KillmailManager(_KillmailBase):
         for attacker in killmanager.attackers:
             character = None
             if attacker.character_id:
-                character = self.get_entity_name(attacker.character_id)
+                character = self.get_or_create_entity(attacker.character_id)
 
             corporation = None
             if attacker.corporation_id:
-                corporation = self.get_entity_name(attacker.corporation_id)
+                corporation = self.get_or_create_entity(attacker.corporation_id)
 
             alliance = None
             if attacker.alliance_id:
-                alliance = self.get_entity_name(attacker.alliance_id)
+                alliance = self.get_or_create_entity(attacker.alliance_id)
 
             ship = None
             if attacker.ship_type_id:
-                ship = self.get_ship_name(attacker.ship_type_id)
+                ship = self.get_or_create_evetype(attacker.ship_type_id)
 
             Attacker.objects.get_or_create(
                 killmail=killmail,
