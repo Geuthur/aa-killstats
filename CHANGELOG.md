@@ -16,15 +16,17 @@
   - Make it more readable
 - Refactor Account Manager
   - Optimized Code
+- Refactor Killstats
+  - Removed Multi View
+  - Use EveEntity functions for portrait instead of create own
+  - Removed Bulk Fetch and use Redes from zKB
+  - Refactor Tasks
 - Template
   - Optimized CSS
   - Update Modal System
 - Java
   - Refactor Killstats
   - Moved common scripts to own file
-- Killstats
-  - Removed Multi View
-  - Use EveEntity functions for portrait instead of create own
 
 ### Removed
 
