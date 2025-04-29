@@ -1,5 +1,9 @@
 # Changelog
 
+> [!IMPORTANT]
+> We Changes the Killmail Fetch System please Read the README!
+> You need to ADD the KILLSTATS_QUEUE_ID to you local.py
+
 ## [0.5.2] - 28.04.2025
 
 ### Added
