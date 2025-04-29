@@ -5,7 +5,7 @@ from django.db.models import Count, Q, Sum
 
 from killstats.api.account_manager import AccountManager
 from killstats.api.helpers import get_alliances, get_corporations
-from killstats.app_settings import KILLBOARD_API_CACHE_LIFETIME
+from killstats.app_settings import KILLSTATS_API_CACHE_LIFETIME
 from killstats.hooks import get_extension_logger
 from killstats.models.killboard import Attacker, Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
@@ -22,7 +22,7 @@ KILLMAIL_MAPPING = {
 }
 
 
-def set_cache_key(cache_key, output, timeout=KILLBOARD_API_CACHE_LIFETIME):
+def set_cache_key(cache_key, output, timeout=KILLSTATS_API_CACHE_LIFETIME):
     if not cache_key:
         return False
 
