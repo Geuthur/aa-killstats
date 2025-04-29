@@ -196,8 +196,6 @@ def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
     shame_data = []
     fame_data = []
 
-    logger.info(mains)
-
     for killmail in shame:
         zkillboard = killmail.evaluate_zkb_link()
 
