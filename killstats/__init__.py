@@ -5,4 +5,4 @@ __title__ = "Killstats"
 
 APP_NAME = "killstats"
 
-USER_AGENT_TEXT = f"{APP_NAME} v{__version__}"
+USER_AGENT_TEXT = f"{APP_NAME} v{__version__} @ devgeuthur@gmail.com"
