@@ -21,8 +21,8 @@
         <tbody>
             {% for character in top10 %}
             <tr>
-                <td><img src="{{ character.character_id|character_portrait_url:32 }}" class="rounded-circle" alt="{{ character.character_name }}"></td>
-                <td>{{ character.character_name }}</td>
+                <td><img src="{{ character.character_id|character_portrait_url:32 }}" class="rounded-circle"></td>
+                <td>{{ character.character__name }}</td>
                 <td>{{ character.kill_count }}</td>
             </tr>
             {% endfor %}
