@@ -26,8 +26,14 @@ class TestAuthHooks(TestCase):
     def test_menu_hook(self):
         self.client.force_login(self.user)
 
-        response = self.client.get(reverse("killstats:index"))
+        response = self.client.get(
+            reverse("killstats:index"), follow=True
+        )  # Follow redirects
 
+        # Überprüfen, ob der Benutzer korrekt weitergeleitet wurde
+        self.assertEqual(response.status_code, 200)
+
+        # Überprüfen, ob das HTML-Menü enthalten ist
         self.assertContains(response, self.html_menu, html=True)
 
     def test_render_returns_empty_string_for_user_without_permission(self):

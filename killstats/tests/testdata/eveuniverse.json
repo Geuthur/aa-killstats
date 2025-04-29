@@ -111,17 +111,17 @@
             "category": "character"
         },
         {
-            "id": 20000001,
+            "id": 2001,
             "name": "Hell RiderZ",
             "category": "corporation"
         },
         {
-            "id": 20000002,
+            "id": 2002,
             "name": "Eulenclub",
             "category": "corporation"
         },
         {
-            "id": 20000003,
+            "id": 2003,
             "name": "Schweinshausen",
             "category": "corporation"
         },
@@ -131,17 +131,17 @@
             "category": "corporation"
         },
         {
-            "id": 30000001,
+            "id": 3001,
             "name": "Voices of War",
             "category": "alliance"
         },
         {
-            "id": 30000002,
+            "id": 3002,
             "name": "Voices of War Inc.",
             "category": "alliance"
         },
         {
-            "id": 30000003,
+            "id": 3003,
             "name": "CCP Industries",
             "category": "alliance"
         }
@@ -199,6 +199,13 @@
             "last_updated": "2024-06-10 09:01:38.177078",
             "published": "0",
             "eve_category_id": "6"
+        },
+        {
+            "id": "301",
+            "name": "Structure",
+            "last_updated": "2024-06-10 09:01:38.177078",
+            "published": "0",
+            "eve_category_id": "65"
         }
     ],
     "EveConstellation": [
@@ -456,6 +463,24 @@
             "eve_market_group_id": null,
             "enabled_sections": "0",
             "description": "Attacker Ship II."
+        },
+        {
+            "id": "30001",
+            "name": "Test Structure",
+            "last_updated": "2024-06-10 09:02:18.072866",
+            "capacity": "0",
+            "icon_id": "73",
+            "mass": "320000000000",
+            "packaged_volume": "500",
+            "portion_size": "1",
+            "radius": "2",
+            "published": "0",
+            "volume": "1000",
+            "eve_graphic_id": null,
+            "eve_group_id": "301",
+            "eve_market_group_id": null,
+            "enabled_sections": "0",
+            "description": "Big Structure."
         }
     ]
 }

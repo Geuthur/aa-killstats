@@ -1,5 +1,45 @@
 # Changelog
 
+> [!IMPORTANT]
+> We Changes the Killmail Fetch System please Read the README!
+> You need to ADD the KILLSTATS_QUEUE_ID to you local.py
+
+## [0.5.2] - 28.04.2025
+
+### Added
+
+- Cache Busting by [@ppfeufer](https://github.com/ppfeufer)
+- Year Dropdown Menu
+
+### Changed
+
+- Refactor Stats System
+  - Optimized Code
+  - Removed unnecessary Code
+  - Improved Query
+  - Make it more readable
+- Refactor Account Manager
+  - Optimized Code
+- Refactor Killstats
+  - Removed Multi View
+  - Use EveEntity functions for portrait instead of create own
+  - Removed Bulk Fetch and use Redes from zKB
+  - Refactor Tasks
+- Template
+  - Optimized CSS
+  - Update Modal System
+- Java
+  - Refactor Killstats
+  - Moved common scripts to own file
+
+### Removed
+
+- Killmail Model
+  - evaluate_victim_id
+  - evaluate_portrait
+  - get_ship_image_url
+  - get_image_url
+
 ## [0.5.1] - 2024-11-22
 
 ### Added

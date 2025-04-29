@@ -1,0 +1,34 @@
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+{% load evelinks %}
+
+{% if top10 %}
+<div>
+    <h4 id="modal-title">
+        Top 10 Killers
+    </h4>
+</div>
+<div class="table-responsive">
+    <table class="table table-dark table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col">{% trans "Character Icon" %}</th>
+                <th scope="col">{% trans "Character Name" %}</th>
+                <th scope="col">{% trans "Kill Count" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for character in top10 %}
+            <tr>
+                <td><img src="{{ character.character_id|character_portrait_url:32 }}" class="rounded-circle"></td>
+                <td>{{ character.character__name }}</td>
+                <td>{{ character.kill_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>{% trans "No data found..." %}</p>
+{% endif %}

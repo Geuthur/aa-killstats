@@ -16,8 +16,12 @@ from killstats.admin import (
     clear_cache_zkb,
 )
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
+from killstats.tests.testdata.generate_killstats import (
+    create_allianceaudit_from_character_id,
+    create_corporationaudit_from_character_id,
+)
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_killstats import load_killstats_all
+from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 MODULE_PATH = "killstats.admin"
 
@@ -31,11 +35,12 @@ class TestKillstatsAuditAdmin(TestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_killstats_all()
+        load_eveuniverse()
+
         cls.factory = RequestFactory()
         cls.site = AdminSite()
         cls.killstats_audit_admin = CorporationsAuditAdmin(CorporationsAudit, cls.site)
-        cls.killstats_audit = CorporationsAudit.objects.get(id=1)
+        cls.killstats_audit = create_corporationaudit_from_character_id(1001)
 
     def test_entity_pic(self):
         user = UserFactory(is_superuser=True, is_staff=True)
@@ -61,7 +66,7 @@ class TestKillstatsAuditAdmin(TestCase):
             self.killstats_audit_admin._corporation__corporation_id(
                 self.killstats_audit
             ),
-            20000001,
+            2001,
         )
 
     def test_last_update(self):
@@ -164,11 +169,12 @@ class TestAlliancesAuditAdmin(TestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_killstats_all()
+        load_eveuniverse()
+
         cls.factory = RequestFactory()
         cls.site = AdminSite()
         cls.killstats_audit_admin = AlliancesAuditAdmin(AlliancesAudit, cls.site)
-        cls.killstats_audit = AlliancesAudit.objects.get(id=1)
+        cls.killstats_audit = create_allianceaudit_from_character_id(1001)
 
     def test_entity_pic(self):
         user = UserFactory(is_superuser=True, is_staff=True)
@@ -192,7 +198,7 @@ class TestAlliancesAuditAdmin(TestCase):
         request.user = user
         self.assertEqual(
             self.killstats_audit_admin._alliance__alliance_id(self.killstats_audit),
-            30000001,
+            3001,
         )
 
     def test_last_update(self):

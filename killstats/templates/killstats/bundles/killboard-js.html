@@ -1,1 +1,29 @@
+{% comment %}
 <script src="/static/killstats/js/killboard.js"></script>
+{% endcomment %}
+{% load killstats %}
+{% load i18n %}
+
+{% killstats_static 'js/common-scripts.js' %}
+
+<script type="application/javascript">
+    let killstatssettings = {
+        entity_pk: {{ entity_pk }},
+        entity_type: "{{ entity_type }}",
+    };
+</script>
+
+<script>
+// Embed translations in a global JavaScript object
+window.translations = {
+    months: [
+        "{% trans 'January' %}", "{% trans 'February' %}", "{% trans 'March' %}", "{% trans 'April' %}",
+        "{% trans 'May' %}", "{% trans 'June' %}", "{% trans 'July' %}", "{% trans 'August' %}",
+        "{% trans 'September' %}", "{% trans 'October' %}", "{% trans 'November' %}", "{% trans 'December' %}"
+    ],
+    dayText: "{% trans 'Day' %}",
+    monthText: "{% trans 'Month' %}"
+};
+</script>
+
+{% killstats_static 'js/killstats.js' %}

@@ -1,4 +1,4 @@
-<div class="card" id="hall" style="display: none;">
+<div class="card d-none mb-2" id="hall">
 	<div class="rounded-top" style="--bs-bg-opacity: .5;">
         <ul class="nav nav-tabs" id="killstats-killmail-hallof">
 
@@ -21,7 +21,7 @@
         <div id="tab-shame" class="tab-pane active">
             <div class="panel-body">
                 <div class="charactercards">
-                    <ul class="cards_container">
+                    <ul class="shame cards-container">
                     </ul>
                 </div>
             </div>
@@ -30,11 +30,40 @@
         <div id="tab-fame" class="tab-pane">
             <div class="panel-body">
                 <div class="charactercards">
-                    <ul class="cards_container">
-                    </ul>
+                    <div class="fame cards-container">
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
+
+{% comment %}
+    Character Card Template
+{% endcomment %}
+
+<li id="hall-template" class="cards-item d-none">
+    <div class="card">
+        <div class="card-header"></div>
+        <div class="card-body">
+            <span class="hall-character-image">
+                <a href="#" class="hall-character-link" target="_blank">
+                    <img class="hall-portrait card-img zoom" src="#">
+                </a>
+                <span class="ship-logo">
+                    <a href="#" class="zkb-link" target="_blank">
+                        <img class="card-img zoom ship-logo-img" src="#">
+                    </a>
+                </span>
+            </span>
+        </div>
+        <div class="card-footer">
+            <div class="total-value"></div>
+            <div class="ship-name"></div>
+            <div class="mt-4">
+                <a class="btn btn-primary btn-sm zkb-button-link" href="#" target="_blank">Killmail</a>
+            </div>
+        </div>
+    </div>
+</li>

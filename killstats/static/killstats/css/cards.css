@@ -5,24 +5,19 @@
         box-sizing: border-box;
     }
 
-    .character-cards {
-        flex: 0 0 50%;
-        width: 100%;
-        margin-right: auto;
-        margin-left: auto;
-        max-width: 180rem;
+    .card-killstats {
+        min-width: 1200px;
     }
 
-    .cards_container {
+    .cards-container {
         display: flex;
-        flex-wrap: wrap;
         list-style: none;
-        margin: 0 -1rem 2rem -1rem;
         padding: 0;
         justify-content: center;
+        border: none;
     }
 
-    .cards_container .card {
+    .cards-container .card {
         position: relative;
         display: -ms-flexbox;
         display: flex;
@@ -39,12 +34,12 @@
         background-color: rgba(0, 0, 0, 0.03);
     }
 
-    .template-dark-mode .cards_container .card {
+    .template-dark-mode .cards-container .card {
         background-color: rgb(100, 100, 100);
     }
 
-    .cards_container .card-header,
-    .cards_container .card-footer {
+    .cards-container .card-header,
+    .cards-container .card-footer {
         padding: 0.75rem 1.25rem;
         margin-bottom: 0;
         background-color: rgba(0, 0, 0, 0.03);
@@ -52,87 +47,33 @@
         text-align: center;
     }
 
-    .cards_container .card-footer {
+    .cards-container .card-footer {
         border-bottom: none;
         border-top: 1px solid rgba(0, 0, 0, 0.125);
     }
 
-    .cards_container .card-header:first-child {
+    .cards-container .card-header:first-child {
         border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
     }
 
-    .cards_container .card-body {
+    .cards-container .card-body {
         -ms-flex: 1 1 auto;
         flex: 1 1 auto;
         min-height: 1px;
         padding: 1.25rem;
     }
 
-    .cards_container .cards_item {
+    .cards-container .cards-item {
         display: flex;
         padding: 1rem;
     }
 
-    .cards_container .cards_item .card {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .cards_container img {
-        max-width: 100%;
-    }
-
-    .cards_container .text-center {
-        text-align: center;
-    }
-
-    .cards_container .label {
-        display: inline;
-        padding: 0.3rem 0.6rem 0.3rem;
-        font-size: 75%;
-        font-weight: 700;
-        line-height: 1;
-        color: rgb(255,255,255);
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: 0.1rem;
-        cursor: pointer;
-    }
-
-    .cards_container .label-requested-scope {
-        margin-left: 1rem;
-        background-color: rgb(192, 192, 192);
-        color: rgb(54, 54, 54);
-    }
-
-    .cards_container .select-character {
-        width: 100%;
-        padding: 0.35rem;
-        cursor: pointer;
-    }
-
-    .cards_container form {
-        margin-bottom: 0.3rem;
-    }
-
-    .cards_container .btn-new-character-sso {
-        padding: 0;
-        border: none;
-        cursor: pointer;
-    }
-
-    .character-cards .card:hover img,
-    .character-cards .card:hover img {
-        opacity: 1;
-    }
     .card-img {
         opacity: 1.0;
-        border-radius: 10px;
     }
+
     .card-img-zoom {
         opacity: 1.0;
-        border-radius: 10px;
         cursor: pointer;
         transition: 0.3s;
     }
@@ -169,34 +110,50 @@
     .ship-logo:hover {
         opacity: 1;
     }
+
+    .stats-container {
+        width: 1400px;
+    }
 }
 
-@media (min-width: 40rem) {
-    .cards_container .cards_item {
+@media (width >= 738px) {
+    .card-characters .card-item {
         width: calc(100% / 2);
     }
 }
 
-@media (min-width: 56rem) {
-    .cards_container .cards_item {
+@media (width >= 976px) {
+    .card-characters .card-item {
         width: calc(100% / 3);
     }
 }
 
-@media (min-width: 75rem) {
-    .cards_container .cards_item {
+@media (width >= 1390px) {
+    .card-characters .card-item {
         width: calc(100% / 4);
     }
 }
 
-@media (min-width: 90rem) {
-    .cards_container .cards_item {
+@media (width >= 1700px) {
+    .card-characters .card-item {
         width: calc(100% / 5);
     }
 }
 
-@media (min-width: 105rem) {
-    .cards_container .cards_item {
+@media (width >= 2000px) {
+    .card-characters .card-item {
         width: calc(100% / 6);
+    }
+}
+
+@media (width >= 2200px) {
+    .card-characters .card-item {
+        width: calc(100% / 7);
+    }
+}
+
+@media (width >= 2400px) {
+    .card-characters .card-item {
+        width: calc(100% / 8);
     }
 }

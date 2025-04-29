@@ -5,9 +5,6 @@ from celery import shared_task
 
 # Django
 from django.db import IntegrityError
-from django.utils import timezone
-
-from allianceauth.services.tasks import QueueOnce
 
 # AA Killstatsp
 from killstats import app_settings
@@ -20,91 +17,78 @@ from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 logger = get_extension_logger(__name__)
 
 
+@shared_task(timeout=app_settings.KILLSTATS_TASKS_TIMEOUT)
+@when_esi_is_available
+def run_zkb_redis(runs: int = 0):
+    killmail = KillmailManager.create_from_zkb_redisq()
+
+    if killmail:
+        killmail.save()
+
+        corps_qs = CorporationsAudit.objects.all()
+        allys_qs = AlliancesAudit.objects.all()
+
+        for corporation in corps_qs:
+            run_tracker_corporation.delay(
+                corporation_id=corporation.corporation.corporation_id,
+                killmail_id=killmail.id,
+            )
+
+        for alliance in allys_qs:
+            run_tracker_alliance.delay(
+                alliance_id=alliance.alliance.alliance_id, killmail_id=killmail.id
+            )
+
+    total_killmails = runs + (1 if killmail else 0)
+
+    if killmail and total_killmails < app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN:
+        run_zkb_redis.delay(runs=runs + 1)
+    else:
+        logger.info(
+            "Killboard runs completed. %s killmails received from zKB",
+            total_killmails,
+        )
+
+
 @shared_task
 @when_esi_is_available
-def killmail_fetch_all(runs: int = 0):
-    corps_query = CorporationsAudit.objects.all()
-    allys_query = AlliancesAudit.objects.all()
-    for corp in corps_query:
-        killmail_update_corp.apply_async(args=[corp.corporation.corporation_id])
-        runs = runs + 1
-    for ally in allys_query:
-        killmail_update_ally.apply_async(args=[ally.alliance.alliance_id])
-        runs = runs + 1
-    logger.info("Queued %s Killstats Audit Updates", runs)
-
-
-# pylint: disable=unused-argument
-@shared_task(bind=True, base=QueueOnce)
-@when_esi_is_available
-def killmail_update_corp(self, corp_id: int, runs: int = 0):
-    """Updates the killmails for a corporation"""
-    corp = CorporationsAudit.objects.get(corporation__corporation_id=corp_id)
-    killstats_url = f"https://zkillboard.com/api/npc/0/corporationID/{corp.corporation.corporation_id}/"
-
-    killmail_list = KillmailManager.get_killmail_data_bulk(killstats_url)
-    existing_kms = Killmail.objects.all().values_list("killmail_id", flat=True)
-    if killmail_list:
-        for killmail_dict in killmail_list:
-            killmail = KillmailManager._create_from_dict(killmail_dict)
-            killmail.save()
-            if killmail.id in existing_kms:
-                continue
-            runs = runs + (1 if killmail else 0)
-            Chain(
-                store_killmail.si(killmail.id),
-            ).delay()
-        corp.last_update = timezone.now()
-        corp.save()
-
-    if not runs == 0:
-        logger.info(
-            "Killboard runs completed. %s killmails received from zKB for %s",
-            runs,
-            corp.corporation.corporation_name,
-        )
-    else:
-        logger.debug("No new Killmail found.")
-
-
-# pylint: disable=unused-argument
-@shared_task(bind=True, base=QueueOnce)
-@when_esi_is_available
-def killmail_update_ally(self, alliance_id: int, runs: int = 0):
-    """Updates the killmails for a corporation"""
-    ally = AlliancesAudit.objects.get(alliance__alliance_id=alliance_id)
-    killstats_url = (
-        f"https://zkillboard.com/api/npc/0/allianceID/{ally.alliance.alliance_id}/"
+def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
+    """Run the tracker for the given killmail"""
+    corporation = CorporationsAudit.objects.get(
+        corporation__corporation_id=corporation_id
     )
-
-    killmail_list = KillmailManager.get_killmail_data_bulk(killstats_url)
-
-    existing_kms = Killmail.objects.all().values_list("killmail_id", flat=True)
-
-    if killmail_list:
-        for killmail_dict in killmail_list:
-            killmail = KillmailManager._create_from_dict(killmail_dict)
-            killmail.save()
-            if killmail.id in existing_kms:
-                continue
-            runs = runs + (1 if killmail else 0)
-            Chain(
-                store_killmail.si(killmail.id),
-            ).delay()
-        ally.last_update = timezone.now()
-        ally.save()
-
-    if not runs == 0:
-        logger.info(
-            "Killboard runs completed. %s killmails received from zKB for %s",
-            runs,
-            ally.alliance.alliance_name,
+    killmail = KillmailManager.get(killmail_id)
+    killmail_new = corporation.process_killmail(killmail)
+    if killmail_new:
+        Chain(
+            store_killmail.si(killmail.id),
+        ).delay()
+        logger.debug(
+            "%s: Start storing killmail for %s",
+            killmail.id,
+            corporation.corporation.corporation_name,
         )
-    else:
-        logger.debug("No new Killmail found.")
 
 
-@shared_task(timeout=app_settings.KILLBOARD_TASKS_TIMEOUT)
+@shared_task
+@when_esi_is_available
+def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
+    """Run the tracker for the given killmail"""
+    alliance = AlliancesAudit.objects.get(alliance__alliance_id=alliance_id)
+    killmail = KillmailManager.get(killmail_id)
+    killmail_new = alliance.process_killmail(killmail)
+    if killmail_new:
+        Chain(
+            store_killmail.si(killmail.id),
+        ).delay()
+        logger.debug(
+            "%s: Start storing killmail for %s",
+            killmail.id,
+            alliance.alliance.alliance_name,
+        )
+
+
+@shared_task(timeout=app_settings.KILLSTATS_TASKS_TIMEOUT)
 def store_killmail(killmail_id: int) -> None:
     """stores killmail as EveKillmail object"""
     killmail = KillmailManager.get(killmail_id)

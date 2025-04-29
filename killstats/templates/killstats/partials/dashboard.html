@@ -8,8 +8,28 @@
         <img src="{% static 'killstats/img/Spinner-1s-64px-light.gif' %}">
     {% endif %}
 </div>
-<div class="stats d-flex justify-content-center">
-    <div id="stats" class="row row-cols-4" style="width: 1600px;">
+<div class="stats d-flex justify-content-center mb-2">
+    <div id="stats" class="stats-container row row-cols-4">
         <!--Killboard Stats-->
+    </div>
+</div>
+
+{% comment %}
+    Stats Template
+{% endcomment %}
+
+<div id="stat-template" class="mb-2 d-none">
+    <div class="row g-0 bg-secondary rounded">
+        <div class="col-md-4">
+            <a href="" target="_blank" class="stat-link">
+                <img class="card-img-zoom img-fluid rounded-start w-100 h-100 stat-portrait rounded-start" src="">
+            </a>
+        </div>
+        <div class="col-md-8 px-2 py-2">
+            <div class="card-body">
+                <h5 class="card-title text-truncate stat-title"></h5>
+                <p class="text-truncate stat-info"></p>
+            </div>
+        </div>
     </div>
 </div>

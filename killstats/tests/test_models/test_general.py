@@ -1,10 +1,7 @@
-from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission
 from django.test import TestCase
-from django.utils import timezone
-from eveuniverse.models import EveEntity
 
 from killstats.models.general import General
 
@@ -13,8 +10,8 @@ MODULE_PATH = "killstats.models.general"
 
 class TestGeneralModel(TestCase):
     @classmethod
-    def setUp(self):
-        pass
+    def setUpClass(cls):
+        super().setUpClass()
 
     def test_basic_permission(self):
         # given

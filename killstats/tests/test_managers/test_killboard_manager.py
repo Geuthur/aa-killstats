@@ -1,22 +1,41 @@
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
+from eveuniverse.models import EveEntity, EveType
 
+from allianceauth.eveonline.models import EveAllianceInfo, EveCorporationInfo
 from app_utils.testing import create_user_from_evecharacter
 
-from killstats.api.account_manager import AccountManager
-from killstats.api.helpers import get_corporations
 from killstats.models.killboard import Killmail
+from killstats.tests.testdata.generate_killmail import create_killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_killstats import load_killstats_all
+from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 
-class KillstatManagerQuerySetTest(TestCase):
+class KillstatsManagerTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_killstats_all()
+        load_eveuniverse()
         cls.factory = RequestFactory()
+
+        cls.killmail = create_killmail(
+            killmail_id=1,
+            killmail_date="2025-10-01T00:00:00Z",
+            victim_corporation_id=2001,
+            victim_alliance_id=3001,
+            victim_region_id=1001,
+            victim_solar_system_id=2001,
+            victim_position_x=1.0,
+            victim_position_y=1.0,
+            victim_position_z=1.0,
+            victim=EveEntity.objects.get(id=1001),
+            victim_ship=EveType.objects.get(id=670),
+            victim_total_value=1000,
+            victim_fitted_value=500,
+            victim_destroyed_value=500,
+            victim_dropped_value=500,
+        )
 
     def test_visible_to_superuser(self):
         # given
@@ -69,12 +88,3 @@ class KillstatManagerQuerySetTest(TestCase):
             victim_ship__eve_group__eve_category_id=65
         ).count()
         self.assertEqual(queryset.count(), expected_count)
-
-
-class KillstatManagerTest(TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        super().setUpClass()
-        load_allianceauth()
-        load_killstats_all()
-        cls.factory = RequestFactory()

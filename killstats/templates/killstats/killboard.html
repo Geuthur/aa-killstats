@@ -4,11 +4,20 @@
 {% load killstats %}
 {% load static %}
 
-{% block page_title %} Killstats - Killmail Index {% endblock %}
+{% block page_title %}
+    {{ title }} ⋗ {% translate "Killstats" %}
+{% endblock %}
 
+{% block page_topic %}
+    <h1 class="page-header text-center">
+        {{ title }}
+    </h1>
+{% endblock page_topic %}
 
 {% block extra_css %}
-<link rel="stylesheet" type="text/css" href="/static/killstats/css/cards.css">
+
+{% killstats_static 'css/cards.css' %}
+
 <style>
 @media all {
     #kills th, #losses th,
@@ -32,17 +41,22 @@
 {% endblock extra_css %}
 
 {% block killstats_block %}
-	<!--Modal-->
-	{% include 'killstats/partials/modal.html' with name="ViewTop10Killer" %}
-	<!--Dashboard-->
-	{% include 'killstats/partials/dashboard.html' with stats=stats %}
-	<br>
 	<!--Killstats-->
-	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center">
-		<h3 id="currentMonthLink" class="page-header text-center">Killstats - {{ value|current_month }}</h3>
+	<div class="card bg-primary d-flex flex-row align-items-center justify-content-center mb-2">
+		<h3 id="currentMonthLink" class="page-header text-center">Killstats</h3>
+		<div class="dropdown px-2">
+			<button id="yearDropDownButton" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+				{% now "Y" %}
+			</button>
+			<ul class="dropdown-menu" id="yearDropdown">
+				{% for year in years %}
+					<li><a class="dropdown-item" data-bs-year-id="{{ year }}" href="#">{{ year }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
 		<div class="dropdown px-2" id="overview">
-			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-			Month
+			<button id="monthDropDownButton" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+			{% now "F" %}
 			</button>
 			<ul class="dropdown-menu" id="monthDropdown">
 				<li><a class="dropdown-item" data-bs-month-id="1" href="#">{% trans "January" %}</a></li>
@@ -59,14 +73,17 @@
 				<li><a class="dropdown-item" data-bs-month-id="12" href="#">{% trans "December" %}</a></li>
 			</ul>
 		</div>
-		<div id="top10"></div>
+		<div id="top10" class="px-2"></div>
 	</div>
-	<br>
-	{% include 'killstats/partials/stats.html' %}
+
+	<!--Modal-->
+	{% include 'killstats/partials/modal/modal.html' with name="ViewTop10Killer" %}
+	<!--Dashboard-->
+	{% include 'killstats/partials/dashboard.html' with stats=stats %}
 	<!--Hall-->
 	{% include 'killstats/partials/hall.html' with shame=shame fame=fame %}
-	<br>
-	<div id="killboard" class="card" style="display: none;">
+
+	<div id="killboard" class="card d-none">
 		<div class="rounded-top">
 			<ul class="nav nav-tabs" id="killstats-killmail">
 				<li class="nav-item">
@@ -93,27 +110,15 @@
 {% endblock killstats_block %}
 
 {% block extra_javascript %}
-<script type="application/javascript">
-    $('#modalViewTop10KillerContainer').on('show.bs.modal', function (event) {
-        let button = $(event.relatedTarget)
-        let ajax_url = button.data('ajax_url');
-
-        $("#modalViewTop10KillerContent").load(ajax_url)
-    });
-</script>
-
-<script type="application/javascript">
-    let corporationsettings = {
-        corporation_pk: {{ corporation_pk }},
-        alliance_pk: {{ alliance_pk }},
-    };
-</script>
 {% include 'bundles/datatables-js-bs5.html' %}
 {% include "bundles/moment-js.html" with locale=True %}
 
 {% include "bundles/filterdropdown-js.html" %}
 {% include 'killstats/bundles/killboard-js.html' %}
 
+<script>
+	setupModal('#modalViewTop10KillerContainer', 'ajax_url', '#modalViewTop10KillerContent', '#modalViewTop10KillerLoader');
+</script>
 {% endblock extra_javascript %}
 
 {% block extra_script %}
