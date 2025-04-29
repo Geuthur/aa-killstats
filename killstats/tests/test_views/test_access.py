@@ -36,7 +36,7 @@ class TestViewKillstatsAccess(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_corporation_view(self):
-        """Test view Killstats index."""
+        """Test Corporation View."""
         # given
         request = self.factory.get(reverse("killstats:corporation", args=[2001]))
         request.user = self.user
@@ -46,7 +46,7 @@ class TestViewKillstatsAccess(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_alliance_view(self):
-        """Test view Killstats index."""
+        """Test Alliance View."""
         # given
         request = self.factory.get(reverse("killstats:alliance", args=[3001]))
         request.user = self.user
@@ -56,7 +56,7 @@ class TestViewKillstatsAccess(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_corporation_admin_view(self):
-        """Test view Killstats index."""
+        """Test Corporation Overview."""
         # given
         request = self.factory.get(reverse("killstats:corporation_admin"))
         request.user = self.user
@@ -66,7 +66,7 @@ class TestViewKillstatsAccess(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_alliance_admin_view(self):
-        """Test view Killstats index."""
+        """Test Alliance Overview."""
         # given
         request = self.factory.get(reverse("killstats:alliance_admin"))
         request.user = self.user
