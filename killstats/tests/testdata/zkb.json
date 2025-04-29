@@ -1,24 +1,75 @@
 [
-    {
-      "killmail_id": 119324952,
-      "zkb": {
-        "locationID": 40165483,
-        "hash": "9ab5e26acfffb8baf534be9d832e51c65bd69ad9",
-        "fittedValue": 1018817626.04,
-        "droppedValue": 845710146.24,
-        "destroyedValue": 1018817626.04,
-        "totalValue": 1864527772.28,
-        "points": 1,
-        "npc": false,
-        "solo": false,
-        "awox": false,
-        "labels": [
+  {
+    "killID":119324952,
+    "killmail":{
+      "attackers":[
+          {
+            "alliance_id":99012042,
+            "character_id":1496334487,
+            "corporation_id":930843372,
+            "damage_done":260285,
+            "final_blow":false,
+            "security_status":5.0,
+            "ship_type_id":72811,
+            "weapon_type_id":2488,
+            "faction_id": null
+          }
+      ],
+      "killmail_id":119324952,
+      "killmail_time":"2024-07-08T22:14:39Z",
+      "solar_system_id":30002596,
+      "victim":{
+          "alliance_id":99003581,
+          "corporation_id":98599770,
+          "damage_taken":7164526,
+          "items":[
+            {
+                "flag":180,
+                "item_type_id":56201,
+                "quantity_dropped":1,
+                "singleton":0,
+                "items": null,
+                "quantity_destroyed": null
+            },
+            {
+                "flag":164,
+                "item_type_id":35894,
+                "quantity_dropped":1,
+                "singleton":0,
+                "items": null,
+                "quantity_destroyed": null
+            }
+          ],
+          "position":{
+            "x":-419863972.0,
+            "y":92024643.0,
+            "z":236744203.0
+          },
+          "ship_type_id":35832,
+          "character_id": null,
+          "faction_id": null
+      },
+      "moon_id": null,
+      "war_id": null
+    },
+    "zkb":{
+      "locationID":40165483,
+      "hash":"9ab5e26acfffb8baf534be9d832e51c65bd69ad9",
+      "fittedValue":1018817626.04,
+      "droppedValue":845710146.24,
+      "destroyedValue":1018817626.04,
+      "totalValue":1864527772.28,
+      "points":1,
+      "npc":false,
+      "solo":false,
+      "awox":false,
+      "labels":[
           "cat:65",
           "#:50+",
           "pvp",
           "loc:nullsec",
           "isk:1b+"
-        ]
-      }
+      ]
     }
+  }
 ]
