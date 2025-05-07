@@ -22,6 +22,7 @@ urlpatterns = [
     # -- Killstats Audit
     path("add_corp/", views.add_corp, name="add_corp"),
     path("add_alliance/", views.add_alliance, name="add_alliance"),
+    path("add_killmail/", views.add_killmail, name="add_killmail"),
     # -- API System
     re_path(r"^api/", api.urls),
 ]

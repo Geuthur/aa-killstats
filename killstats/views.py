@@ -16,8 +16,11 @@ from allianceauth.eveonline.providers import ObjectNotFound, provider
 
 # AA Killstats
 from killstats import __title__
+from killstats.forms import SingleKillmail
+from killstats.managers.killboard_manager import KillmailManager
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
+from killstats.tasks import store_killmail
 
 from .hooks import get_extension_logger
 
@@ -169,3 +172,47 @@ def alliance_admin(request):
         "title": "Alliance Overview",
     }
     return render(request, "killstats/admin/alliance_admin.html", context=context)
+
+
+@login_required
+@permission_required("killstats.basic_access")
+def add_killmail(request):
+    """
+    Test
+    """
+    context = {
+        "title": "Test",
+        "forms": {
+            "single_killmail": SingleKillmail(),
+        },
+    }
+    form = SingleKillmail(request.POST)
+
+    if form.is_valid():
+        killmail_id = int(form.cleaned_data["killmail_id"])
+
+        try:
+            killmail = Killmail.objects.get(killmail_id=killmail_id)
+            messages.error(
+                request,
+                _(
+                    "Killmail {killmail_id} already exists. "
+                    "Please check the killmail ID and try again."
+                ).format(killmail_id=killmail_id),
+            )
+            return render(request, "killstats/killmail_add.html", context=context)
+        except Killmail.DoesNotExist:
+            killmail = KillmailManager.get_single_killmail(killmail_id)
+            killmail.save()
+
+            killmail = KillmailManager.get(killmail_id)
+
+            if killmail:
+                store_killmail.apply_async((killmail.id,))
+                messages.success(
+                    request,
+                    _("Killmail {killmail_id} has been added to Killstats.").format(
+                        killmail_id=killmail_id
+                    ),
+                )
+    return render(request, "killstats/killmail_add.html", context=context)
