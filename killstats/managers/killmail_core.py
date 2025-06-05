@@ -39,7 +39,7 @@ from killstats.providers import esi
 
 logger = get_extension_logger(__name__)
 
-ZKB_REDISQ_URL = "https://redisq.zkillboard.com/listen.php"
+ZKB_REDISQ_URL = "https://zkillredisq.stream/listen.php"
 REQUESTS_TIMEOUT = (5, 30)
 RETRY_DELAY = 3
 

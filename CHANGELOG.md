@@ -2,6 +2,10 @@
 
 ## [0.5.3] - 07.05.2025
 
+### Fixed
+
+- New zKB Redis URL
+
 ### Added
 
 - Add Killmail to Killstats System
