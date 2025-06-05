@@ -1,0 +1,54 @@
+{% extends 'killstats/base.html' %}
+{% load i18n %}
+{% load humanize %}
+{% load killstats %}
+{% load static %}
+{% load bootstrap %}
+
+{% block page_title %}
+    {{ title }} ⋗ {% translate "Killstats" %}
+{% endblock %}
+
+{% block page_topic %}
+    <h1 class="page-header text-center">
+        {{ title }}
+    </h1>
+{% endblock page_topic %}
+
+{% block extra_css %}
+
+{% killstats_static 'css/cards.css' %}
+
+{% endblock extra_css %}
+
+{% block killstats_block %}
+	<div id="killboard" class="card">
+        <div class="card-header bg-primary d-flex flex-row align-items-center justify-content-center mb-2">
+            <h3 class="page-header text-center">Killstats - Add Killmail</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'killstats:add_killmail' %}" class="form-inline">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <fieldset class="assets-single-request-form">
+                        {{ forms.single_killmail|bootstrap }}
+                    </fieldset>
+                    <button type="submit" class="btn btn-primary mt-2">
+                        {% translate "Add Killmail" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+	</div>
+{% endblock killstats_block %}
+
+{% block extra_javascript %}
+{% include 'bundles/datatables-js-bs5.html' %}
+{% include "bundles/moment-js.html" with locale=True %}
+
+{% include "bundles/filterdropdown-js.html" %}
+
+{% endblock extra_javascript %}
+
+{% block extra_script %}
+{% endblock extra_script %}
