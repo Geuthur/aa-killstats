@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.4] - 05.07.2025
+
+### Changed
+
+- Minimum dependencies
+  - allianceauth>=4.8.0
+
+### Fixed
+
+- Wrong Static path
+
 ## [0.5.3] - 07.05.2025
 
 ### Fixed
