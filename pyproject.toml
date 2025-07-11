@@ -34,14 +34,15 @@ dynamic = [
 ]
 dependencies = [
     "allianceauth>=4.8,<5",
-    "allianceauth-app-utils>=1.19",
+    "allianceauth-app-utils>=1.26",
     "dacite",
-    "django-eveuniverse>=1.3",
+    "django-esi>=7.0.1",
+    "django-eveuniverse>=1.5.7",
     "django-ninja",
 ]
 optional-dependencies.tests-allianceauth-latest = [
     "coverage",
-    "django-webtest",
+    "factory-boy",
 ]
 urls.Changelog = "https://github.com/Geuthur/aa-killstats/blob/master/CHANGELOG.md"
 urls.Documentation = "https://github.com/Geuthur/aa-killstats/blob/master/README.md"
@@ -57,26 +58,3 @@ include = [
 
 [tool.hatch.version]
 path = "killstats/__init__.py"
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-sections = [
-    "FUTURE",
-    "STDLIB",
-    "THIRDPARTY",
-    "DJANGO",
-    "ALLIANCEAUTH",
-    "FIRSTPARTY",
-    "LOCALFOLDER",
-]
-known_allianceauth = [
-    "allianceauth",
-    "app_utils",
-]
-known_django = [
-    "django",
-    "django_webtest",
-    "esi",
-    "eveuniverse",
-]
