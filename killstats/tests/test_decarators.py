@@ -1,9 +1,13 @@
+# Standard Library
 from unittest.mock import patch
 
+# Django
 from django.test import TestCase
 
+# Alliance Auth (External Libs)
 from app_utils.esi import EsiDailyDowntime
 
+# AA Killstats
 from killstats.decorators import when_esi_is_available
 from killstats.hooks import get_extension_logger
 
@@ -51,6 +55,7 @@ class TestDecorators(TestCase):
 
     def test_log_timing(self):
         # given
+        # AA Killstats
         from killstats.decorators import log_timing
 
         logger = get_extension_logger(__name__)

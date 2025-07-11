@@ -1,14 +1,20 @@
+# Standard Library
 from unittest.mock import MagicMock, patch
 
+# Django
 from django.contrib.admin.sites import AdminSite
 from django.contrib.messages import get_messages
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase
 
+# Alliance Auth
 from allianceauth.eveonline.evelinks import eveimageserver
+
+# Alliance Auth (External Libs)
 from app_utils.testdata_factories import UserFactory
 
+# AA Killstats
 from killstats.admin import (
     AlliancesAuditAdmin,
     CorporationsAuditAdmin,

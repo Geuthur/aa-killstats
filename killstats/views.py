@@ -1,18 +1,20 @@
 """App Views"""
 
+# Django
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models.functions import ExtractYear
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
-from esi.decorators import token_required
 
+# Alliance Auth
 from allianceauth.eveonline.models import (
     EveAllianceInfo,
     EveCharacter,
     EveCorporationInfo,
 )
 from allianceauth.eveonline.providers import ObjectNotFound, provider
+from esi.decorators import token_required
 
 # AA Killstats
 from killstats import __title__

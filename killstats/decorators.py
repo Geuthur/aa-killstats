@@ -6,6 +6,7 @@ from functools import wraps
 # Alliance Auth (External Libs)
 from app_utils.esi import EsiDailyDowntime, fetch_esi_status
 
+# AA Killstats
 from killstats.hooks import get_extension_logger
 
 logger = get_extension_logger(__name__)

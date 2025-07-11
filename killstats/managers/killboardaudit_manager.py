@@ -1,5 +1,7 @@
+# Django
 from django.db import models
 
+# AA Killstats
 from killstats.hooks import get_extension_logger
 
 logger = get_extension_logger(__name__)

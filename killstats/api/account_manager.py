@@ -1,6 +1,8 @@
+# Alliance Auth
 from allianceauth.authentication.models import UserProfile
 from allianceauth.eveonline.models import EveCharacter
 
+# AA Killstats
 from killstats.hooks import get_extension_logger
 
 logger = get_extension_logger(__name__)

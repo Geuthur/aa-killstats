@@ -1,7 +1,9 @@
 """AA Hooks"""
 
+# Standard Library
 import logging
 
+# AA Killstats
 from killstats.app_settings import KILLSTATS_LOGGER_USE
 
 

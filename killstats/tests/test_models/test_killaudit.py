@@ -1,5 +1,7 @@
+# Django
 from django.test import TestCase
 
+# AA Killstats
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.tests.testdata.generate_killstats import (
     create_allianceaudit_from_character_id,

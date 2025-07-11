@@ -1,11 +1,13 @@
 """App Tasks"""
 
+# Third Party
 from celery import chain as Chain
 from celery import shared_task
 
 # Django
 from django.db import IntegrityError
 
+# AA Killstats
 # AA Killstatsp
 from killstats import app_settings
 from killstats.decorators import when_esi_is_available

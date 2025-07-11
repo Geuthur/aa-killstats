@@ -2,15 +2,15 @@
 Helper functions for static integrity calculations
 """
 
-import logging
-
 # Standard Library
+import logging
 import os
 from pathlib import Path
 
 # Third Party
 from sri import Algorithm, calculate_integrity
 
+# AA Killstats
 # AA Fleet Pings
 from killstats import __title__
 from killstats.constants import AA_KILLSTATS_STATIC_DIR

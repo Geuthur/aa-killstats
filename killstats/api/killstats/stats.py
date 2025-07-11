@@ -1,14 +1,15 @@
 """API"""
 
+# Third Party
 from ninja import NinjaAPI
 
+# Django
 from django.db.models import Count, Q
 from django.shortcuts import render
 
+# AA Killstats
 from killstats.api.killstats import api_helper
 from killstats.hooks import get_extension_logger
-
-# AA Killstats
 from killstats.models.killboard import Attacker, Killmail
 
 logger = get_extension_logger(__name__)
