@@ -9,13 +9,13 @@ Thank you for considering contributing to our project! Here are some guidelines 
 1. **Clone your fork**: Clone your forked repository to your local machine.
 
    ```sh
-   git clone https://github.com/geuthur/aa-ledger.git
+   git clone https://github.com/geuthur/aa-killstats.git
    ```
 
 1. **Set up the upstream remote**: Add the original repository as a remote to keep your fork up to date.
 
    ```sh
-   git remote add upstream https://github.com/geuthur/aa-ledger.git
+   git remote add upstream https://github.com/geuthur/aa-killstats.git
    ```
 
 1. **Set up Alliance Auth Development Environment**
