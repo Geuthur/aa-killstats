@@ -1,13 +1,19 @@
+# Standard Library
 from unittest.mock import patch
 
+# Django
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+# Alliance Auth
 from allianceauth.authentication.models import UserProfile
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
+
+# Alliance Auth (External Libs)
 from app_utils.testing import create_user_from_evecharacter
 
+# AA Killstats
 from killstats.api.account_manager import AccountManager
 from killstats.api.killstats.api_helper import get_alliances, get_corporations
 from killstats.tests.testdata.load_allianceauth import load_allianceauth

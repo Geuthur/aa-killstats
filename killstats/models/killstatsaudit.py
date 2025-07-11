@@ -2,15 +2,18 @@
 Killstats Audit Model
 """
 
+# Django
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+# Alliance Auth
 from allianceauth.eveonline.models import (
     EveAllianceInfo,
     EveCharacter,
     EveCorporationInfo,
 )
 
+# AA Killstats
 from killstats.hooks import get_extension_logger
 from killstats.managers.killboardaudit_manager import (
     AllianceManager,

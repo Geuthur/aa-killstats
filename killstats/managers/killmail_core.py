@@ -12,19 +12,18 @@ import requests
 from dacite import DaciteError, from_dict
 from redis.exceptions import LockError
 
+# Django
 from django.conf import settings
 from django.core.cache import cache
-
-# Django
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.dateparse import parse_datetime
-from eveuniverse.models import EveEntity, EveType
 
 # Alliance Auth (External Libs)
 from app_utils.allianceauth import get_redis_client
 from app_utils.json import JSONDateTimeDecoder, JSONDateTimeEncoder
+from eveuniverse.models import EveEntity, EveType
 
-# AA Voices of War
+# AA Killstats
 from killstats import USER_AGENT_TEXT, __title__, __version__
 from killstats.app_settings import (
     KILLSTATS_QUEUE_ID,
@@ -173,6 +172,7 @@ class KillmailManager(_KillmailBase):
     def get_single_killmail(cls, killmail_id: int):
         """Get kill data from zKillboard"""
         # pylint: disable=import-outside-toplevel
+        # AA Killstats
         from killstats.models.killboard import Killmail
 
         cache_key = f"{STORAGE_BASE_KEY}_KILLMAIL_{killmail_id}"
@@ -335,6 +335,7 @@ class KillmailManager(_KillmailBase):
     def get_or_create_region_id(solar_system_id: int) -> int:
         """Get or create region ID from solar system ID."""
         # pylint: disable=import-outside-toplevel
+        # Alliance Auth (External Libs)
         from eveuniverse.models import EveSolarSystem
 
         solar_system, new_entry = EveSolarSystem.objects.get_or_create_esi(
@@ -347,6 +348,7 @@ class KillmailManager(_KillmailBase):
 
     def create_attackers(self, killmail, killmanager):
         # pylint: disable=import-outside-toplevel
+        # AA Killstats
         from killstats.models.killboard import Attacker
 
         for attacker in killmanager.attackers:

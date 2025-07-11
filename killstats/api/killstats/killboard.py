@@ -1,7 +1,9 @@
 """API"""
 
+# Third Party
 from ninja import NinjaAPI
 
+# Django
 from django.http import JsonResponse
 
 # AA Killstats

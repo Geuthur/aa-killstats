@@ -1,16 +1,22 @@
+# Standard Library
 from http import HTTPStatus
 from unittest.mock import Mock, patch
 
+# Django
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
-from esi.models import Token
 
+# Alliance Auth
 from allianceauth.eveonline.models import (
     EveAllianceInfo,
 )
+from esi.models import Token
+
+# Alliance Auth (External Libs)
 from app_utils.testing import create_user_from_evecharacter
 
+# AA Killstats
 from killstats.models.killstatsaudit import AlliancesAudit
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.views import (

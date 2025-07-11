@@ -1,8 +1,11 @@
+# Standard Library
 from unittest.mock import patch
 
+# Django
 from django.contrib.auth.models import Permission
 from django.test import TestCase
 
+# AA Killstats
 from killstats.models.general import General
 
 MODULE_PATH = "killstats.models.general"

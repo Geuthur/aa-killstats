@@ -1,3 +1,4 @@
+# AA Killstats
 from killstats.models.killboard import Attacker, Killmail
 
 

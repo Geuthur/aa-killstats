@@ -1,6 +1,8 @@
+# Django
 from django.template import Context, Template
 from django.test import TestCase, override_settings
 
+# AA Killstats
 from killstats import __version__
 from killstats.helpers.static_files import calculate_integrity_hash
 

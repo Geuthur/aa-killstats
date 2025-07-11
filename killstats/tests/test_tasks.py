@@ -1,8 +1,11 @@
+# Standard Library
 import json
 from unittest.mock import MagicMock, patch
 
+# Django
 from django.test import TestCase, override_settings
 
+# AA Killstats
 from killstats.managers.killmail_core import KillmailManager
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.tasks import (

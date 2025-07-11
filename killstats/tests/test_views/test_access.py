@@ -1,9 +1,12 @@
+# Standard Library
 from http import HTTPStatus
 from unittest.mock import Mock, patch
 
+# Django
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+# AA Killstats
 from killstats import views
 from killstats.tests.testdata.generate_killstats import (
     create_user_from_evecharacter_with_access,

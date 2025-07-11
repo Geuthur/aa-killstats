@@ -1,5 +1,7 @@
+# Django
 from django.test import TestCase
 
+# AA Killstats
 from killstats.hooks import get_extension_logger
 
 

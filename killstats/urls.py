@@ -3,9 +3,8 @@
 # Django
 from django.urls import path, re_path
 
-from killstats import views
-
 # AA Killstats
+from killstats import views
 from killstats.api import api
 
 app_name: str = "killstats"

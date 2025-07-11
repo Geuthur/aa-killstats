@@ -6,6 +6,7 @@ from typing import Any
 # Django
 from django.db import models, transaction
 
+# AA Killstats
 # AA Voices of War
 from killstats.hooks import get_extension_logger
 from killstats.managers.killmail_core import KillmailManager
@@ -17,6 +18,7 @@ class KillmailQueryCore(models.QuerySet):
     def filter_entities(self, entities):
         """Filter Kills and Losses from Entities List (Corporations or Alliances)."""
         # pylint: disable=import-outside-toplevel
+        # AA Killstats
         from killstats.models.killboard import Attacker
 
         # Get all Killmail IDs
@@ -44,6 +46,7 @@ class KillmailQueryCore(models.QuerySet):
     def filter_entities_kills(self, entities):
         """Filter Kills from Entities List (Corporations or Alliances)."""
         # pylint: disable=import-outside-toplevel
+        # AA Killstats
         from killstats.models.killboard import Attacker
 
         kms = []

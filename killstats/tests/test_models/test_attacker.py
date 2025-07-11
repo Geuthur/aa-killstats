@@ -1,7 +1,11 @@
+# Django
 from django.test import TestCase
 from django.utils import timezone
+
+# Alliance Auth (External Libs)
 from eveuniverse.models import EveEntity, EveType
 
+# AA Killstats
 from killstats.tests.testdata.generate_killmail import create_attacker, create_killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse

@@ -1,12 +1,16 @@
 """Admin models"""
 
+# Third Party
 from django_redis import get_redis_connection
 
+# Django
 from django.contrib import admin
 from django.utils.html import format_html
 
+# Alliance Auth
 from allianceauth.eveonline.evelinks import eveimageserver
 
+# AA Killstats
 from killstats.hooks import get_extension_logger
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 

@@ -1,8 +1,11 @@
+# Standard Library
 import hashlib
 
+# Django
 from django.core.cache import cache
 from django.db.models import Count, Q, Sum
 
+# AA Killstats
 from killstats.api.account_manager import AccountManager
 from killstats.api.helpers import get_alliances, get_corporations
 from killstats.app_settings import KILLSTATS_API_CACHE_LIFETIME
