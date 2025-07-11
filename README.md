@@ -47,7 +47,7 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 
 ### Step 0 - Check dependencies are installed<a name="step0"></a>
 
-- Ledger needs the app [django-eveuniverse](https://apps.allianceauth.org/apps/detail/django-eveuniverse) to function. Please make sure it is installed.
+- Killstats needs the app [django-eveuniverse](https://apps.allianceauth.org/apps/detail/django-eveuniverse) to function. Please make sure it is installed.
 
 ### Step 1 - Install the Package<a name="step1"></a>
 
