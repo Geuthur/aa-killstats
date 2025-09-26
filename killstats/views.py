@@ -14,7 +14,11 @@ from allianceauth.eveonline.models import (
     EveCorporationInfo,
 )
 from allianceauth.eveonline.providers import ObjectNotFound, provider
+from allianceauth.services.hooks import get_extension_logger
 from esi.decorators import token_required
+
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
 
 # AA Killstats
 from killstats import __title__
@@ -24,9 +28,7 @@ from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.tasks import store_killmail
 
-from .hooks import get_extension_logger
-
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 @login_required

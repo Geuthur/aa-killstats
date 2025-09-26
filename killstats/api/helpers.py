@@ -1,11 +1,14 @@
 # Alliance Auth
 from allianceauth.eveonline.models import EveCharacter
+from allianceauth.services.hooks import get_extension_logger
+
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
 
 # AA Killstats
-from killstats import models
-from killstats.hooks import get_extension_logger
+from killstats import __title__, models
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 # NOTE: not implemented yet

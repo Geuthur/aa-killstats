@@ -3,13 +3,17 @@ from django.contrib.auth.models import Permission
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
 # Alliance Auth (External Libs)
 from app_utils.django import users_with_permission
+from app_utils.logging import LoggerAddTag
 
 # AA Killstats
-from killstats.hooks import get_extension_logger
+from killstats import __title__
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 class General(models.Model):

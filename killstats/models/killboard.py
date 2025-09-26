@@ -2,14 +2,18 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
 # Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
 from eveuniverse.models import EveEntity, EveType
 
 # AA Killstats
-from killstats.hooks import get_extension_logger
+from killstats import __title__
 from killstats.managers.killboard_manager import EveKillmailManager
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 class Killmail(models.Model):

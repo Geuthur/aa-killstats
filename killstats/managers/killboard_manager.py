@@ -6,14 +6,20 @@ from typing import TYPE_CHECKING, Any
 # Django
 from django.db import models, transaction
 
-# AA Killstats
-from killstats.hooks import get_extension_logger
-
 if TYPE_CHECKING:
     # AA Killstats
     from killstats.helpers.killmail import KillmailBody
 
-logger = get_extension_logger(__name__)
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
+# AA Killstats
+from killstats import __title__
+
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 class KillmailQueryCore(models.QuerySet):
