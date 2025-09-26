@@ -5,6 +5,7 @@ from celery import chain as Chain
 from celery import shared_task
 
 # Django
+from django.core.cache import cache
 from django.db import IntegrityError
 
 # Alliance Auth
@@ -45,6 +46,10 @@ def run_zkb_redis():
             killmail = KillmailBody.create_from_zkb_redisq()
         except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error("Error fetching killmail from zKB RedisQ: %s", e)
+            break
+
+        if cache.get(f"{__title__.upper()}_WORKER_SHUTDOWN"):
+            logger.info("Worker shutdown detected; stopping zKB RedisQ processing")
             break
 
         if not killmail:

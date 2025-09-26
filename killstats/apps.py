@@ -14,3 +14,8 @@ class KillstatsrConfig(AppConfig):
     name = "killstats"
     label = "killstats"
     verbose_name = f"Killstats v{__version__}"
+
+    def ready(self) -> None:
+        # AA Killstats
+        # pylint: disable=import-outside-toplevel
+        import killstats.signals  # pylint: disable=unused-import
