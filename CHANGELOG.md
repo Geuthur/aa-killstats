@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.7] - 26.09.2025
+
+### Added
+
+- timeout for redis lock
+
+### Changed
+
+- while to for to avoid infinite loops
+
+### Removed
+
+- raise_for_status()
+
 ## [0.5.6] - 26.09.2025
 
 As of August 2025 zKB redis has changed their request limitations [see here](https://github.com/zKillboard/RedisQ/blob/master/README.md#limitations)
