@@ -1,10 +1,10 @@
 {% comment %}
 <script src="/static/killstats/js/killboard.js"></script>
 {% endcomment %}
-{% load killstats %}
+{% load sri %}
 {% load i18n %}
 
-{% killstats_static 'js/common-scripts.js' %}
+{% sri_static 'killstats/js/common-scripts.js' %}
 
 <script type="application/javascript">
     let killstatssettings = {
@@ -26,4 +26,4 @@ window.translations = {
 };
 </script>
 
-{% killstats_static 'js/killstats.js' %}
+{% sri_static 'killstats/js/killstats.js' %}
