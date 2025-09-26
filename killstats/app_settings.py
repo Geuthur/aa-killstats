@@ -39,5 +39,8 @@ KILLSTATS_QUEUE_ID = clean_setting("KILLSTATS_QUEUE_ID", "")
 # Max duration to wait for new killmails from redisq in seconds
 KILLSTATS_REDISQ_TTW = clean_setting("KILLSTATS_REDISQ_TTW", 5)
 
-# Timeout for Lock to ensure atomic access to ZKB RedisQ
-KILLSTATS_REDISQ_LOCK_TIMEOUT = clean_setting("KILLSTATS_REDISQ_LOCK_TIMEOUT", 5)
+# Rate limiting for zKillboard RedisQ requests
+# Max seconds to wait trying to acquire a rate slot (0 = don't wait)
+KILLSTATS_REDISQ_RATE_TIMEOUT = clean_setting("KILLSTATS_REDISQ_RATE_TIMEOUT", 10)
+# Maximum allowed requests per second across all workers/processes
+KILLSTATS_REDISQ_MAX_PER_SEC = clean_setting("KILLSTATS_REDISQ_MAX_PER_SEC", 2)
