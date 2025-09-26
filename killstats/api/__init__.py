@@ -5,11 +5,17 @@ from ninja.security import django_auth
 # Django
 from django.conf import settings
 
-# AA Killstats
-from killstats.api import killstats
-from killstats.hooks import get_extension_logger
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
 
-logger = get_extension_logger(__name__)
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
+# AA Killstats
+from killstats import __title__
+from killstats.api import killstats
+
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 api = NinjaAPI(
     title="Killstats API",

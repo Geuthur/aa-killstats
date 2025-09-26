@@ -3,13 +3,17 @@ import sys
 import time
 from functools import wraps
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
 # Alliance Auth (External Libs)
 from app_utils.esi import EsiDailyDowntime, fetch_esi_status
+from app_utils.logging import LoggerAddTag
 
 # AA Killstats
-from killstats.hooks import get_extension_logger
+from killstats import __title__
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 # True when tests are currently running, else False.
 IS_TESTING = sys.argv[1:2] == ["test"]

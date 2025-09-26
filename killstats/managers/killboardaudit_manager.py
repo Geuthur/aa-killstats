@@ -1,10 +1,16 @@
 # Django
 from django.db import models
 
-# AA Killstats
-from killstats.hooks import get_extension_logger
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
 
-logger = get_extension_logger(__name__)
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
+# AA Killstats
+from killstats import __title__
+
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 class CorporationsAuditQuerySet(models.QuerySet):

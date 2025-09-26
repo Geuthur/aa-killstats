@@ -3,12 +3,18 @@
 # Third Party
 from ninja import NinjaAPI
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
 # AA Killstats
+from killstats import __title__
 from killstats.api import schema
-from killstats.hooks import get_extension_logger
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 class KillboardAdminApiEndpoints:

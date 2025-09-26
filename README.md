@@ -84,6 +84,26 @@ KILLSTATS_QUEUE_ID = ""
 KILLSTATS_QUEUE_ID = "MyGneutenCorporation2000"
 ```
 
+### Step 3.1 - (Optional) Add own Logger File
+
+To set up the Logger add following code to your `local.py`
+Ensure that you have writing permission in logs folder.
+
+```python
+LOGGING["handlers"]["killstats_file"] = {
+    "level": "DEBUG",
+    "class": "logging.handlers.RotatingFileHandler",
+    "filename": os.path.join(BASE_DIR, "log/killstats.log"),
+    "formatter": "verbose",
+    "maxBytes": 1024 * 1024 * 5,
+    "backupCount": 5,
+}
+LOGGING["loggers"]["extensions.killstats"] = {
+    "handlers": ["killstats_file"],
+    "level": "DEBUG",
+}
+```
+
 ### Step 4 - Migration to AA<a name="step4"></a>
 
 ```shell
@@ -107,33 +127,7 @@ The Following Settings can be setting up in the `local.py`
 | Setting                        | Configuration(default)     | Description                                  |
 | :----------------------------- | :------------------------- | :------------------------------------------- |
 | `KILLSTATS_APP_NAME`           | `"YOURNAME"` ("Killstats") | Set the name of the APP.                     |
-| `KILLSTATS_LOGGER_USE`         | `True / False` (False)     | Set to use own Logger File.                  |
 | `KILLBOARD_API_CACHE_LIFETIME` | `5` (10)                   | Set Cache Lifetime for Killstats in Minutes. |
-
-If you set up KILLSTATS_LOGGER_USE to `True` you need to add the following code below:
-
-```python
-LOGGING_KILLSTATS = {
-    "handlers": {
-        "killstats_file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "log/killstats.log"),
-            "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
-        },
-    },
-    "loggers": {
-        "killstats": {
-            "handlers": ["killstats_file", "console"],
-            "level": "INFO",
-        },
-    },
-}
-LOGGING["handlers"].update(LOGGING_KILLSTATS["handlers"])
-LOGGING["loggers"].update(LOGGING_KILLSTATS["loggers"])
-```
 
 ## Highlights<a name="highlights"></a>
 

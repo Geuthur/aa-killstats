@@ -18,8 +18,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
 # Alliance Auth (External Libs)
 from app_utils.json import JSONDateTimeDecoder, JSONDateTimeEncoder
+from app_utils.logging import LoggerAddTag
 from eveuniverse.models import EveEntity, EveSolarSystem, EveType
 
 # AA Killstats
@@ -33,11 +37,10 @@ from killstats.app_settings import (
     STORAGE_BASE_KEY,
     ZKILLBOARD_API_URL,
 )
-from killstats.hooks import get_extension_logger
 from killstats.models.killboard import Attacker
 from killstats.providers import esi
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 ZKB_REDISQ_URL = "https://zkillredisq.stream/listen.php"
 REQUESTS_TIMEOUT = (5, 30)

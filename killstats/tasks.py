@@ -8,17 +8,20 @@ from celery import shared_task
 from django.db import IntegrityError
 
 # Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
 # AA Killstats
-from killstats import app_settings
+from killstats import __title__, app_settings
 from killstats.decorators import when_esi_is_available
 from killstats.helpers.killmail import KillmailBody
-from killstats.hooks import get_extension_logger
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 MAX_RETRIES_DEFAULT = 3
 

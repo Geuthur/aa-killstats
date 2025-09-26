@@ -6,12 +6,18 @@ from ninja import NinjaAPI
 # Django
 from django.http import JsonResponse
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
 # AA Killstats
+from killstats import __title__
 from killstats.api import schema
 from killstats.api.killstats import api_helper
-from killstats.hooks import get_extension_logger
 
-logger = get_extension_logger(__name__)
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 
 class KillboardApiEndpoints:
