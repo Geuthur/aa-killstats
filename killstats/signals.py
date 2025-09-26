@@ -52,10 +52,10 @@ def worker_shutting_down_handler(sender, **kwargs):  # pylint: disable=unused-ar
 def worker_shutdown_handler(sender, **kwargs):  # pylint: disable=unused-argument
     """Handle worker shutdown signal.
 
-    Celery sends this signal when a worker is in the process of shutting down.
-    We use this signal to clear the shutdown flag in the cache, ensuring that
-    the system is marked as inactive. This helps maintain a clean state after
-    the worker has shut down.
+    This signal is sent when a Celery worker has fully shut down. We use this
+    signal to clear any existing QueueOnce locks for tasks that should only run
+    once at a time. This ensures that when the worker restarts, tasks can be
+    executed again without being blocked by stale locks.
     """
     # Only attempt to clear the lock if we have a redis/cache client
     redis = get_redis_client()
@@ -75,16 +75,14 @@ def worker_shutdown_handler(sender, **kwargs):  # pylint: disable=unused-argumen
         # The celery-once key format (used by celery_once/helpers.queue_once_key)
         # starts with 'qo_' + task name when there are no task kwargs.
         key = f"qo_{run_zkb_task.name}"
-        try:
-            deleted = cache.delete(key)
-            logger.debug(
-                "Cleared QueueOnce lock for %s on shutdown (key=%s, deleted=%s)",
-                run_zkb_task.name,
-                key,
-                deleted,
-            )
-        except Exception:  # pylint: disable=broad-exception-caught
-            logger.exception("Error deleting cache key for QueueOnce lock: %s", key)
+
+        deleted = cache.delete(key)
+        logger.debug(
+            "Cleared QueueOnce lock for %s on shutdown (key=%s, deleted=%s)",
+            run_zkb_task.name,
+            key,
+            deleted,
+        )
         logger.debug("Worker shutdown signal successfully processed for %s", sender)
     except Exception:  # pylint: disable=broad-exception-caught
         logger.exception("Failed to clear QueueOnce lock for run_zkb_redis")
