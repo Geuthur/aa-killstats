@@ -1,10 +1,10 @@
 """Initialize the app"""
 
-__version__ = "0.5.5"
+__version__ = "0.5.6"
 __title__ = "Killstats"
 
 __package_name__ = "aa-killstats"
-
+__app_name__ = "killstats"
 __app_name_useragent__ = "AA-Killstats"
 __github_url__ = f"https://github.com/Geuthur/{__package_name__}"
 
