@@ -20,7 +20,7 @@ from django.utils.dateparse import parse_datetime
 
 # Alliance Auth (External Libs)
 from app_utils.json import JSONDateTimeDecoder, JSONDateTimeEncoder
-from eveuniverse.models import EveEntity, EveType
+from eveuniverse.models import EveEntity, EveSolarSystem, EveType
 
 # AA Killstats
 from killstats import USER_AGENT_TEXT, __title__, __version__
@@ -34,6 +34,7 @@ from killstats.app_settings import (
     ZKILLBOARD_API_URL,
 )
 from killstats.hooks import get_extension_logger
+from killstats.models.killboard import Attacker
 from killstats.providers import esi
 
 logger = get_extension_logger(__name__)
@@ -122,8 +123,8 @@ class KillmailZkb(_KillmailBase):
 
 
 @dataclass
-class KillmailManager(_KillmailBase):
-    """Killmail Manager"""
+class KillmailBody(_KillmailBase):
+    """A killmail body as returned from ZKB RedisQ or ZKB API."""
 
     _STORAGE_BASE_KEY = "killboard_storage_killmail_"
 
@@ -178,7 +179,7 @@ class KillmailManager(_KillmailBase):
         cache_key = f"{STORAGE_BASE_KEY}_KILLMAIL_{killmail_id}"
         killmail_json = cache.get(cache_key)
         if killmail_json:
-            return KillmailManager.from_json(killmail_json)
+            return KillmailBody.from_json(killmail_json)
 
         logger.debug("Fetching killmail %s from zKillboard", killmail_id)
 
@@ -288,7 +289,7 @@ class KillmailManager(_KillmailBase):
         return True
 
     @classmethod
-    def create_from_zkb_redisq(cls) -> Optional["KillmailManager"]:
+    def create_from_zkb_redisq(cls) -> Optional["KillmailBody"]:
         """Fetches and returns a killmail from ZKB.
 
         Returns None if no killmail is received.
@@ -381,10 +382,6 @@ class KillmailManager(_KillmailBase):
     @staticmethod
     def get_or_create_region_id(solar_system_id: int) -> int:
         """Get or create region ID from solar system ID."""
-        # pylint: disable=import-outside-toplevel
-        # Alliance Auth (External Libs)
-        from eveuniverse.models import EveSolarSystem
-
         solar_system, new_entry = EveSolarSystem.objects.get_or_create_esi(
             id=solar_system_id
         )
@@ -394,10 +391,6 @@ class KillmailManager(_KillmailBase):
         return region_id.id
 
     def create_attackers(self, killmail, killmanager):
-        # pylint: disable=import-outside-toplevel
-        # AA Killstats
-        from killstats.models.killboard import Attacker
-
         for attacker in killmanager.attackers:
             character = None
             if attacker.character_id:
@@ -431,7 +424,7 @@ class KillmailManager(_KillmailBase):
         return True
 
     @classmethod
-    def get(cls, cache_id: int) -> "KillmailManager":
+    def get(cls, cache_id: int) -> "KillmailBody":
         """Fetch a killmail from temporary storage."""
         data = cache.get(key=cls._storage_key(cache_id))
         if not data:
@@ -445,16 +438,16 @@ class KillmailManager(_KillmailBase):
         return cls._STORAGE_BASE_KEY + str(cache_id)
 
     @classmethod
-    def from_dict(cls, data: dict) -> "KillmailManager":
+    def from_dict(cls, data: dict) -> "KillmailBody":
         """Create new object from dictionary."""
         try:
-            return from_dict(data_class=KillmailManager, data=data)
+            return from_dict(data_class=KillmailBody, data=data)
         except DaciteError as ex:
             logger.error("Failed to convert dict to %s", type(cls), exc_info=True)
             raise ex
 
     @classmethod
-    def from_json(cls, json_str: str) -> "KillmailManager":
+    def from_json(cls, json_str: str) -> "KillmailBody":
         """Create new object from JSON data."""
         return cls.from_dict(json.loads(json_str, cls=JSONDateTimeDecoder))
 
@@ -528,7 +521,7 @@ class KillmailManager(_KillmailBase):
         return KillmailZkb(**params)
 
     @classmethod
-    def _create_from_dict(cls, package_data: dict) -> Optional["KillmailManager"]:
+    def _create_from_dict(cls, package_data: dict) -> Optional["KillmailBody"]:
         """creates a new object from given dict.
         Needs to confirm with data structure returned from ZKB RedisQ
         """
@@ -551,6 +544,6 @@ class KillmailManager(_KillmailBase):
             if "solar_system_id" in killmail_data:
                 params["solar_system_id"] = killmail_data["solar_system_id"]
 
-            killmail = KillmailManager(**params)
+            killmail = KillmailBody(**params)
 
         return killmail

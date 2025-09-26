@@ -7,7 +7,7 @@ from django.db import migrations
 from eveuniverse.models import EveEntity
 
 # AA Killstats
-from killstats.managers.killmail_core import KillmailManager
+from killstats.helpers.killmail import KillmailBody
 from killstats.models.killboard import Killmail
 
 
@@ -42,8 +42,8 @@ def migrate_table(apps, schema_editor):
                 "killmail_id": killmail.killmail_id,
                 "zkb": {"hash": killmail.hash},
             }
-            killmail_dict = KillmailManager._process_killmail_data(killmail_data)
-            km = KillmailManager._create_from_dict(killmail_dict)
+            killmail_dict = KillmailBody._process_killmail_data(killmail_data)
+            km = KillmailBody._create_from_dict(killmail_dict)
             km.create_attackers(killmail, km)
             runs = runs + 1
         except Exception as e:

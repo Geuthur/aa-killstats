@@ -1,15 +1,17 @@
 """Managers for killboard."""
 
 # Standard Library
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 # Django
 from django.db import models, transaction
 
 # AA Killstats
-# AA Voices of War
 from killstats.hooks import get_extension_logger
-from killstats.managers.killmail_core import KillmailManager
+
+if TYPE_CHECKING:
+    # AA Killstats
+    from killstats.helpers.killmail import KillmailBody
 
 logger = get_extension_logger(__name__)
 
@@ -131,7 +133,7 @@ class KillmailBaseManager(models.Manager):
     def visible_to(self, user):
         return self.get_queryset().visible_to(user)
 
-    def create_from_killmail(self, killmail: KillmailManager):
+    def create_from_killmail(self, killmail: "KillmailBody"):
         """create a new EveKillmail from a Killmail object and returns it"""
         # AA Killstats
         # pylint: disable=import-outside-toplevel
@@ -188,7 +190,7 @@ class KillmailBaseManager(models.Manager):
         return km
 
     def update_or_create_from_killmail(
-        self, killmail: KillmailManager
+        self, killmail: "KillmailBody"
     ) -> tuple[Any, bool]:
         """Update or create new EveKillmail from a Killmail object."""
         with transaction.atomic():

@@ -19,7 +19,7 @@ from esi.decorators import token_required
 # AA Killstats
 from killstats import __title__
 from killstats.forms import SingleKillmail
-from killstats.managers.killboard_manager import KillmailManager
+from killstats.helpers.killmail import KillmailBody
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.tasks import store_killmail
@@ -204,10 +204,10 @@ def add_killmail(request):
             )
             return render(request, "killstats/killmail_add.html", context=context)
         except Killmail.DoesNotExist:
-            killmail = KillmailManager.get_single_killmail(killmail_id)
+            killmail = KillmailBody.get_single_killmail(killmail_id)
             killmail.save()
 
-            killmail = KillmailManager.get(killmail_id)
+            killmail = KillmailBody.get(killmail_id)
 
             if killmail:
                 store_killmail.apply_async((killmail.id,))

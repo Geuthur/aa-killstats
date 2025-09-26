@@ -14,12 +14,12 @@ from allianceauth.eveonline.models import (
 )
 
 # AA Killstats
+from killstats.helpers.killmail import KillmailBody
 from killstats.hooks import get_extension_logger
 from killstats.managers.killboardaudit_manager import (
     AllianceManager,
     CorporationManager,
 )
-from killstats.managers.killmail_core import KillmailManager
 
 logger = get_extension_logger(__name__)
 
@@ -40,7 +40,7 @@ class CorporationsAudit(models.Model):
     def __str__(self):
         return f"{self.corporation.corporation_name}'s Killstats Data"
 
-    def process_killmail(self, killmail: KillmailManager):
+    def process_killmail(self, killmail: KillmailBody):
         """Process the killmail for this corporation"""
         if (
             killmail.victim.corporation_id == self.corporation.corporation_id
@@ -70,7 +70,7 @@ class AlliancesAudit(models.Model):
     def __str__(self):
         return f"{self.alliance.alliance_name}'s Killstats Data"
 
-    def process_killmail(self, killmail: KillmailManager):
+    def process_killmail(self, killmail: KillmailBody):
         """Process the killmail for this corporation"""
         if (
             killmail.victim.alliance_id == self.alliance.alliance_id
