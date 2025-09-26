@@ -27,7 +27,8 @@ MAX_RETRIES_DEFAULT = 3
 
 # Default params for all tasks.
 TASK_DEFAULTS = {
-    "time_limit": app_settings.KILLSTATS_TASKS_TIMEOUT,
+    "time_limit": app_settings.KILLSTATS_TASKS_TIME_LIMIT,
+    "timeout": app_settings.KILLSTATS_TASKS_TIMEOUT,
     "max_retries": MAX_RETRIES_DEFAULT,
 }
 
@@ -39,8 +40,12 @@ TASK_DEFAULTS_ONCE = {**TASK_DEFAULTS, **{"base": QueueOnce}}
 @when_esi_is_available
 def run_zkb_redis():
     total_killmails = 0
-    while total_killmails < app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN:
-        killmail = KillmailBody.create_from_zkb_redisq()
+    for _ in range(app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN):
+        try:
+            killmail = KillmailBody.create_from_zkb_redisq()
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error fetching killmail from zKB RedisQ: %s", e)
+            break
 
         if not killmail:
             break

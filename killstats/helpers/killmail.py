@@ -332,8 +332,6 @@ class KillmailBody(_KillmailBase):
             logger.error("429 Client Error: Too many requests: %s", response.text)
             return None
 
-        response.raise_for_status()
-
         try:
             data = response.json()
         except JSONDecodeError:

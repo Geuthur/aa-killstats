@@ -28,8 +28,10 @@ KILLSTATS_MAX_KILLMAILS_PER_RUN = clean_setting("KILLSTATS_MAX_KILLMAILS_PER_RUN
 # Max lifetime of API Cache (10 min)
 KILLSTATS_API_CACHE_LIFETIME = clean_setting("KILLSTATS_API_CACHE_LIFETIME", 10)
 
+# Tasks max time limit in seconds
+KILLSTATS_TASKS_TIME_LIMIT = clean_setting("KILLSTATS_TASKS_TIME_LIMIT", 1800)
 # Tasks hard timeout
-KILLSTATS_TASKS_TIMEOUT = clean_setting("KILLSTATS_TASKS_TIMEOUT", 1_800)
+KILLSTATS_TASKS_TIMEOUT = clean_setting("KILLSTATS_TASKS_TIMEOUT", 600)
 
 # Unique ID used to identify this server when fetching killmails from zKillboard
 # Please note that the Queue ID is globally unique for all users of the zKillboard API
