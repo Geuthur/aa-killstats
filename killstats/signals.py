@@ -42,16 +42,3 @@ def worker_shutting_down_handler(sender, **kwargs):  # pylint: disable=unused-ar
     """
     cache.set(f"{__title__.upper()}_WORKER_SHUTDOWN", True, timeout=120)
     logger.debug("Worker shutting down signal successfully processed for %s", sender)
-
-
-@signals.worker_shutdown.connect
-def worker_shutdown_handler(sender, **kwargs):  # pylint: disable=unused-argument
-    """Handle worker shutdown signal.
-
-    Celery sends this signal when a worker is in the process of shutting down.
-    We use this signal to clear the shutdown flag in the cache, ensuring that
-    the system is marked as inactive. This helps maintain a clean state after
-    the worker has shut down.
-    """
-    cache.delete(f"{__title__.upper()}_WORKER_SHUTDOWN")
-    logger.debug("Worker shutdown signal successfully processed for %s", sender)
