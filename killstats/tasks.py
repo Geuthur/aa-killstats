@@ -13,8 +13,8 @@ from allianceauth.services.tasks import QueueOnce
 # AA Killstats
 from killstats import app_settings
 from killstats.decorators import when_esi_is_available
+from killstats.helpers.killmail import KillmailBody
 from killstats.hooks import get_extension_logger
-from killstats.managers.killboard_manager import KillmailManager
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
@@ -37,7 +37,7 @@ TASK_DEFAULTS_ONCE = {**TASK_DEFAULTS, **{"base": QueueOnce}}
 def run_zkb_redis():
     total_killmails = 0
     while total_killmails < app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN:
-        killmail = KillmailManager.create_from_zkb_redisq()
+        killmail = KillmailBody.create_from_zkb_redisq()
 
         if not killmail:
             break
@@ -72,7 +72,7 @@ def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
     corporation = CorporationsAudit.objects.get(
         corporation__corporation_id=corporation_id
     )
-    killmail = KillmailManager.get(killmail_id)
+    killmail = KillmailBody.get(killmail_id)
     killmail_new = corporation.process_killmail(killmail)
     if killmail_new:
         Chain(
@@ -90,7 +90,7 @@ def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
 def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
     """Run the tracker for the given killmail"""
     alliance = AlliancesAudit.objects.get(alliance__alliance_id=alliance_id)
-    killmail = KillmailManager.get(killmail_id)
+    killmail = KillmailBody.get(killmail_id)
     killmail_new = alliance.process_killmail(killmail)
     if killmail_new:
         Chain(
@@ -106,7 +106,7 @@ def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
 @shared_task(**TASK_DEFAULTS)
 def store_killmail(killmail_id: int) -> None:
     """stores killmail as EveKillmail object"""
-    killmail = KillmailManager.get(killmail_id)
+    killmail = KillmailBody.get(killmail_id)
     try:
         Killmail.objects.create_from_killmail(killmail)
     except IntegrityError:
