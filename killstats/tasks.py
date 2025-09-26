@@ -7,8 +7,10 @@ from celery import shared_task
 # Django
 from django.db import IntegrityError
 
+# Alliance Auth
+from allianceauth.services.tasks import QueueOnce
+
 # AA Killstats
-# AA Killstatsp
 from killstats import app_settings
 from killstats.decorators import when_esi_is_available
 from killstats.hooks import get_extension_logger
@@ -18,13 +20,28 @@ from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 logger = get_extension_logger(__name__)
 
+MAX_RETRIES_DEFAULT = 3
 
-@shared_task(timeout=app_settings.KILLSTATS_TASKS_TIMEOUT)
+# Default params for all tasks.
+TASK_DEFAULTS = {
+    "time_limit": app_settings.KILLSTATS_TASKS_TIMEOUT,
+    "max_retries": MAX_RETRIES_DEFAULT,
+}
+
+# Default params for tasks that need run once only.
+TASK_DEFAULTS_ONCE = {**TASK_DEFAULTS, **{"base": QueueOnce}}
+
+
+@shared_task(**TASK_DEFAULTS_ONCE)
 @when_esi_is_available
-def run_zkb_redis(runs: int = 0):
-    killmail = KillmailManager.create_from_zkb_redisq()
+def run_zkb_redis():
+    total_killmails = 0
+    while total_killmails < app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN:
+        killmail = KillmailManager.create_from_zkb_redisq()
 
-    if killmail:
+        if not killmail:
+            break
+
         killmail.save()
 
         corps_qs = CorporationsAudit.objects.all()
@@ -41,18 +58,14 @@ def run_zkb_redis(runs: int = 0):
                 alliance_id=alliance.alliance.alliance_id, killmail_id=killmail.id
             )
 
-    total_killmails = runs + (1 if killmail else 0)
-
-    if killmail and total_killmails < app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN:
-        run_zkb_redis.delay(runs=runs + 1)
-    else:
-        logger.info(
-            "Killboard runs completed. %s killmails received from zKB",
-            total_killmails,
-        )
+        total_killmails += 1
+    logger.info(
+        "Killboard runs completed. %s killmails received from zKB",
+        total_killmails,
+    )
 
 
-@shared_task
+@shared_task(**TASK_DEFAULTS)
 @when_esi_is_available
 def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
     """Run the tracker for the given killmail"""
@@ -72,7 +85,7 @@ def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
         )
 
 
-@shared_task
+@shared_task(**TASK_DEFAULTS)
 @when_esi_is_available
 def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
     """Run the tracker for the given killmail"""
@@ -90,7 +103,7 @@ def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
         )
 
 
-@shared_task(timeout=app_settings.KILLSTATS_TASKS_TIMEOUT)
+@shared_task(**TASK_DEFAULTS)
 def store_killmail(killmail_id: int) -> None:
     """stores killmail as EveKillmail object"""
     killmail = KillmailManager.get(killmail_id)

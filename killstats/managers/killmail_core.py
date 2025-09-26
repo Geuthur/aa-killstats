@@ -1,5 +1,6 @@
 # Standard Library
 import json
+import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from http import HTTPStatus
@@ -10,16 +11,14 @@ from urllib.parse import quote_plus
 # Third Party
 import requests
 from dacite import DaciteError, from_dict
-from redis.exceptions import LockError
 
 # Django
-from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
+from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 # Alliance Auth (External Libs)
-from app_utils.allianceauth import get_redis_client
 from app_utils.json import JSONDateTimeDecoder, JSONDateTimeEncoder
 from eveuniverse.models import EveEntity, EveType
 
@@ -27,7 +26,8 @@ from eveuniverse.models import EveEntity, EveType
 from killstats import USER_AGENT_TEXT, __title__, __version__
 from killstats.app_settings import (
     KILLSTATS_QUEUE_ID,
-    KILLSTATS_REDISQ_LOCK_TIMEOUT,
+    KILLSTATS_REDISQ_MAX_PER_SEC,
+    KILLSTATS_REDISQ_RATE_TIMEOUT,
     KILLSTATS_REDISQ_TTW,
     KILLSTATS_STORAGE_LIFETIME,
     STORAGE_BASE_KEY,
@@ -236,6 +236,57 @@ class KillmailManager(_KillmailBase):
             cache.set(key=cache_key, value=killmail.asjson())
         return killmail
 
+    @staticmethod
+    def _rate_limit(last_request_key: str | None = None) -> bool:
+        """
+        Check and wait for RedisQ rate limit.
+        Returns True if it's ok to proceed, False if the rate limit was reached and
+        the operation should be skipped.
+        """
+        # pylint: disable=too-many-nested-blocks
+        if last_request_key:
+            try:
+                last_iso = cache.get(last_request_key)
+                if last_iso:
+                    last_dt = parse_datetime(last_iso)
+                    if last_dt is not None:
+                        # Minimum interval between requests in seconds
+                        min_interval = 1.0 / float(KILLSTATS_REDISQ_MAX_PER_SEC)
+                        elapsed = (timezone.now() - last_dt).total_seconds()
+                        if elapsed >= min_interval:
+                            return True
+
+                        # Need to wait the remaining time (single sleep)
+                        wait = min_interval - elapsed
+                        if (
+                            KILLSTATS_REDISQ_RATE_TIMEOUT
+                            and KILLSTATS_REDISQ_RATE_TIMEOUT > 0
+                        ):
+                            if wait <= KILLSTATS_REDISQ_RATE_TIMEOUT:
+                                logger.debug(
+                                    "ZKB RedisQ rate limit requires waiting %.3fs", wait
+                                )
+                                time.sleep(wait)
+                                return True
+                            logger.warning(
+                                "ZKB RedisQ rate limit requires waiting %.3fs which exceeds RATE_TIMEOUT (%.3fs). Skipping fetch.",
+                                wait,
+                                KILLSTATS_REDISQ_RATE_TIMEOUT,
+                            )
+                            return False
+                        logger.warning(
+                            "ZKB RedisQ rate limit reached (need %.3fs wait). Skipping fetch.",
+                            wait,
+                        )
+                        return False
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.debug(
+                    "Failed to read last_request_key from cache, allowing request by fallback.",
+                    exc_info=True,
+                )
+        # if no last_request_key provided or no usable timestamp found, allow the request.
+        return True
+
     @classmethod
     def create_from_zkb_redisq(cls) -> Optional["KillmailManager"]:
         """Fetches and returns a killmail from ZKB.
@@ -250,28 +301,28 @@ class KillmailManager(_KillmailBase):
         if "," in KILLSTATS_QUEUE_ID:
             raise ImproperlyConfigured("A queue ID must not contains commas.")
 
-        redis = get_redis_client()
+        last_request_key = f"{__title__.upper()}_REDISQ_LAST_REQUEST"
+
+        # Check rate limit before attempting to fetch (use cache-based last_request_key if available)
+        if not cls._rate_limit(last_request_key=last_request_key):
+            return None
+
         params = {
             "queueID": quote_plus(KILLSTATS_QUEUE_ID),
             "ttw": KILLSTATS_REDISQ_TTW,
         }
-        try:
-            logger.debug("Trying to fetch killmail from ZKB RedisQ...")
-            with redis.lock(
-                cls.lock_key(), blocking_timeout=KILLSTATS_REDISQ_LOCK_TIMEOUT
-            ):
-                response = requests.get(
-                    ZKB_REDISQ_URL,
-                    params=params,
-                    timeout=REQUESTS_TIMEOUT,
-                    headers={"User-Agent": USER_AGENT_TEXT},
-                )
-        except LockError:
-            logger.warning(
-                "Failed to acquire lock for atomic access to RedisQ.",
-                exc_info=settings.DEBUG,  # provide details in DEBUG mode
-            )
-            return None
+
+        logger.debug("Trying to fetch killmail from ZKB RedisQ...")
+
+        response = requests.get(
+            ZKB_REDISQ_URL,
+            params=params,
+            timeout=REQUESTS_TIMEOUT,
+            headers={"User-Agent": USER_AGENT_TEXT},
+        )
+
+        # Log this request timestamp for rate limiting
+        cache.set(last_request_key, timezone.now().isoformat())
 
         if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
             logger.error("429 Client Error: Too many requests: %s", response.text)
@@ -285,11 +336,7 @@ class KillmailManager(_KillmailBase):
             logger.error("Error from ZKB API:\n%s", response.text)
             return None
 
-        if data:
-            logger.debug("data:\n%s", data)
-
         if data and "package" in data and data["package"]:
-            logger.debug("Received a killmail from ZKB RedisQ")
             package_data = data["package"]
             return cls._create_from_dict(package_data)
 
@@ -396,11 +443,6 @@ class KillmailManager(_KillmailBase):
     @classmethod
     def _storage_key(cls, cache_id: int) -> str:
         return cls._STORAGE_BASE_KEY + str(cache_id)
-
-    @staticmethod
-    def lock_key() -> str:
-        """Key used for lock operation on Redis."""
-        return f"{__title__.upper()}_REDISQ_LOCK"
 
     @classmethod
     def from_dict(cls, data: dict) -> "KillmailManager":
