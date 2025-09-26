@@ -1,0 +1,180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: AA Killstats "
+"Geuthur/aa-killstats/issuesPOT-Creation-Date: 2025-09-26 14:31+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issues"
+"POT-Creation-Date: 2025-09-26 14:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: killstats/forms.py:25
+msgid "Killmail ID"
+msgstr ""
+
+#: killstats/models/killboard.py:46 killstats/models/killboard.py:54
+#: killstats/models/killboard.py:113
+msgid "Unknown"
+msgstr ""
+
+#: killstats/templates/killstats/admin/alliance_admin.html:7
+#: killstats/templates/killstats/admin/corporation_admin.html:8
+msgid "Killstats Corporation Overview"
+msgstr ""
+
+#: killstats/templates/killstats/admin/alliance_admin.html:64
+#: killstats/templates/killstats/admin/corporation_admin.html:65
+msgid "Show"
+msgstr ""
+
+#: killstats/templates/killstats/admin/alliance_admin.html:87
+#: killstats/templates/killstats/admin/corporation_admin.html:88
+msgid "No Permission"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:20
+#: killstats/templates/killstats/killboard.html:62
+msgid "January"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:20
+#: killstats/templates/killstats/killboard.html:63
+msgid "February"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:20
+#: killstats/templates/killstats/killboard.html:64
+msgid "March"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:20
+#: killstats/templates/killstats/killboard.html:65
+msgid "April"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:21
+#: killstats/templates/killstats/killboard.html:66
+msgid "May"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:21
+#: killstats/templates/killstats/killboard.html:67
+msgid "June"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:21
+#: killstats/templates/killstats/killboard.html:68
+msgid "July"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:21
+#: killstats/templates/killstats/killboard.html:69
+msgid "August"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:22
+#: killstats/templates/killstats/killboard.html:70
+msgid "September"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:22
+#: killstats/templates/killstats/killboard.html:71
+msgid "October"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:22
+#: killstats/templates/killstats/killboard.html:72
+msgid "November"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:22
+#: killstats/templates/killstats/killboard.html:73
+msgid "December"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:24
+msgid "Day"
+msgstr ""
+
+#: killstats/templates/killstats/bundles/killboard-js.html:25
+msgid "Month"
+msgstr ""
+
+#: killstats/templates/killstats/killboard.html:8
+#: killstats/templates/killstats/killmail_add.html:8
+msgid "Killstats"
+msgstr ""
+
+#: killstats/templates/killstats/killmail_add.html:36
+#: killstats/templates/killstats/partials/menu/navigation.html:16
+msgid "Add Killmail"
+msgstr ""
+
+#: killstats/templates/killstats/partials/menu/administration.html:6
+msgid "Add Corporation"
+msgstr ""
+
+#: killstats/templates/killstats/partials/menu/administration.html:11
+msgid "Add Alliance"
+msgstr ""
+
+#: killstats/templates/killstats/partials/menu/navigation.html:4
+msgid "Corporation Overview"
+msgstr ""
+
+#: killstats/templates/killstats/partials/menu/navigation.html:8
+msgid "Alliance Overview"
+msgstr ""
+
+#: killstats/templates/killstats/partials/modal/modal.html:25
+msgid "Close"
+msgstr ""
+
+#: killstats/templates/killstats/partials/modal/view_top_10.html:16
+msgid "Character Icon"
+msgstr ""
+
+#: killstats/templates/killstats/partials/modal/view_top_10.html:17
+msgid "Character Name"
+msgstr ""
+
+#: killstats/templates/killstats/partials/modal/view_top_10.html:18
+msgid "Kill Count"
+msgstr ""
+
+#: killstats/templates/killstats/partials/modal/view_top_10.html:33
+msgid "No data found..."
+msgstr ""
+
+#: killstats/views.py:143
+#, python-brace-format
+msgid "{alliance_name} successfully added/updated to Killstats"
+msgstr ""
+
+#: killstats/views.py:147
+#, python-brace-format
+msgid "Failed to fetch Alliance data for {alliance_name}"
+msgstr ""
+
+#: killstats/views.py:203
+#, python-brace-format
+msgid ""
+"Killmail {killmail_id} already exists. Please check the killmail ID and try "
+"again."
+msgstr ""
+
+#: killstats/views.py:218
+#, python-brace-format
+msgid "Killmail {killmail_id} has been added to Killstats."
+msgstr ""
