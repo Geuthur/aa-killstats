@@ -1,14 +1,9 @@
-# Standard Library
-from unittest.mock import patch
-
 # Django
-from django.core.exceptions import ObjectDoesNotExist
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 # Alliance Auth
-from allianceauth.authentication.models import UserProfile
-from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
+from allianceauth.eveonline.models import EveCorporationInfo
 
 # Alliance Auth (External Libs)
 from app_utils.testing import create_user_from_evecharacter
