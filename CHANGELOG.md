@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.0] - 26.09.2025
+
+### Fixed
+
+- `run_zkb_reids` Task endless lock
+
+### Added
+
+- 429: Too Many Requests Handler
+
 ## [0.5.7] - 26.09.2025
 
 ### Added
