@@ -42,9 +42,12 @@ from killstats.providers import esi
 
 logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
+LAST_REQUEST_KEY = f"{__title__.upper()}_REDISQ_LAST_REQUEST"
+RETRY_AFTER_KEY = f"{__title__.upper()}_REDISQ_RETRY_AFTER"
+
 ZKB_REDISQ_URL = "https://zkillredisq.stream/listen.php"
 REQUESTS_TIMEOUT = (5, 30)
-RETRY_DELAY = 3
+RETRY_DELAY = 10
 
 
 class KillboardException(Exception):
@@ -241,55 +244,89 @@ class KillmailBody(_KillmailBase):
         return killmail
 
     @staticmethod
-    def _rate_limit(last_request_key: str | None = None) -> bool:
+    def _rate_limit() -> bool:
         """
         Check and wait for RedisQ rate limit.
         Returns True if it's ok to proceed, False if the rate limit was reached and
         the operation should be skipped.
         """
         # pylint: disable=too-many-nested-blocks
-        if last_request_key:
-            try:
-                last_iso = cache.get(last_request_key)
-                if last_iso:
-                    last_dt = parse_datetime(last_iso)
-                    if last_dt is not None:
-                        # Minimum interval between requests in seconds
-                        min_interval = 1.0 / float(KILLSTATS_REDISQ_MAX_PER_SEC)
-                        elapsed = (timezone.now() - last_dt).total_seconds()
-                        if elapsed >= min_interval:
-                            return True
+        last_iso = cache.get(LAST_REQUEST_KEY)
+        retry_after = cache.get(RETRY_AFTER_KEY)
 
-                        # Need to wait the remaining time (single sleep)
-                        wait = min_interval - elapsed
-                        if (
-                            KILLSTATS_REDISQ_RATE_TIMEOUT
-                            and KILLSTATS_REDISQ_RATE_TIMEOUT > 0
-                        ):
-                            if wait <= KILLSTATS_REDISQ_RATE_TIMEOUT:
-                                logger.debug(
-                                    "ZKB RedisQ rate limit requires waiting %.3fs", wait
-                                )
-                                time.sleep(wait)
-                                return True
-                            logger.warning(
-                                "ZKB RedisQ rate limit requires waiting %.3fs which exceeds RATE_TIMEOUT (%.3fs). Skipping fetch.",
-                                wait,
-                                KILLSTATS_REDISQ_RATE_TIMEOUT,
-                            )
-                            return False
-                        logger.warning(
-                            "ZKB RedisQ rate limit reached (need %.3fs wait). Skipping fetch.",
-                            wait,
-                        )
-                        return False
-            except Exception:  # pylint: disable=broad-exception-caught
-                logger.debug(
-                    "Failed to read last_request_key from cache, allowing request by fallback.",
-                    exc_info=True,
+        if retry_after is not None:
+            retry_after: datetime = retry_after
+            wait_time = (retry_after - timezone.now()).total_seconds()
+            if wait_time > 0:
+                logger.warning(
+                    "ZKB RedisQ rate limit requires waiting %.3fs due to Too Many Requests",
+                    wait_time,
                 )
+                time.sleep(wait_time)
+                return True
+            # Retry-After has passed, remove it
+            cache.delete(RETRY_AFTER_KEY)
+
+        if last_iso is not None:
+            last_dt = parse_datetime(last_iso)
+            if last_dt is not None:
+                # Minimum interval between requests in seconds
+                min_interval = 1.0 / float(KILLSTATS_REDISQ_MAX_PER_SEC)
+                elapsed = (timezone.now() - last_dt).total_seconds()
+                if elapsed >= min_interval:
+                    return True
+
+                # Need to wait the remaining time (single sleep)
+                wait = min_interval - elapsed
+                if KILLSTATS_REDISQ_RATE_TIMEOUT and KILLSTATS_REDISQ_RATE_TIMEOUT > 0:
+                    if wait <= KILLSTATS_REDISQ_RATE_TIMEOUT:
+                        logger.debug(
+                            "ZKB RedisQ rate limit requires waiting %.3fs", wait
+                        )
+                        time.sleep(wait)
+                        return True
+                    logger.warning(
+                        "ZKB RedisQ rate limit requires waiting %.3fs which exceeds RATE_TIMEOUT (%.3fs). Skipping fetch.",
+                        wait,
+                        KILLSTATS_REDISQ_RATE_TIMEOUT,
+                    )
+                    return False
+                logger.warning(
+                    "ZKB RedisQ rate limit reached (need %.3fs wait). Skipping fetch.",
+                    wait,
+                )
+                return False
         # if no last_request_key provided or no usable timestamp found, allow the request.
         return True
+
+    @staticmethod
+    def _too_many_requests_delay(response: requests.Response) -> bool:
+        """
+        Handles HTTP 429 Too Many Requests responses from ZKB RedisQ.
+        If the response includes a 'Retry-After' header, sets a delay in the cache and returns True to indicate the operation should be retried later.
+        If the header is missing, uses a default delay value.
+        Returns False if the response status is not 429, indicating the operation can continue.
+        """
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            try:
+                wait_time = int(response.headers.get("Retry-After"))
+                logger.debug(
+                    "Received 429 Too Many Requests. Retrying after %s seconds.",
+                    wait_time,
+                )
+            except KeyError:
+                logger.debug(
+                    "Received 429 Too Many Requests without Retry-After header. Waiting default %s seconds.",
+                    RETRY_DELAY,
+                )
+                wait_time = RETRY_DELAY
+            # Set the retry after time in cache
+            cache.set(
+                f"{__title__.upper()}_REDISQ_LAST_REQUEST_RETRY_AFTER",
+                timezone.now() + timezone.timedelta(seconds=wait_time),
+            )
+            return True
+        return False
 
     @classmethod
     def create_from_zkb_redisq(cls) -> Optional["KillmailBody"]:
@@ -305,10 +342,8 @@ class KillmailBody(_KillmailBase):
         if "," in KILLSTATS_QUEUE_ID:
             raise ImproperlyConfigured("A queue ID must not contains commas.")
 
-        last_request_key = f"{__title__.upper()}_REDISQ_LAST_REQUEST"
-
-        # Check rate limit before attempting to fetch (use cache-based last_request_key if available)
-        if not cls._rate_limit(last_request_key=last_request_key):
+        # Check rate limit before attempting to fetch
+        if not cls._rate_limit():
             return None
 
         params = {
@@ -326,10 +361,10 @@ class KillmailBody(_KillmailBase):
         )
 
         # Log this request timestamp for rate limiting
-        cache.set(last_request_key, timezone.now().isoformat())
+        cache.set(LAST_REQUEST_KEY, timezone.now().isoformat())
 
-        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
-            logger.error("429 Client Error: Too many requests: %s", response.text)
+        # Handle 429 Too Many Requests
+        if cls._too_many_requests_delay(response):
             return None
 
         try:

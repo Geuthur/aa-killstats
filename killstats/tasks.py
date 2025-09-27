@@ -48,8 +48,8 @@ def run_zkb_redis():
             logger.error("Error fetching killmail from zKB RedisQ: %s", e)
             break
 
-        if cache.get(f"{__title__.upper()}_WORKER_SHUTDOWN"):
-            logger.info("Worker shutdown detected; stopping zKB RedisQ processing")
+        if not cache.get(f"{__title__.upper()}_WORKER_SHUTDOWN") is None:
+            logger.debug("Worker shutdown detected; stopping zKB RedisQ processing")
             break
 
         if not killmail:
