@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.6.0] - 26.09.2025
+As of August 2025 zKB redis has changed their request limitations [see here](https://github.com/zKillboard/RedisQ/blob/master/README.md#limitations)
+
+## [0.5.6-0.6.0] - 26.09.2025
 
 ### Fixed
 
@@ -9,41 +11,19 @@
 ### Added
 
 - 429: Too Many Requests Handler
-
-## [0.5.7] - 26.09.2025
-
-### Added
-
 - timeout for redis lock
-
-### Changed
-
-- while to for to avoid infinite loops
-
-### Removed
-
-- raise_for_status()
-
-## [0.5.6] - 26.09.2025
-
-As of August 2025 zKB redis has changed their request limitations [see here](https://github.com/zKillboard/RedisQ/blob/master/README.md#limitations)
-
-### Added
-
 - Makefile System
 - Translations
 
 ### Changed
 
+- while to for to avoid infinite loops
 - [moved killmail_core to helpers & renamed to killmail](https://github.com/Geuthur/aa-killstats/commit/4231d846e7683790d8080a5c640a524ef3a419b1)
 - [Refactor Logger System](https://github.com/Geuthur/aa-killstats/commit/b8590ffa9b377e80b17ce629f6cabd2b7090052e)
 
-### Fixed
-
-- [429 `Too Many Requests`](https://github.com/Geuthur/aa-killstats/commit/97b25fcda958dd177f2ea5c733479a909b2efa5b)
-
 ### Removed
 
+- raise_for_status()
 - [Cache Buster](https://github.com/Geuthur/aa-killstats/commit/16a81c519a8c3db46af23d58eabf36261d1fb866)
 
 ## [0.5.5] - 11.07.2025
