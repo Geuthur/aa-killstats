@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1] - 08.10.2025
+
+### Changed
+
+- Redis Lock System to avoid hammering ESI Endpoint
+
 As of August 2025 zKB redis has changed their request limitations [see here](https://github.com/zKillboard/RedisQ/blob/master/README.md#limitations)
 
 ## [0.5.6-0.6.0] - 26.09.2025
