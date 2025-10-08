@@ -79,7 +79,6 @@ def run_zkb_redis():
 
 
 @shared_task(**TASK_DEFAULTS)
-@when_esi_is_available
 def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
     """Run the tracker for the given killmail"""
     corporation = CorporationsAudit.objects.get(
@@ -99,7 +98,6 @@ def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
 
 
 @shared_task(**TASK_DEFAULTS)
-@when_esi_is_available
 def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
     """Run the tracker for the given killmail"""
     alliance = AlliancesAudit.objects.get(alliance__alliance_id=alliance_id)
