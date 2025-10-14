@@ -1,13 +1,15 @@
 """App Settings"""
 
+# Standard Library
+import sys
+
 # Alliance Auth (External Libs)
 from app_utils.app_settings import clean_setting
 
+IS_TESTING = sys.argv[1:2] == ["test"]
+
 # Set Naming on Auth Hook
 KILLSTATS_APP_NAME = clean_setting("KILLSTATS_APP_NAME", "Killstats")
-
-# If True you need to set up the Logger
-KILLSTATS_LOGGER_USE = clean_setting("KILLSTATS_LOGGER_USE", False)
 
 # zKillboard - https://zkillboard.com/
 ZKILLBOARD_BASE_URL = "https://zkillboard.com/"
