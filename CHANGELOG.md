@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.2] - 14.10.2025
+
+### Added
+
+- Automatic Release workflow
+
+### Changed
+
+- Optimized ESI Status endpoint
+
 ## [0.6.1] - 08.10.2025
 
 ### Changed
