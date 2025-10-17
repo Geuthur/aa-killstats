@@ -7,9 +7,8 @@ msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issuesPOT-"
 "Creation-Date: 2025-09-26 14:33+0200\n"
-"PO-Revision-Date: 2025-10-15 06:27+0000\n"
-"Last-Translator: Weblate Admin <geuthur@users.noreply.weblate.voices-of-"
-"war.de>\n"
+"PO-Revision-Date: 2025-10-17 06:28+0000\n"
+"Last-Translator: Peter Pfeufer <info@ppfeufer.de>\n"
 "Language-Team: German <https://weblate.voices-of-war.de/projects/"
 "allianceauth/aa-killstats/de/>\n"
 "Language: de\n"
@@ -114,7 +113,7 @@ msgstr "Schließen"
 
 #: killstats/templates/killstats/partials/modal/view_top_10.html:33
 msgid "No data found..."
-msgstr "Keine daten gefunden..."
+msgstr "Keine Daten gefunden..."
 
 #: killstats/views.py:143
 #, python-brace-format
