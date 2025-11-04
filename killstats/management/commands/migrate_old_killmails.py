@@ -55,7 +55,7 @@ class Command(BaseCommand):
                 }
                 killmail_obj = KillmailBody._process_killmail_data(killmail_data)
                 km = KillmailBody._create_from_dict(killmail_obj)
-                km.create_attackers(killmail, km)
+                km.get_or_create_attackers(killmail, km)
                 runs = runs + 1
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.error(f"Error processing killmail {killmail.killmail_id}: {e}")

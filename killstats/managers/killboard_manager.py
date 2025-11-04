@@ -139,7 +139,7 @@ class KillmailBaseManager(models.Manager):
     def visible_to(self, user):
         return self.get_queryset().visible_to(user)
 
-    def create_from_killmail(self, killmail: "KillmailBody"):
+    def create_from_killmail(self, killmail_body: "KillmailBody"):
         """create a new EveKillmail from a Killmail object and returns it"""
         # AA Killstats
         # pylint: disable=import-outside-toplevel
@@ -148,50 +148,60 @@ class KillmailBaseManager(models.Manager):
         with transaction.atomic():
             attackers_list = []
 
-            corporation_id = killmail.victim.corporation_id
-            region_id = killmail.get_or_create_region_id(killmail.solar_system_id)
-            victim_ship = killmail.get_or_create_evetype(killmail.victim.ship_type_id)
+            corporation_id = killmail_body.victim.corporation_id
+            region_id = killmail_body.get_or_create_region_id(
+                killmail_body.solar_system_id
+            )
+            victim_ship = killmail_body.get_or_create_evetype(
+                killmail_body.victim.ship_type_id
+            )
             victim = None
 
-            if killmail.victim.character_id:
-                victim = killmail.get_or_create_entity(killmail.victim.character_id)
-            elif killmail.victim.alliance_id:
-                victim = killmail.get_or_create_entity(killmail.victim.alliance_id)
-            elif killmail.victim.corporation_id:
-                victim = killmail.get_or_create_entity(killmail.victim.corporation_id)
+            if killmail_body.victim.character_id:
+                victim = killmail_body.get_or_create_entity(
+                    killmail_body.victim.character_id
+                )
+            elif killmail_body.victim.alliance_id:
+                victim = killmail_body.get_or_create_entity(
+                    killmail_body.victim.alliance_id
+                )
+            elif killmail_body.victim.corporation_id:
+                victim = killmail_body.get_or_create_entity(
+                    killmail_body.victim.corporation_id
+                )
 
-            for attacker in killmail.attackers:
+            for attacker in killmail_body.attackers:
                 if attacker.character_id:
                     attackers_list.append(attacker.character_id)
 
             if attackers_list:
                 try:
                     unique_attackers = list(set(attackers_list))
-                    killmail.create_names_bulk(eve_ids=unique_attackers)
+                    killmail_body.create_names_bulk(eve_ids=unique_attackers)
                 # pylint: disable=broad-exception-caught
                 except Exception as e:
                     logger.debug("Error on Create Names: %s", e, exc_info=True)
 
             km = Killmail.objects.create(
-                killmail_id=killmail.id,
-                killmail_date=killmail.time,
+                killmail_id=killmail_body.id,
+                killmail_date=killmail_body.time,
                 victim=victim,
                 victim_ship=victim_ship,
                 victim_corporation_id=corporation_id,
-                victim_alliance_id=killmail.victim.alliance_id,
-                hash=killmail.zkb.hash,
-                victim_total_value=killmail.zkb.total_value,
-                victim_fitted_value=killmail.zkb.fitted_value,
-                victim_destroyed_value=killmail.zkb.destroyed_value,
-                victim_dropped_value=killmail.zkb.dropped_value,
+                victim_alliance_id=killmail_body.victim.alliance_id,
+                hash=killmail_body.zkb.hash,
+                victim_total_value=killmail_body.zkb.total_value,
+                victim_fitted_value=killmail_body.zkb.fitted_value,
+                victim_destroyed_value=killmail_body.zkb.destroyed_value,
+                victim_dropped_value=killmail_body.zkb.dropped_value,
                 victim_region_id=region_id,
-                victim_solar_system_id=killmail.solar_system_id,
-                victim_position_x=killmail.position.x,
-                victim_position_y=killmail.position.y,
-                victim_position_z=killmail.position.z,
+                victim_solar_system_id=killmail_body.solar_system_id,
+                victim_position_x=killmail_body.position.x,
+                victim_position_y=killmail_body.position.y,
+                victim_position_z=killmail_body.position.z,
             )
 
-            killmail.create_attackers(km, killmail)
+            killmail_body.get_or_create_attackers(km, killmail_body)
 
         return km
 
