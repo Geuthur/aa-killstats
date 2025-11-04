@@ -7,7 +7,7 @@ from django.urls import path, re_path
 from killstats import views
 from killstats.api import api
 
-app_name: str = "killstats"
+app_name: str = "killstats"  # pylint: disable=invalid-name
 
 urlpatterns = [
     # Killstats
