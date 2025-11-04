@@ -3,60 +3,6 @@
 # Django
 from django.db import migrations
 
-# Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity
-
-# AA Killstats
-from killstats.helpers.killmail import KillmailBody
-from killstats.models.killboard import Killmail
-
-
-def migrate_table(apps, schema_editor):
-    print("\nMigrating Killmails this can take a while...")
-    killmails = Killmail.objects.all()
-    kms_count = killmails.count()
-    runs = 0
-    characters = 0
-    corporations = 0
-    alliances = 0
-    for killmail in killmails:
-        try:
-            if killmail.victim_id:
-                _, created = EveEntity.objects.get_or_create_esi(id=killmail.victim_id)
-                if created:
-                    characters = characters + 1
-            if killmail.victim_corporation_id:
-                _, created = EveEntity.objects.get_or_create_esi(
-                    id=killmail.victim_corporation_id
-                )
-                if created:
-                    corporations = corporations + 1
-            if killmail.victim_alliance_id:
-                _, created = EveEntity.objects.get_or_create_esi(
-                    id=killmail.victim_alliance_id
-                )
-                if created:
-                    alliances = alliances + 1
-
-            killmail_data = {
-                "killmail_id": killmail.killmail_id,
-                "zkb": {"hash": killmail.hash},
-            }
-            killmail_dict = KillmailBody._process_killmail_data(killmail_data)
-            km = KillmailBody._create_from_dict(killmail_dict)
-            km.create_attackers(killmail, km)
-            runs = runs + 1
-        except Exception as e:
-            print(
-                f"Error processing killmail {killmail.killmail_id} deleting killmail..."
-            )
-            killmail.delete()
-            continue
-    print(f"{characters} characters created")
-    print(f"{corporations} corporations created")
-    print(f"{alliances} alliances created")
-    print(f"{runs} from {kms_count} Killmails migrated")
-
 
 class Migration(migrations.Migration):
 
@@ -65,6 +11,4 @@ class Migration(migrations.Migration):
         ("killstats", "0003_attacker_remove_killmail_attackers_and_more"),
     ]
 
-    operations = [
-        migrations.RunPython(migrate_table),
-    ]
+    # Moved migration to command line migration (management/commands/migrate_old_killmails.py)
