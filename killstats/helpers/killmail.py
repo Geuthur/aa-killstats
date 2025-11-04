@@ -1,7 +1,7 @@
 # Standard Library
 import json
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from http import HTTPStatus
 from json import JSONDecodeError
@@ -50,6 +50,33 @@ REQUESTS_TIMEOUT = (5, 30)
 RETRY_DELAY = 10
 
 
+# Example usage:
+#    attackers=[FWDe5e7e5ed_5ccd_420d_8787_68168325bcdb(
+#   alliance_id=99001383,
+#   character_id=273213517,
+#   corporation_id=1372265539,
+#   damage_done=377,
+#   faction_id=None,
+#   final_blow=True,
+#   security_status=4.8,
+#   ship_type_id=32878,
+#   weapon_type_id=27381
+# )
+# ]
+#    killmail_id=113104645
+#    killmail_time=datetime.datetime(2023, 11, 13, 21, 20, 42, tzinfo=TzInfo(0))
+#    moon_id=None
+#    solar_system_id=30004642
+#    victim=FWDb837ecde_43ff_4d28_a889_5e693ad28f1a(
+#   alliance_id=99011239,
+#   character_id=95826959,
+#   corporation_id=98702221,
+#   damage_taken=460,
+#   faction_id=None,
+#   items=[],
+#   position=Xbaea3f48_d232_4dc3_99c4_faafefc93a00(x=3373168445550.001, y=1645232080255.205, z=5872593829858.347),
+#   ship_type_id=670)
+#   war_id=None
 class KillboardException(Exception):
     """Exception from Killboard"""
 
@@ -65,6 +92,16 @@ class _KillmailBase:
     def asdict(self) -> dict:
         """Return this object as dict."""
         return asdict(self)
+
+
+@dataclass
+class KillmailItems:
+    flag: int
+    item_type_id: int
+    items: list | None
+    quantity_dropped: int
+    quantity_destroyed: int
+    singleton: int
 
 
 @dataclass
@@ -85,9 +122,20 @@ class _KillmailCharacter(_KillmailBase):
 
 
 @dataclass
+class KillmailPosition(_KillmailBase):
+    "A position for a killmail."
+
+    x: float | None = None
+    y: float | None = None
+    z: float | None = None
+
+
+@dataclass
 class KillmailVictim(_KillmailCharacter):
     """A victim on a killmail."""
 
+    items: list[KillmailItems] = field(default_factory=list)
+    position: KillmailPosition | None = field(default=None)
     damage_taken: int | None = None
 
 
@@ -98,18 +146,9 @@ class KillmailAttacker(_KillmailCharacter):
     ENTITY_PROPS = _KillmailCharacter.ENTITY_PROPS + ["weapon_type_id"]
 
     damage_done: int | None = None
-    is_final_blow: bool | None = None
+    final_blow: bool | None = None
     security_status: float | None = None
     weapon_type_id: int | None = None
-
-
-@dataclass
-class KillmailPosition(_KillmailBase):
-    "A position for a killmail."
-
-    x: float | None = None
-    y: float | None = None
-    z: float | None = None
 
 
 @dataclass
@@ -128,6 +167,18 @@ class KillmailZkb(_KillmailBase):
     is_awox: bool | None = None
 
 
+class KillmailContext:
+    """Context for processing killmails."""
+
+    attackers: list[KillmailAttacker]
+    killmail_id: int
+    killmail_time: datetime
+    moon_id: int | None
+    solar_system_id: int | None
+    victim: KillmailVictim
+    war_id: int | None
+
+
 @dataclass
 class KillmailBody(_KillmailBase):
     """A killmail body as returned from ZKB RedisQ or ZKB API."""
@@ -140,7 +191,10 @@ class KillmailBody(_KillmailBase):
     attackers: list[KillmailAttacker]
     position: KillmailPosition
     zkb: KillmailZkb
+
     solar_system_id: int | None = None
+    moon_id: int | None = None
+    war_id: int | None = None
 
     def __repr__(self):
         return f"{type(self).__name__}(id={self.id})"
@@ -162,13 +216,19 @@ class KillmailBody(_KillmailBase):
         try:
             killmail_id = data["killmail_id"]
             killmail_hash = data["zkb"]["hash"]
-            esi_killmail = esi.client.Killmails.get_killmails_killmail_id_killmail_hash(
-                killmail_id=killmail_id, killmail_hash=killmail_hash
-            ).result()
-            esi_killmail["killmail_time"] = esi_killmail["killmail_time"].strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
+            esi_killmail = esi.client.Killmails.GetKillmailsKillmailIdKillmailHash(
+                killmail_hash=killmail_hash,
+                killmail_id=killmail_id,
             )
-            return {"killID": killmail_id, "killmail": esi_killmail, "zkb": data["zkb"]}
+
+            killmail_item = esi_killmail.result(force_refresh=True)
+
+            killmail_item: KillmailContext
+            return {
+                "killID": killmail_id,
+                "killmail": killmail_item,
+                "zkb": data["zkb"],
+            }
         # pylint: disable=broad-exception-caught
         except Exception as exc:
             logger.error("Killmail can't fetch %s", exc)
@@ -223,22 +283,26 @@ class KillmailBody(_KillmailBase):
                 logger.debug("Killmail %s exists already..", killmail_id)
                 return None
 
-            esi_killmail = esi.client.Killmails.get_killmails_killmail_id_killmail_hash(
-                killmail_id=killmail_id, killmail_hash=killmail_hash
-            ).results()
+            esi_killmail = esi.client.Killmails.GetKillmailsKillmailIdKillmailHash(
+                killmail_hash=killmail_hash,
+                killmail_id=killmail_id,
+            )
+
+            killmail_item = esi_killmail.result(force_refresh=True)
+
         except Exception as exc:
             raise ValueError("Invalid Kill ID or Hash.") from exc
 
-        esi_killmail["killmail_time"] = esi_killmail["killmail_time"].strftime(
+        killmail_item.killmail_time = killmail_item.killmail_time.strftime(
             "%Y-%m-%dT%H:%M:%SZ"
         )
 
         killmail_dict = {
             "killID": killmail_id,
-            "killmail": esi_killmail,
+            "killmail": killmail_item,
             "zkb": zkb_killmail["zkb"],
         }
-        killmail = cls._create_from_dict(killmail_dict)
+        killmail = cls._create_from_openapi(killmail_dict)
         if killmail:
             cache.set(key=cache_key, value=killmail.asjson())
         return killmail
@@ -426,8 +490,8 @@ class KillmailBody(_KillmailBase):
             logger.debug("Killstats Manager EveName: %s added", region_id.name)
         return region_id.id
 
-    def create_attackers(self, killmail, killmanager):
-        for attacker in killmanager.attackers:
+    def get_or_create_attackers(self, killmail, killmail_body):
+        for attacker in killmail_body.attackers:
             character = None
             if attacker.character_id:
                 character = self.get_or_create_entity(attacker.character_id)
@@ -452,7 +516,7 @@ class KillmailBody(_KillmailBase):
                 defaults={
                     "ship": ship,
                     "damage_done": attacker.damage_done,
-                    "final_blow": attacker.is_final_blow,
+                    "final_blow": attacker.final_blow,
                     "security_status": attacker.security_status,
                     "weapon_type_id": attacker.weapon_type_id,
                 },
@@ -524,7 +588,7 @@ class KillmailBody(_KillmailBase):
                     params[prop] = attacker_data[prop]
 
             if "final_blow" in attacker_data:
-                params["is_final_blow"] = attacker_data["final_blow"]
+                params["final_blow"] = attacker_data["final_blow"]
 
             attackers.append(KillmailAttacker(**params))
         return attackers
@@ -579,6 +643,34 @@ class KillmailBody(_KillmailBase):
             }
             if "solar_system_id" in killmail_data:
                 params["solar_system_id"] = killmail_data["solar_system_id"]
+
+            killmail = KillmailBody(**params)
+
+        return killmail
+
+    @classmethod
+    def _create_from_openapi(cls, package_data: dict) -> Optional["KillmailBody"]:
+        """creates a new object from given dict.
+        Needs to confirm with data structure returned from OpenAPI ESI
+        """
+        killmail = None
+        if "killmail" in package_data:
+            killmail_data: KillmailContext = package_data["killmail"]
+            zkb = cls._extract_zkb(package_data)
+            str_formated_time = killmail_data.killmail_time.strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
+
+            params = {
+                "id": killmail_data.killmail_id,
+                "time": parse_datetime(str_formated_time),
+                "victim": killmail_data.victim,
+                "position": killmail_data.victim.position,
+                "attackers": killmail_data.attackers,
+                "zkb": zkb,
+            }
+            if killmail_data and hasattr(killmail_data, "solar_system_id"):
+                params["solar_system_id"] = killmail_data.solar_system_id
 
             killmail = KillmailBody(**params)
 
