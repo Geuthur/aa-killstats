@@ -11,6 +11,21 @@ Section Order:
 ### Removed
 -->
 
+## [1.0.1] - 2025-11-13
+
+### Changed
+
+- Updated dependencies
+  - `allianceauth-app-utils` to `>=2b2`
+  - `allianceauth` to `>=4.10,<5`
+  - `django-esi` to `8,<9`
+  - `django-eveuniverse` to `>=1.6`
+
+### Removed
+
+- csrf arg from `django-ninja`
+- `django-ninja` dependency pin `<1.5`
+
 ## [1.0.0] - 13.11.2025
 
 ### Added
