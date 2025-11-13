@@ -22,7 +22,6 @@ api = NinjaAPI(
     version="0.2.0",
     urls_namespace="killstats:new_api",
     auth=django_auth,
-    csrf=True,
     openapi_url=settings.DEBUG and "/openapi.json" or "",
 )
 
