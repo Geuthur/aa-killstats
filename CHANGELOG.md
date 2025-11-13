@@ -11,10 +11,19 @@ Section Order:
 ### Removed
 -->
 
+## [1.0.0] - 13.11.2025
+
 ### Added
 
 - Temporary pin `django-ninja` to `django-ninja<=1.5`
   - https://github.com/vitalik/django-ninja/pull/1524
+
+### Changed
+
+- renamed `create_attackers` to `get_or_create_attackers`
+- Migrated OpenAPI3 ESI Client for single Killmail
+- update var naming in `create_from_killmail`
+- use Django Commands for old Killmail migration
 
 ## [0.6.2] - 14.10.2025
 
