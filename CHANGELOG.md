@@ -1,5 +1,21 @@
 # Changelog
 
+## [In Development] - Unreleased
+
+<!--
+Section Order:
+
+### Added
+### Fixed
+### Changed
+### Removed
+-->
+
+### Added
+
+- Temporary pin `django-ninja` to `django-ninja<=1.5`
+  - https://github.com/vitalik/django-ninja/pull/1524
+
 ## [0.6.2] - 14.10.2025
 
 ### Added

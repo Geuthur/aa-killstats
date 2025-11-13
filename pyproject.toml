@@ -39,7 +39,7 @@ dependencies = [
     "dacite",
     "django-esi>=8b2",
     "django-eveuniverse>=1.5.7",
-    "django-ninja",
+    "django-ninja<=1.5",
 ]
 optional-dependencies.tests-allianceauth-latest = [
     "coverage",
