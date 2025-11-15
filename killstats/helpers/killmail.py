@@ -1,7 +1,7 @@
 # Standard Library
 import json
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime
 from http import HTTPStatus
 from json import JSONDecodeError
@@ -90,8 +90,25 @@ class _KillmailBase:
     """Base class for all Killmail."""
 
     def asdict(self) -> dict:
-        """Return this object as dict."""
-        return asdict(self)
+        """Return this object as dict, recursively converting nested objects."""
+        return to_serializable_dict(self)
+
+
+def to_serializable_dict(obj):
+    """Recursively convert dataclasses and custom objects to dicts."""
+    if is_dataclass(obj):
+        return {k: to_serializable_dict(v) for k, v in asdict(obj).items()}
+    if isinstance(obj, dict):
+        return {k: to_serializable_dict(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple, set)):
+        return [to_serializable_dict(v) for v in obj]
+    if hasattr(obj, "__dict__"):
+        return {
+            k: to_serializable_dict(v)
+            for k, v in obj.__dict__.items()
+            if not k.startswith("_")
+        }
+    return obj
 
 
 @dataclass
@@ -208,8 +225,8 @@ class KillmailBody(_KillmailBase):
         return {obj.corporation_id for obj in self.attackers if obj.corporation_id}
 
     def asjson(self) -> str:
-        """Convert killmail into JSON data."""
-        return json.dumps(asdict(self), cls=JSONDateTimeEncoder)
+        """Convert killmail into JSON data, ensuring all nested objects are serializable."""
+        return json.dumps(to_serializable_dict(self), cls=JSONDateTimeEncoder)
 
     @staticmethod
     def _process_killmail_data(data):
@@ -292,10 +309,6 @@ class KillmailBody(_KillmailBase):
 
         except Exception as exc:
             raise ValueError("Invalid Kill ID or Hash.") from exc
-
-        killmail_item.killmail_time = killmail_item.killmail_time.strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        )
 
         killmail_dict = {
             "killID": killmail_id,
