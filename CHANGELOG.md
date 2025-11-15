@@ -11,6 +11,10 @@ Section Order:
 ### Removed
 -->
 
+### Fixed
+
+- OpenAPI3 Killmails not serializable [#71](https://github.com/Geuthur/aa-killstats/issues/71)
+
 ## [1.0.1] - 2025-11-13
 
 ### Changed
