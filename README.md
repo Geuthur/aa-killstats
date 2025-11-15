@@ -23,6 +23,8 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
     - [Step 5 - Setting up Permissions](#step5)
     - [Step 6 - (Optional) Setting up Compatibilies](#step6)
   - [Highlights](#highlights)
+  - [Translations](#translations)
+  - [Contributing](#contributing)
 
 ## Features<a name="features"></a>
 
@@ -135,8 +137,13 @@ The Following Settings can be setting up in the `local.py`
 ![Hall](/killstats/docs/img/killstats2.png)
 ![Kills](/killstats/docs/img/killstats3.png)
 
-> [!NOTE]
-> Contributing
-> You want to improve the project?
-> Just Make a [Pull Request](https://github.com/Geuthur/aa-killstats/pulls) with the Guidelines.
-> We Using pre-commit
+## Translations<a name="translations"></a>
+
+[![Translations](https://weblate.geuthur.de/widget/allianceauth/aa-killstats/multi-auto.svg)](https://weblate.geuthur.de/engage/allianceauth/)
+
+Help us translate this app into your language or improve existing translations. Join our team!"
+
+## Contributing <a name="contributing"></a>
+
+You want to improve the project?
+Please ensure you read the [contribution guidelines](https://github.com/Geuthur/aa-killstats/blob/master/CONTRIBUTING.md)
