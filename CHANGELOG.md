@@ -11,6 +11,12 @@ Section Order:
 ### Removed
 -->
 
+## [1.0.3] - 2025-11-16
+
+### Changed
+
+- Downgrade `allianceauth-app-utils` to `>=1.30`
+
 ## [1.0.2] - 2025-11-15
 
 ### Added
