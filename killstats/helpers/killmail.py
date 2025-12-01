@@ -184,18 +184,6 @@ class KillmailZkb(_KillmailBase):
     is_awox: bool | None = None
 
 
-class KillmailContext:
-    """Context for processing killmails."""
-
-    attackers: list[KillmailAttacker]
-    killmail_id: int
-    killmail_time: datetime
-    moon_id: int | None
-    solar_system_id: int | None
-    victim: KillmailVictim
-    war_id: int | None
-
-
 @dataclass
 class KillmailBody(_KillmailBase):
     """A killmail body as returned from ZKB RedisQ or ZKB API."""
@@ -240,7 +228,6 @@ class KillmailBody(_KillmailBase):
 
             killmail_item = esi_killmail.result(force_refresh=True)
 
-            killmail_item: KillmailContext
             return {
                 "killID": killmail_id,
                 "killmail": killmail_item,
@@ -291,22 +278,18 @@ class KillmailBody(_KillmailBase):
 
         try:
             killmail_id = zkb_killmail["killmail_id"]
-            killmail_hash = zkb_killmail["zkb"]["hash"]
+            killmail_url = zkb_killmail["zkb"]["href"]
 
-            # Überprüfe, ob die Killmail bereits in der Datenbank existiert
+            # Check if killmail already exists
             existing_killmail = Killmail.objects.filter(killmail_id=killmail_id).first()
 
+            # Get killmail data from CCP
+            killmail_item = cls._get_killmail_data_from_href(killmail_url)
+            if killmail_item is None:
+                raise ValueError("Failed to fetch killmail data from href URL.")
             if existing_killmail:
                 logger.debug("Killmail %s exists already..", killmail_id)
                 return None
-
-            esi_killmail = esi.client.Killmails.GetKillmailsKillmailIdKillmailHash(
-                killmail_hash=killmail_hash,
-                killmail_id=killmail_id,
-            )
-
-            killmail_item = esi_killmail.result(force_refresh=True)
-
         except Exception as exc:
             raise ValueError("Invalid Kill ID or Hash.") from exc
 
@@ -315,7 +298,7 @@ class KillmailBody(_KillmailBase):
             "killmail": killmail_item,
             "zkb": zkb_killmail["zkb"],
         }
-        killmail = cls._create_from_openapi(killmail_dict)
+        killmail = cls._create_from_dict(killmail_dict)
         if killmail:
             cache.set(key=cache_key, value=killmail.asjson())
         return killmail
@@ -634,14 +617,35 @@ class KillmailBody(_KillmailBase):
         return KillmailZkb(**params)
 
     @classmethod
+    def _get_killmail_data_from_href(cls, href: str) -> dict | None:
+        """Fetch killmail data from zKillboard href URL."""
+        headers = {"User-Agent": USER_AGENT_TEXT, "Content-Type": "application/json"}
+        try:
+            response = requests.get(url=href, headers=headers, timeout=5)
+            response.raise_for_status()
+            killmail_data = response.json()
+            return killmail_data
+        except requests.RequestException as exc:
+            logger.error("Error fetching killmail data from href %s: %s", href, exc)
+            return None
+
+    @classmethod
     def _create_from_dict(cls, package_data: dict) -> Optional["KillmailBody"]:
         """creates a new object from given dict.
         Needs to confirm with data structure returned from ZKB RedisQ
         """
-
         killmail = None
-        if "killmail" in package_data:
-            killmail_data = package_data["killmail"]
+        if (
+            package_data
+            and "zkb" in package_data
+            and package_data["zkb"]
+            and "href" in package_data["zkb"]
+        ):
+            killmail_data = cls._get_killmail_data_from_href(
+                package_data["zkb"]["href"]
+            )
+            if not killmail_data:
+                return None
             victim, position = cls._extract_victim_and_position(killmail_data)
             attackers = cls._extract_attackers(killmail_data)
             zkb = cls._extract_zkb(package_data)
@@ -656,34 +660,6 @@ class KillmailBody(_KillmailBase):
             }
             if "solar_system_id" in killmail_data:
                 params["solar_system_id"] = killmail_data["solar_system_id"]
-
-            killmail = KillmailBody(**params)
-
-        return killmail
-
-    @classmethod
-    def _create_from_openapi(cls, package_data: dict) -> Optional["KillmailBody"]:
-        """creates a new object from given dict.
-        Needs to confirm with data structure returned from OpenAPI ESI
-        """
-        killmail = None
-        if "killmail" in package_data:
-            killmail_data: KillmailContext = package_data["killmail"]
-            zkb = cls._extract_zkb(package_data)
-            str_formated_time = killmail_data.killmail_time.strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
-            )
-
-            params = {
-                "id": killmail_data.killmail_id,
-                "time": parse_datetime(str_formated_time),
-                "victim": killmail_data.victim,
-                "position": killmail_data.victim.position,
-                "attackers": killmail_data.attackers,
-                "zkb": zkb,
-            }
-            if killmail_data and hasattr(killmail_data, "solar_system_id"):
-                params["solar_system_id"] = killmail_data.solar_system_id
 
             killmail = KillmailBody(**params)
 
