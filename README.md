@@ -5,6 +5,7 @@
 [![Tests](https://github.com/Geuthur/aa-killstats/actions/workflows/autotester.yml/badge.svg)](https://github.com/Geuthur/aa-killstats/actions/workflows/autotester.yml)
 [![codecov](https://codecov.io/gh/Geuthur/aa-killstats/graph/badge.svg?token=jRicu5enZF)](https://codecov.io/gh/Geuthur/aa-killstats)
 [![Translation status](https://weblate.geuthur.de/widget/allianceauth/aa-killstats/svg-badge.svg)](https://weblate.geuthur.de/engage/allianceauth/)
+[![Discord](https://img.shields.io/discord/337275567487320064?label=discord)](https://discord.gg/WrHzA4rnxA)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W810Q5J4)
 

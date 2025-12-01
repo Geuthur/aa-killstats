@@ -11,6 +11,21 @@ Section Order:
 ### Removed
 -->
 
+## [1.0.4] - 2025-12-01
+
+### Added
+
+- `get_single_killmail` test
+- Discord Link to `README.md`
+
+### Changed
+
+- Killmails are now fetched from ESI instead of zKB.
+
+### Removed
+
+- `_create_from_openapi` function
+
 ## [1.0.3] - 2025-11-16
 
 ### Changed
