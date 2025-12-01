@@ -303,11 +303,6 @@ class KillmailBody(_KillmailBase):
                     logger.debug(f"Generated href: {killmail_url}")
                 else:
                     raise ValueError("Cannot generate href: killID or hash missing.")
-            # Get killmail data from CCP
-            killmail_item = cls._get_killmail_data_from_ccp(killmail_url)
-            if not killmail_item:
-                raise ValueError("Failed to fetch killmail data from href URL.")
-
         except Exception as exc:
             raise ValueError(
                 "Some error occurred while processing the killmail."
@@ -315,7 +310,6 @@ class KillmailBody(_KillmailBase):
 
         killmail_dict = {
             "killID": killmail_id,
-            "killmail": killmail_item,
             "zkb": zkb_killmail["zkb"],
         }
         killmail = cls._create_from_dict(killmail_dict)
