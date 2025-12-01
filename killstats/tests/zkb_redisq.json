@@ -1,0 +1,25 @@
+{
+  "package": {
+    "killID": 130678514,
+    "zkb": {
+      "locationID": 40030969,
+      "hash": "145c457c34ce9c9e8d67e942e764d8f439b22271",
+      "fittedValue": 3373417589.45,
+      "droppedValue": 2474643537.39,
+      "destroyedValue": 900440852.06,
+      "totalValue": 3375084389.45,
+      "points": 13,
+      "npc": false,
+      "solo": false,
+      "awox": false,
+      "labels": [
+        "tz:ru",
+        "cat:6",
+        "#:5+",
+        "pvp",
+        "loc:nullsec",
+        "isk:1b+"
+      ]
+    }
+  }
+}

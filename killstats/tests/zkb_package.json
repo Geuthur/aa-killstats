@@ -17,7 +17,8 @@
             "#:2+",
             "pvp",
             "loc:nullsec"
-         ]
+         ],
+         "href":"https://esi.evetech.net/v1/killmails/121152845/15ceb3b90831b2d77936e0e5170ebbac6a2c8389/"
       }
    },
    {
@@ -38,7 +39,8 @@
             "#:1",
             "pvp",
             "loc:nullsec"
-         ]
+         ],
+         "href":"https://esi.evetech.net/v1/killmails/120885941/9ac74758129a7b8ead50839dbb33f3ad9e0d2c68/"
       }
    }
 ]
