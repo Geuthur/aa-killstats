@@ -226,7 +226,12 @@ class KillmailBody(_KillmailBase):
                 killmail_id=killmail_id,
             )
 
+            # Get killmail data from ESI
             killmail_item = esi_killmail.result(force_refresh=True)
+            # Convert to dict
+            killmail_item = json.dumps(
+                to_serializable_dict(killmail_item), cls=JSONDateTimeEncoder
+            )
 
             return {
                 "killID": killmail_id,
@@ -278,20 +283,35 @@ class KillmailBody(_KillmailBase):
 
         try:
             killmail_id = zkb_killmail["killmail_id"]
-            killmail_url = zkb_killmail["zkb"]["href"]
 
             # Check if killmail already exists
             existing_killmail = Killmail.objects.filter(killmail_id=killmail_id).first()
-
-            # Get killmail data from CCP
-            killmail_item = cls._get_killmail_data_from_href(killmail_url)
-            if killmail_item is None:
-                raise ValueError("Failed to fetch killmail data from href URL.")
             if existing_killmail:
                 logger.debug("Killmail %s exists already..", killmail_id)
                 return None
+
+            zkb = zkb_killmail["zkb"]
+            killmail_url = zkb.get("href")
+            if not killmail_url:
+                km_id = zkb_killmail.get("killID") or zkb_killmail.get("killmail_id")
+                km_hash = zkb.get("hash")
+                if km_id and km_hash:
+                    killmail_url = (
+                        f"https://esi.evetech.net/v1/killmails/{km_id}/{km_hash}/"
+                    )
+                    zkb["href"] = killmail_url
+                    logger.debug(f"Generated href: {killmail_url}")
+                else:
+                    raise ValueError("Cannot generate href: killID or hash missing.")
+            # Get killmail data from CCP
+            killmail_item = cls._get_killmail_data_from_ccp(killmail_url)
+            if not killmail_item:
+                raise ValueError("Failed to fetch killmail data from href URL.")
+
         except Exception as exc:
-            raise ValueError("Invalid Kill ID or Hash.") from exc
+            raise ValueError(
+                "Some error occurred while processing the killmail."
+            ) from exc
 
         killmail_dict = {
             "killID": killmail_id,
@@ -617,7 +637,7 @@ class KillmailBody(_KillmailBase):
         return KillmailZkb(**params)
 
     @classmethod
-    def _get_killmail_data_from_href(cls, href: str) -> dict | None:
+    def _get_killmail_data_from_ccp(cls, href: str) -> dict | None:
         """Fetch killmail data from zKillboard href URL."""
         headers = {"User-Agent": USER_AGENT_TEXT, "Content-Type": "application/json"}
         try:
@@ -641,9 +661,7 @@ class KillmailBody(_KillmailBase):
             and package_data["zkb"]
             and "href" in package_data["zkb"]
         ):
-            killmail_data = cls._get_killmail_data_from_href(
-                package_data["zkb"]["href"]
-            )
+            killmail_data = cls._get_killmail_data_from_ccp(package_data["zkb"]["href"])
             if not killmail_data:
                 return None
             victim, position = cls._extract_victim_and_position(killmail_data)
