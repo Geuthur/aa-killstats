@@ -7,22 +7,21 @@ msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issues\n"
 "POT-Creation-Date: 2025-12-22 10:01+0100\n"
-"PO-Revision-Date: 2025-10-17 06:28+0000\n"
-"Last-Translator: Peter Pfeufer <info@ppfeufer.de>\n"
-"Language-Team: German <https://weblate.voices-of-war.de/projects/"
-"allianceauth/aa-killstats/de/>\n"
+"PO-Revision-Date: 2025-12-22 09:23+0000\n"
+"Last-Translator: Weblate Admin <geuthur@users.noreply.weblate.voices-of-"
+"war.de>\n"
+"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-"
+"killstats/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #: killstats/forms.py:25
-#, fuzzy
-#| msgid "Add Killmail"
 msgid "Killmail ID"
-msgstr "Killmail hinzufügen"
+msgstr "Killmail ID"
 
 #: killstats/models/killboard.py:46 killstats/models/killboard.py:54
 #: killstats/models/killboard.py:113
@@ -62,7 +61,7 @@ msgstr "März"
 #: killstats/templates/killstats/bundles/killboard-js.html:20
 #: killstats/templates/killstats/killboard.html:65
 msgid "April"
-msgstr ""
+msgstr "April"
 
 #: killstats/templates/killstats/bundles/killboard-js.html:21
 #: killstats/templates/killstats/killboard.html:66
@@ -82,14 +81,12 @@ msgstr "Juli"
 #: killstats/templates/killstats/bundles/killboard-js.html:21
 #: killstats/templates/killstats/killboard.html:69
 msgid "August"
-msgstr ""
+msgstr "August"
 
 #: killstats/templates/killstats/bundles/killboard-js.html:22
 #: killstats/templates/killstats/killboard.html:70
-#, fuzzy
-#| msgid "December"
 msgid "September"
-msgstr "Dezember"
+msgstr "September"
 
 #: killstats/templates/killstats/bundles/killboard-js.html:22
 #: killstats/templates/killstats/killboard.html:71
@@ -98,10 +95,8 @@ msgstr "Oktober"
 
 #: killstats/templates/killstats/bundles/killboard-js.html:22
 #: killstats/templates/killstats/killboard.html:72
-#, fuzzy
-#| msgid "December"
 msgid "November"
-msgstr "Dezember"
+msgstr "November"
 
 #: killstats/templates/killstats/bundles/killboard-js.html:22
 #: killstats/templates/killstats/killboard.html:73
@@ -119,7 +114,7 @@ msgstr "Monat"
 #: killstats/templates/killstats/killboard.html:8
 #: killstats/templates/killstats/killmail_add.html:8
 msgid "Killstats"
-msgstr ""
+msgstr "Killstats"
 
 #: killstats/templates/killstats/killmail_add.html:36
 #: killstats/templates/killstats/partials/menu/navigation.html:16
@@ -148,15 +143,15 @@ msgstr "Schließen"
 
 #: killstats/templates/killstats/partials/modal/view_top_10.html:16
 msgid "Character Icon"
-msgstr ""
+msgstr "Charakter-Symbol"
 
 #: killstats/templates/killstats/partials/modal/view_top_10.html:17
 msgid "Character Name"
-msgstr ""
+msgstr "Charakter Name"
 
 #: killstats/templates/killstats/partials/modal/view_top_10.html:18
 msgid "Kill Count"
-msgstr ""
+msgstr "Kill-Zählung"
 
 #: killstats/templates/killstats/partials/modal/view_top_10.html:33
 msgid "No data found..."
