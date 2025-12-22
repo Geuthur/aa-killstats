@@ -56,22 +56,22 @@ translations: check-python-venv
 	fi;
 
 # Compile translation files
-.PHONY: compile_translations
-compile_translations: check-python-venv
+.PHONY: compile-translations
+compile-translations: check-python-venv
 	@echo "Compiling translation files"
 	@django-admin compilemessages $(django_locales)
 
 # Migrate all database changes
 .PHONY: migrate
-migrate: check-python-venv
+migrate: check-python-venv check-myauth-path
 	@echo "Migrating the database"
-	@python ../auth/manage.py migrate $(package)
+	@python $(myauth_path)/manage.py migrate $(package)
 
 # Make migrations for the app
 .PHONY: migrations
-migrations: check-python-venv
+migrations: check-python-venv check-myauth-path
 	@echo "Creating or updating migrations"
-	@python ../auth/manage.py makemigrations $(package)
+	@python $(myauth_path)/manage.py makemigrations $(package)
 
 # Help message
 .PHONY: help
@@ -82,7 +82,7 @@ help::
 	@echo "      migrations                Create or update migrations"
 	@echo ""
 	@echo "    Translation handling:"
-	@echo "      compile_translations      Compile translation files"
+	@echo "      compile-translations      Compile translation files"
 	@echo "      pot                       Create or update translation template (.pot file)"
 	@echo "      translations              Create or update translation files"
 	@echo ""
