@@ -62,6 +62,7 @@ def run_zkb_r2z2():
             sequence_id += 1
             continue
 
+        # Process the killmail for the current sequence ID
         killmail = KillmailBody.create_from_r2z2_sequence(sequence_id)
         if not killmail:
             logger.debug(
@@ -69,12 +70,13 @@ def run_zkb_r2z2():
             )
             break
 
+        # Save temporary to Cache
         killmail.save()
-        logger.debug("Killmail fetched from ZKB R2Z2: %s", killmail.id)
 
         corps_qs = CorporationsAudit.objects.all()
         allys_qs = AlliancesAudit.objects.all()
 
+        # Iterate over all corporations and alliances and run the tracker for each of them
         for corporation in corps_qs:
             run_tracker_corporation.delay(
                 corporation_id=corporation.corporation.corporation_id,
