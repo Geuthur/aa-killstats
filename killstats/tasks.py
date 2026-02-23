@@ -39,23 +39,38 @@ TASK_DEFAULTS_ONCE = {**TASK_DEFAULTS, **{"base": QueueOnce}}
 
 @shared_task(**TASK_DEFAULTS_ONCE)
 @when_esi_is_available
-def run_zkb_redis():
+def run_zkb_r2z2():
     total_killmails = 0
-    for _ in range(app_settings.KILLSTATS_MAX_KILLMAILS_PER_RUN):
-        try:
-            killmail = KillmailBody.create_from_zkb_redisq()
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.error("Error fetching killmail from zKB RedisQ: %s", e)
-            break
+    sequence_id = None
 
-        if not cache.get(f"{__title__.upper()}_WORKER_SHUTDOWN") is None:
-            logger.debug("Worker shutdown detected; stopping zKB RedisQ processing")
-            break
+    try:
+        sequence_id = KillmailBody.get_sequence_from_r2z2()
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error("Error fetching killmail from zKB R2Z2: %s", e)
+        return
 
+    if not sequence_id:
+        logger.debug("No killmail received from zKB R2Z2.")
+        return
+
+    while True:
+        if cache.get(f"{__title__.upper()}_{sequence_id}"):
+            logger.debug(
+                "Killmail with sequence ID %s already processed recently; skipping",
+                sequence_id,
+            )
+            sequence_id += 1
+            continue
+
+        killmail = KillmailBody.create_from_r2z2_sequence(sequence_id)
         if not killmail:
+            logger.debug(
+                "No valid killmail data received for sequence ID %s", sequence_id
+            )
             break
 
         killmail.save()
+        logger.debug("Killmail fetched from ZKB R2Z2: %s", killmail.id)
 
         corps_qs = CorporationsAudit.objects.all()
         allys_qs = AlliancesAudit.objects.all()
@@ -72,6 +87,8 @@ def run_zkb_redis():
             )
 
         total_killmails += 1
+        sequence_id += 1
+        cache.set(key=f"{__title__.upper()}_{sequence_id}", value=True, timeout=60 * 5)
     logger.info(
         "Killboard runs completed. %s killmails received from zKB",
         total_killmails,

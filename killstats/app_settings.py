@@ -14,6 +14,8 @@ KILLSTATS_APP_NAME = clean_setting("KILLSTATS_APP_NAME", "Killstats")
 # zKillboard - https://zkillboard.com/
 ZKILLBOARD_BASE_URL = "https://zkillboard.com/"
 ZKILLBOARD_API_URL = "https://zkillboard.com/api/"
+ZKILLBOARD_R2Z2_URL = "https://r2z2.zkillboard.com/ephemeral/"
+ZKILLBOARD_R2Z2_SEQUENCE_URL = "https://r2z2.zkillboard.com/ephemeral/sequence.json"
 
 ZKILLBOARD_BASE_URL_REGEX = r"^http[s]?:\/\/zkillboard\.com\/"
 ZKILLBOARD_KILLMAIL_URL_REGEX = r"^http[s]?:\/\/zkillboard\.com\/kill\/\d+\/"
@@ -35,16 +37,8 @@ KILLSTATS_TASKS_TIME_LIMIT = clean_setting("KILLSTATS_TASKS_TIME_LIMIT", 1800)
 # Tasks hard timeout
 KILLSTATS_TASKS_TIMEOUT = clean_setting("KILLSTATS_TASKS_TIMEOUT", 600)
 
-# Unique ID used to identify this server when fetching killmails from zKillboard
-# Please note that the Queue ID is globally unique for all users of the zKillboard API
-# Only use characters Example: "Gneuten9000"
-KILLSTATS_QUEUE_ID = clean_setting("KILLSTATS_QUEUE_ID", "")
-
-# Max duration to wait for new killmails from redisq in seconds
-KILLSTATS_REDISQ_TTW = clean_setting("KILLSTATS_REDISQ_TTW", 5)
-
 # Rate limiting for zKillboard RedisQ requests
 # Max seconds to wait trying to acquire a rate slot (0 = don't wait)
-KILLSTATS_REDISQ_RATE_TIMEOUT = clean_setting("KILLSTATS_REDISQ_RATE_TIMEOUT", 10)
+KILLSTATS_ZKB_RATE_TIMEOUT = clean_setting("KILLSTATS_REDISQ_RATE_TIMEOUT", 10)
 # Maximum allowed requests per second across all workers/processes
-KILLSTATS_REDISQ_MAX_PER_SEC = clean_setting("KILLSTATS_REDISQ_MAX_PER_SEC", 2)
+KILLSTATS_MAX_ZKB_PER_SEC = clean_setting("KILLSTATS_REDISQ_MAX_PER_SEC", 2)
