@@ -422,8 +422,6 @@ class KillmailBody(_KillmailBase):
             logger.error("Error from ZKB R2Z2 Sequence:\n%s", sequence.text)
             return None
 
-        logger.debug("Received data from ZKB R2Z2 Sequence: %s", data)
-
         # Log this request timestamp for rate limiting
         cache.set(LAST_REQUEST_KEY, timezone.now().isoformat())
 
@@ -463,8 +461,6 @@ class KillmailBody(_KillmailBase):
             timeout=REQUESTS_TIMEOUT,
             headers={"User-Agent": USER_AGENT_TEXT},
         )
-
-        logger.debug("Received response from ZKB R2Z2: %s", response.status_code)
 
         # Handle 429 Too Many Requests
         if KillmailBody._too_many_requests_delay(response):
