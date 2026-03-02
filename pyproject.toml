@@ -52,10 +52,8 @@ urls.Homepage = "https://github.com/Geuthur/aa-killstats"
 urls.Source = "https://github.com/Geuthur/aa-killstats"
 urls.Tracker = "https://github.com/Geuthur/aa-killstats/issues"
 
-[tool.hatch.build]
-include = [
+[tool.hatch]
+build.include = [
     "/killstats",
 ]
-
-[tool.hatch.version]
-path = "killstats/__init__.py"
+version.path = "killstats/__init__.py"
