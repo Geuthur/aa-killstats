@@ -11,12 +11,13 @@ from eveuniverse.models import EveEntity, EveType
 
 # AA Killstats
 from killstats.models.killstatsaudit import CorporationsAudit
+from killstats.tests import NoSocketsTestCase
 from killstats.tests.testdata.generate_killmail import create_killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 
-class KillstatsAuditMangerTest(TestCase):
+class KillstatsAuditMangerTest(NoSocketsTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
