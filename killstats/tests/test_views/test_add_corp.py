@@ -6,18 +6,10 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-# Alliance Auth
-from allianceauth.eveonline.models import (
-    EveCorporationInfo,
-)
-from esi.models import Token
-
-# Alliance Auth (External Libs)
-from app_utils.testing import create_user_from_evecharacter
-
 # AA Killstats
 from killstats.models.killstatsaudit import CorporationsAudit
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
+from killstats.tests.testdata.utils import create_user_from_evecharacter
 from killstats.views import (
     add_corp,
 )

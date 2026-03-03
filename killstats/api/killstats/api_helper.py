@@ -8,9 +8,6 @@ from django.db.models import Count, Q, Sum
 # Alliance Auth
 from allianceauth.services.hooks import get_extension_logger
 
-# Alliance Auth (External Libs)
-from app_utils.logging import LoggerAddTag
-
 # AA Killstats
 from killstats import __title__
 from killstats.api.account_manager import AccountManager
@@ -18,8 +15,9 @@ from killstats.api.helpers import get_alliances, get_corporations
 from killstats.app_settings import KILLSTATS_API_CACHE_LIFETIME
 from killstats.models.killboard import Attacker, Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
+from killstats.providers import AppLogger
 
-logger = LoggerAddTag(get_extension_logger(__name__), __title__)
+logger = AppLogger(get_extension_logger(__name__), __title__)
 
 KILLMAIL_MAPPING = {
     0: "killmail_id",

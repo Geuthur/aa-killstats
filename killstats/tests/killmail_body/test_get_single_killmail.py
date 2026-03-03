@@ -10,19 +10,18 @@ from django.core.cache import cache
 from django.utils.timezone import datetime
 
 # Alliance Auth (External Libs)
-from app_utils.testing import NoSocketsTestCase
 from eveuniverse.models import EveEntity, EveType
 
 # AA Killstats
 # Create a properly structured killmail object
 from killstats.helpers.killmail import (
-    KillmailAttacker,
     KillmailBody,
     KillmailPosition,
     KillmailVictim,
     KillmailZkb,
 )
 from killstats.models.killboard import Killmail
+from killstats.tests import NoSocketsTestCase
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 

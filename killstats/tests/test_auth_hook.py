@@ -5,11 +5,10 @@ from unittest.mock import MagicMock
 from django.test import TestCase
 from django.urls import reverse
 
-# Alliance Auth (External Libs)
-from app_utils.testdata_factories import UserMainFactory
-
 # AA Killstats
 from killstats.auth_hooks import KillstatsMenuItem
+from killstats.tests.testdata.load_allianceauth import load_allianceauth
+from killstats.tests.testdata.utils import create_user_from_evecharacter_with_access
 
 
 class TestAuthHooks(TestCase):
@@ -17,7 +16,11 @@ class TestAuthHooks(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.user = UserMainFactory(permissions=["killstats.basic_access"])
+        load_allianceauth()
+
+        cls.user, cls.character_ownership = create_user_from_evecharacter_with_access(
+            character_id=1001, disconnect_signals=True
+        )
         cls.html_menu = f"""
             <li class="d-flex flex-wrap m-2 p-2 pt-0 pb-0 mt-0 mb-0 me-0 pe-0">
                 <i class="nav-link fas fa-star fa-fw fa-fw align-self-center me-3 active"></i>

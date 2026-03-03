@@ -5,13 +5,11 @@ from django.urls import reverse
 # Alliance Auth
 from allianceauth.eveonline.models import EveCorporationInfo
 
-# Alliance Auth (External Libs)
-from app_utils.testing import create_user_from_evecharacter
-
 # AA Killstats
 from killstats.api.account_manager import AccountManager
 from killstats.api.killstats.api_helper import get_alliances, get_corporations
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
+from killstats.tests.testdata.utils import create_user_from_evecharacter
 
 MODULE_PATH = "killstats.api.account_manager"
 

@@ -6,14 +6,9 @@ from django.utils import timezone
 from eveuniverse.models import EveEntity, EveType
 
 # AA Killstats
-from killstats.models.killboard import Killmail
-from killstats.tests.testdata.generate_killmail import create_killmail
-from killstats.tests.testdata.generate_killstats import (
-    create_alliance,
-    create_corporation,
-)
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
+from killstats.tests.testdata.utils import create_killmail
 
 MODULE_PATH = "killstats.models.killstatsaudit"
 
