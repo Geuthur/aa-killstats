@@ -1,9 +1,8 @@
 import globals from 'globals';
+import { defineConfig } from 'eslint/config';
 import js from '@eslint/js';
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
-
-export default [
+export default defineConfig([
     {
         languageOptions: {
             globals: {
@@ -31,4 +30,4 @@ export default [
             'no-unused-vars': 'off',
         },
     }
-];
+]);
