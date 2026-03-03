@@ -20,7 +20,8 @@ from django.utils.dateparse import parse_datetime
 from allianceauth.services.hooks import get_extension_logger
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveSolarSystem, EveType
+from eve_sde.models.map import SolarSystem
+from eve_sde.models.types import ItemType
 
 # AA Killstats
 from killstats import USER_AGENT_TEXT, __title__, __version__
@@ -40,6 +41,7 @@ from killstats.constants import (
     RETRY_DELAY,
 )
 from killstats.helpers.core import JSONDateTimeDecoder, JSONDateTimeEncoder
+from killstats.models.general import EveEntity
 from killstats.models.killboard import Attacker
 from killstats.providers import AppLogger, esi
 
@@ -494,22 +496,14 @@ class KillmailBody(_KillmailBase):
 
     def create_names_bulk(self, eve_ids: list):
         if len(eve_ids) > 0:
-            EveEntity.objects.bulk_create_esi(eve_ids)
+            EveEntity.objects.create_bulk_from_esi(eve_ids)
             return True
         return False
 
     @staticmethod
-    def get_or_create_evetype(evetype_id: int) -> EveType:
-        """Get or create an entity type from Eve ID."""
-        evetype, new_entry = EveType.objects.get_or_create_esi(id=evetype_id)
-        if new_entry:
-            logger.debug("Killstats Manager Entity: %s added", evetype.name)
-        return evetype
-
-    @staticmethod
     def get_or_create_entity(eve_id: int) -> EveEntity:
         """Get or create an entity from Eve ID."""
-        entity, new_entry = EveEntity.objects.get_or_create_esi(id=eve_id)
+        entity, new_entry = EveEntity.objects.get_or_create_esi(eve_id=eve_id)
         if new_entry:
             logger.debug("Killstats Manager EveName: %s added", entity.name)
         return entity
@@ -517,12 +511,8 @@ class KillmailBody(_KillmailBase):
     @staticmethod
     def get_or_create_region_id(solar_system_id: int) -> int:
         """Get or create region ID from solar system ID."""
-        solar_system, new_entry = EveSolarSystem.objects.get_or_create_esi(
-            id=solar_system_id
-        )
-        region_id = solar_system.eve_constellation.eve_region
-        if new_entry:
-            logger.debug("Killstats Manager EveName: %s added", region_id.name)
+        solar_system = SolarSystem.objects.get(id=solar_system_id)
+        region_id = solar_system.constellation.region
         return region_id.id
 
     def get_or_create_attackers(self, killmail, killmail_body):
@@ -541,7 +531,7 @@ class KillmailBody(_KillmailBase):
 
             ship = None
             if attacker.ship_type_id:
-                ship = self.get_or_create_evetype(attacker.ship_type_id)
+                ship = ItemType.objects.get(attacker.ship_type_id)
 
             Attacker.objects.get_or_create(
                 killmail=killmail,

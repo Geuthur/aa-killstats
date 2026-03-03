@@ -20,7 +20,6 @@ from killstats.admin import (
 )
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 from killstats.tests.testdata.utils import (
     create_owner_from_evecharacter,
     create_user_from_evecharacter,
@@ -38,7 +37,6 @@ class TestKillstatsAuditAdmin(TestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
 
         cls.factory = RequestFactory()
         cls.site = AdminSite()
@@ -173,7 +171,6 @@ class TestAlliancesAuditAdmin(TestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
 
         cls.factory = RequestFactory()
         cls.site = AdminSite()

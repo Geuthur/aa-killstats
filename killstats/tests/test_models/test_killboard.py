@@ -3,11 +3,12 @@ from django.test import TestCase
 from django.utils import timezone
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
+from eve_sde.models.types import ItemType
 
 # AA Killstats
+from killstats.models.general import EveEntity
+from killstats.tests.testdata.eveentity import load_eveentity
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 from killstats.tests.testdata.utils import create_killmail
 
 MODULE_PATH = "killstats.models.killstatsaudit"
@@ -18,13 +19,13 @@ class TestKillstatsAuditModel(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
+        load_eveentity()
 
         cls.killmail = create_killmail(
             killmail_id=1,
             killmail_date=timezone.datetime(2023, 1, 30, 0, 0, 0, tzinfo=timezone.utc),
             victim=EveEntity.objects.get(id=1001),
-            victim_ship=EveType.objects.get(id=10001),
+            victim_ship=ItemType.objects.get(id=10001),
             victim_corporation_id=2001,
             victim_alliance_id=None,
             hash="hash1",
@@ -42,7 +43,7 @@ class TestKillstatsAuditModel(TestCase):
             killmail_id=2,
             killmail_date=timezone.now(),
             victim=EveEntity.objects.get(id=1001),
-            victim_ship=EveType.objects.get(id=30001),
+            victim_ship=ItemType.objects.get(id=30001),
             victim_corporation_id=2001,
             victim_alliance_id=3001,
             hash="hash2",
@@ -60,7 +61,7 @@ class TestKillstatsAuditModel(TestCase):
             killmail_id=3,
             killmail_date=timezone.now(),
             victim=EveEntity.objects.get(id=1001),
-            victim_ship=EveType.objects.get(id=670),
+            victim_ship=ItemType.objects.get(id=670),
             victim_corporation_id=2001,
             victim_alliance_id=3001,
             hash="hash3",
@@ -78,7 +79,7 @@ class TestKillstatsAuditModel(TestCase):
     def test_str(self):
         self.assertEqual(
             str(self.killmail),
-            "Killmail 1 - 2023-01-30 00:00:00+00:00 - Gneuten - Victim Ship I",
+            "Killmail 1 - 2023-01-30 00:00:00+00:00 - Gneuten - Victim Ship I (10001)",
         )
 
     def test_get_victim_name(self):

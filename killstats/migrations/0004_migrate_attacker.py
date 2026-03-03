@@ -7,7 +7,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("eveuniverse", "0010_alter_eveindustryactivityduration_eve_type_and_more"),
         ("killstats", "0003_attacker_remove_killmail_attackers_and_more"),
     ]
 

@@ -118,7 +118,7 @@ class KillboardStatsApiEndpoints:
                 ).order_by("-top_victim", "victim__name")
 
                 top_victim_ship = (
-                    killmail_month.exclude(victim_ship__eve_group_id__in=[29])
+                    killmail_month.exclude(victim_ship__group_id__in=[29])
                     .values("victim_ship_id", "victim_ship__name")
                     .annotate(top_victim_ship=Count("victim_ship_id"))
                 ).order_by("-top_victim_ship", "victim_ship__name")

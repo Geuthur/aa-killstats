@@ -6,13 +6,14 @@ from django.urls import reverse
 from allianceauth.eveonline.models import EveCorporationInfo
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
+from eve_sde.models.types import ItemType
 
 # AA Killstats
+from killstats.models.general import EveEntity
 from killstats.models.killstatsaudit import CorporationsAudit
 from killstats.tests import NoSocketsTestCase
+from killstats.tests.testdata.eveentity import load_eveentity
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 from killstats.tests.testdata.utils import (
     create_killmail,
     create_user_from_evecharacter,
@@ -24,7 +25,7 @@ class KillstatsAuditMangerTest(NoSocketsTestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
+        load_eveentity()
 
         cls.killmail = create_killmail(
             killmail_id=1,
@@ -37,7 +38,7 @@ class KillstatsAuditMangerTest(NoSocketsTestCase):
             victim_position_y=1.0,
             victim_position_z=1.0,
             victim=EveEntity.objects.get(id=1001),
-            victim_ship=EveType.objects.get(id=670),
+            victim_ship=ItemType.objects.get(id=670),
             victim_total_value=1000,
             victim_fitted_value=500,
             victim_destroyed_value=500,

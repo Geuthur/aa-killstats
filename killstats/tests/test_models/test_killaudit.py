@@ -3,8 +3,8 @@ from django.test import TestCase
 
 # AA Killstats
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
+from killstats.tests.testdata.eveentity import load_eveentity
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 from killstats.tests.testdata.utils import create_owner_from_evecharacter
 
 MODULE_PATH = "killstats.models.killstatsaudit"
@@ -15,7 +15,7 @@ class TestKillstatsAuditModel(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
+        load_eveentity()
 
         cls.audit1 = create_owner_from_evecharacter(
             character_id=1001,

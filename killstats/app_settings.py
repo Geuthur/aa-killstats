@@ -23,10 +23,7 @@ KILLSTATS_STORAGE_LIFETIME = getattr(
     settings, "KILLSTATS_STORAGE_LIFETIME", 3_600 * 24 * 3
 )
 
-# Max Killmails per run should not be higher then 500
-KILLSTATS_MAX_KILLMAILS_PER_RUN = getattr(
-    settings, "KILLSTATS_MAX_KILLMAILS_PER_RUN", 200
-)
+KILLSTATS_BULK_BATCH_SIZE = getattr(settings, "KILLSTATS_BULK_BATCH_SIZE", 500)
 
 # Max lifetime of API Cache (10 min)
 KILLSTATS_API_CACHE_LIFETIME = getattr(settings, "KILLSTATS_API_CACHE_LIFETIME", 10)
@@ -38,6 +35,6 @@ KILLSTATS_TASKS_TIMEOUT = getattr(settings, "KILLSTATS_TASKS_TIMEOUT", 600)
 
 # Rate limiting for zKillboard RedisQ requests
 # Max seconds to wait trying to acquire a rate slot (0 = don't wait)
-KILLSTATS_ZKB_RATE_TIMEOUT = getattr(settings, "KILLSTATS_REDISQ_RATE_TIMEOUT", 10)
+KILLSTATS_ZKB_RATE_TIMEOUT = getattr(settings, "KILLSTATS_ZKB_RATE_TIMEOUT", 10)
 # Maximum allowed requests per second across all workers/processes
-KILLSTATS_MAX_ZKB_PER_SEC = getattr(settings, "KILLSTATS_REDISQ_MAX_PER_SEC", 2)
+KILLSTATS_MAX_ZKB_PER_SEC = getattr(settings, "KILLSTATS_MAX_ZKB_PER_SEC", 2)

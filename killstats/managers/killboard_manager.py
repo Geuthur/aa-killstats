@@ -90,8 +90,8 @@ class KillmailQueryCore(models.QuerySet):
     def filter_structure(self, exclude=False):
         """Filter or Exclude Structure Kills."""
         if exclude:
-            return self.exclude(victim_ship__eve_group__eve_category_id=65)
-        return self.filter(victim_ship__eve_group__eve_category_id=65)
+            return self.exclude(victim_ship__group__category_id=65)
+        return self.filter(victim_ship__group__category_id=65)
 
     def filter_threshold(self, threshold: int):
         """Filter Killmails are in Threshold."""
@@ -101,19 +101,19 @@ class KillmailQueryCore(models.QuerySet):
 class KillmailQueryMining(KillmailQueryCore):
     def filter_barge(self):
         """Filter Mining Barge."""
-        return self.filter(victim_ship__eve_group_id=463)
+        return self.filter(victim_ship__group_id=463)
 
     def filter_exhumer(self):
         """Filter Exhumer."""
-        return self.filter(victim_ship__eve_group_id=543)
+        return self.filter(victim_ship__group_id=543)
 
     def filter_indu_command_ship(self):
         """Filter Industrial Command Ship."""
-        return self.filter(victim_ship__eve_group_id=941)
+        return self.filter(victim_ship__group_id=941)
 
     def filter_capital_indu_ship(self):
         """Filter Capital Industrial Ship."""
-        return self.filter(victim_ship__eve_group_id=883)
+        return self.filter(victim_ship__group_id=883)
 
 
 class KillmailQuerySet(KillmailQueryMining):
