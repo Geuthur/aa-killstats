@@ -20,8 +20,6 @@ from django.utils.dateparse import parse_datetime
 from allianceauth.services.hooks import get_extension_logger
 
 # Alliance Auth (External Libs)
-from app_utils.json import JSONDateTimeDecoder, JSONDateTimeEncoder
-from app_utils.logging import LoggerAddTag
 from eveuniverse.models import EveEntity, EveSolarSystem, EveType
 
 # AA Killstats
@@ -41,10 +39,11 @@ from killstats.constants import (
     RETRY_AFTER_KEY,
     RETRY_DELAY,
 )
+from killstats.helpers.core import JSONDateTimeDecoder, JSONDateTimeEncoder
 from killstats.models.killboard import Attacker
-from killstats.providers import esi
+from killstats.providers import AppLogger, esi
 
-logger = LoggerAddTag(get_extension_logger(__name__), __title__)
+logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 # Example usage:

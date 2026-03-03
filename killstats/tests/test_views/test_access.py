@@ -8,10 +8,8 @@ from django.urls import reverse
 
 # AA Killstats
 from killstats import views
-from killstats.tests.testdata.generate_killstats import (
-    create_user_from_evecharacter_with_access,
-)
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
+from killstats.tests.testdata.utils import create_user_from_evecharacter_with_access
 
 MODULE_PATH = "killstats.views"
 

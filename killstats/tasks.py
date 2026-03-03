@@ -12,17 +12,14 @@ from django.db import IntegrityError
 from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 
-# Alliance Auth (External Libs)
-from app_utils.logging import LoggerAddTag
-
 # AA Killstats
 from killstats import __title__, app_settings
-from killstats.decorators import when_esi_is_available
 from killstats.helpers.killmail import KillmailBody
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
+from killstats.providers import AppLogger
 
-logger = LoggerAddTag(get_extension_logger(__name__), __title__)
+logger = AppLogger(get_extension_logger(__name__), __title__)
 
 MAX_RETRIES_DEFAULT = 3
 
@@ -38,7 +35,6 @@ TASK_DEFAULTS_ONCE = {**TASK_DEFAULTS, **{"base": QueueOnce}}
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
-@when_esi_is_available
 def run_zkb_r2z2():
     total_killmails = 0
     sequence_id = None

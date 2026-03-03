@@ -1,15 +1,10 @@
 """App Settings"""
 
-# Standard Library
-import sys
-
-# Alliance Auth (External Libs)
-from app_utils.app_settings import clean_setting
-
-IS_TESTING = sys.argv[1:2] == ["test"]
+# Django
+from django.conf import settings
 
 # Set Naming on Auth Hook
-KILLSTATS_APP_NAME = clean_setting("KILLSTATS_APP_NAME", "Killstats")
+KILLSTATS_APP_NAME = getattr(settings, "KILLSTATS_APP_NAME", "Killstats")
 
 # zKillboard - https://zkillboard.com/
 ZKILLBOARD_BASE_URL = "https://zkillboard.com/"
@@ -24,21 +19,25 @@ ZKILLBOARD_KILLMAIL_URL_REGEX = r"^http[s]?:\/\/zkillboard\.com\/kill\/\d+\/"
 STORAGE_BASE_KEY = "killstats_storage_"
 
 # Max lifetime of killmails in temporary storage in seconds
-KILLSTATS_STORAGE_LIFETIME = clean_setting("KILLSTATS_STORAGE_LIFETIME", 3_600 * 24 * 3)
+KILLSTATS_STORAGE_LIFETIME = getattr(
+    settings, "KILLSTATS_STORAGE_LIFETIME", 3_600 * 24 * 3
+)
 
 # Max Killmails per run should not be higher then 500
-KILLSTATS_MAX_KILLMAILS_PER_RUN = clean_setting("KILLSTATS_MAX_KILLMAILS_PER_RUN", 200)
+KILLSTATS_MAX_KILLMAILS_PER_RUN = getattr(
+    settings, "KILLSTATS_MAX_KILLMAILS_PER_RUN", 200
+)
 
 # Max lifetime of API Cache (10 min)
-KILLSTATS_API_CACHE_LIFETIME = clean_setting("KILLSTATS_API_CACHE_LIFETIME", 10)
+KILLSTATS_API_CACHE_LIFETIME = getattr(settings, "KILLSTATS_API_CACHE_LIFETIME", 10)
 
 # Tasks max time limit in seconds
-KILLSTATS_TASKS_TIME_LIMIT = clean_setting("KILLSTATS_TASKS_TIME_LIMIT", 1800)
+KILLSTATS_TASKS_TIME_LIMIT = getattr(settings, "KILLSTATS_TASKS_TIME_LIMIT", 1800)
 # Tasks hard timeout
-KILLSTATS_TASKS_TIMEOUT = clean_setting("KILLSTATS_TASKS_TIMEOUT", 600)
+KILLSTATS_TASKS_TIMEOUT = getattr(settings, "KILLSTATS_TASKS_TIMEOUT", 600)
 
 # Rate limiting for zKillboard RedisQ requests
 # Max seconds to wait trying to acquire a rate slot (0 = don't wait)
-KILLSTATS_ZKB_RATE_TIMEOUT = clean_setting("KILLSTATS_REDISQ_RATE_TIMEOUT", 10)
+KILLSTATS_ZKB_RATE_TIMEOUT = getattr(settings, "KILLSTATS_REDISQ_RATE_TIMEOUT", 10)
 # Maximum allowed requests per second across all workers/processes
-KILLSTATS_MAX_ZKB_PER_SEC = clean_setting("KILLSTATS_REDISQ_MAX_PER_SEC", 2)
+KILLSTATS_MAX_ZKB_PER_SEC = getattr(settings, "KILLSTATS_REDISQ_MAX_PER_SEC", 2)

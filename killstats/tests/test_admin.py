@@ -11,9 +11,6 @@ from django.test import RequestFactory, TestCase
 # Alliance Auth
 from allianceauth.eveonline.evelinks import eveimageserver
 
-# Alliance Auth (External Libs)
-from app_utils.testdata_factories import UserFactory
-
 # AA Killstats
 from killstats.admin import (
     AlliancesAuditAdmin,
@@ -22,12 +19,12 @@ from killstats.admin import (
     clear_cache_zkb,
 )
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
-from killstats.tests.testdata.generate_killstats import (
-    create_allianceaudit_from_character_id,
-    create_corporationaudit_from_character_id,
-)
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
+from killstats.tests.testdata.utils import (
+    create_owner_from_evecharacter,
+    create_user_from_evecharacter,
+)
 
 MODULE_PATH = "killstats.admin"
 
@@ -46,13 +43,19 @@ class TestKillstatsAuditAdmin(TestCase):
         cls.factory = RequestFactory()
         cls.site = AdminSite()
         cls.killstats_audit_admin = CorporationsAuditAdmin(CorporationsAudit, cls.site)
-        cls.killstats_audit = create_corporationaudit_from_character_id(1001)
+        cls.killstats_audit = create_owner_from_evecharacter(1001)
+        # User with Superuser Access - Corporation 2003
+        cls.superuser, cls.superuser_character = create_user_from_evecharacter(
+            character_id=1003,
+            permissions=[],
+        )
+        cls.superuser.is_superuser = True
+        cls.superuser.save()
 
     def test_entity_pic(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         expected_html = '<img src="{}" class="img-circle">'.format(
             eveimageserver._eve_entity_image_url(
                 "corporation", self.killstats_audit.corporation.corporation_id, 32
@@ -64,10 +67,9 @@ class TestKillstatsAuditAdmin(TestCase):
         )
 
     def test_corporation_corporation_id(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         self.assertEqual(
             self.killstats_audit_admin._corporation__corporation_id(
                 self.killstats_audit
@@ -76,27 +78,24 @@ class TestKillstatsAuditAdmin(TestCase):
         )
 
     def test_last_update(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         self.assertEqual(
             self.killstats_audit_admin._last_update(self.killstats_audit),
             self.killstats_audit.last_update,
         )
 
     def test_has_add_permission(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         self.assertFalse(self.killstats_audit_admin.has_add_permission(request))
 
     def test_has_change_permission(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         request = MockRequest()
         self.assertFalse(self.killstats_audit_admin.has_change_permission(request))
         self.assertFalse(
@@ -107,10 +106,9 @@ class TestKillstatsAuditAdmin(TestCase):
 
     @patch("killstats.admin.clear_cache_zkb")
     def test_clear_cache_for_selected(self, mock_clear_cache_zkb):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.post("/")
-        request.user = user
+        request.user = self.superuser
 
         # Fügen Sie die MessageMiddleware hinzu
         session_middleware = SessionMiddleware(lambda req: None)
@@ -180,13 +178,21 @@ class TestAlliancesAuditAdmin(TestCase):
         cls.factory = RequestFactory()
         cls.site = AdminSite()
         cls.killstats_audit_admin = AlliancesAuditAdmin(AlliancesAudit, cls.site)
-        cls.killstats_audit = create_allianceaudit_from_character_id(1001)
+        cls.killstats_audit = create_owner_from_evecharacter(
+            character_id=1001, owner_type="alliance"
+        )
+        # User with Superuser Access - Corporation 2003
+        cls.superuser, cls.superuser_character = create_user_from_evecharacter(
+            character_id=1003,
+            permissions=[],
+        )
+        cls.superuser.is_superuser = True
+        cls.superuser.save()
 
     def test_entity_pic(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         expected_html = '<img src="{}" class="img-circle">'.format(
             eveimageserver._eve_entity_image_url(
                 "alliance", self.killstats_audit.alliance.alliance_id, 32
@@ -198,37 +204,33 @@ class TestAlliancesAuditAdmin(TestCase):
         )
 
     def test_alliance_alliance_id(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         self.assertEqual(
             self.killstats_audit_admin._alliance__alliance_id(self.killstats_audit),
             3001,
         )
 
     def test_last_update(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         self.assertEqual(
             self.killstats_audit_admin._last_update(self.killstats_audit),
             self.killstats_audit.last_update,
         )
 
     def test_has_add_permission(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         self.assertFalse(self.killstats_audit_admin.has_add_permission(request))
 
     def test_has_change_permission(self):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
+        self.client.force_login(self.superuser)
         request = self.factory.get("/")
-        request.user = user
+        request.user = self.superuser
         request = MockRequest()
         self.assertFalse(self.killstats_audit_admin.has_change_permission(request))
         self.assertFalse(
@@ -239,10 +241,9 @@ class TestAlliancesAuditAdmin(TestCase):
 
     @patch("killstats.admin.clear_alliance_cache_zkb")
     def test_clear_alliance_cache_for_selected(self, mock_clear_cache_zkb):
-        user = UserFactory(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
-        request = self.factory.post("/")
-        request.user = user
+        self.client.force_login(self.superuser)
+        request = self.factory.get("/")
+        request.user = self.superuser
 
         # Fügen Sie die MessageMiddleware hinzu
         session_middleware = SessionMiddleware(lambda req: None)

@@ -9,15 +9,13 @@ from django.http import JsonResponse
 # Alliance Auth
 from allianceauth.services.hooks import get_extension_logger
 
-# Alliance Auth (External Libs)
-from app_utils.logging import LoggerAddTag
-
 # AA Killstats
 from killstats import __title__
 from killstats.api import schema
 from killstats.api.killstats import api_helper
+from killstats.providers import AppLogger
 
-logger = LoggerAddTag(get_extension_logger(__name__), __title__)
+logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 class KillboardApiEndpoints:

@@ -3,12 +3,9 @@ from django.test import TestCase
 
 # AA Killstats
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
-from killstats.tests.testdata.generate_killstats import (
-    create_allianceaudit_from_character_id,
-    create_corporationaudit_from_character_id,
-)
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
+from killstats.tests.testdata.utils import create_owner_from_evecharacter
 
 MODULE_PATH = "killstats.models.killstatsaudit"
 
@@ -20,11 +17,11 @@ class TestKillstatsAuditModel(TestCase):
         load_allianceauth()
         load_eveuniverse()
 
-        cls.audit1 = create_corporationaudit_from_character_id(
-            1001,
+        cls.audit1 = create_owner_from_evecharacter(
+            character_id=1001,
         )
-        cls.audit2 = create_allianceaudit_from_character_id(
-            1007,
+        cls.audit2 = create_owner_from_evecharacter(
+            character_id=1007, owner_type="alliance"
         )
 
     def test_str(self):
