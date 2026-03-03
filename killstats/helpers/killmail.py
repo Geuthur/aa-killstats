@@ -6,7 +6,6 @@ from datetime import datetime
 from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Optional
-from urllib.parse import quote_plus
 
 # Third Party
 import requests
@@ -14,7 +13,6 @@ from dacite import DaciteError, from_dict
 
 # Django
 from django.core.cache import cache
-from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
@@ -29,25 +27,24 @@ from eveuniverse.models import EveEntity, EveSolarSystem, EveType
 # AA Killstats
 from killstats import USER_AGENT_TEXT, __title__, __version__
 from killstats.app_settings import (
-    KILLSTATS_QUEUE_ID,
-    KILLSTATS_REDISQ_MAX_PER_SEC,
-    KILLSTATS_REDISQ_RATE_TIMEOUT,
-    KILLSTATS_REDISQ_TTW,
+    KILLSTATS_MAX_ZKB_PER_SEC,
     KILLSTATS_STORAGE_LIFETIME,
+    KILLSTATS_ZKB_RATE_TIMEOUT,
     STORAGE_BASE_KEY,
     ZKILLBOARD_API_URL,
+    ZKILLBOARD_R2Z2_SEQUENCE_URL,
+    ZKILLBOARD_R2Z2_URL,
+)
+from killstats.constants import (
+    LAST_REQUEST_KEY,
+    REQUESTS_TIMEOUT,
+    RETRY_AFTER_KEY,
+    RETRY_DELAY,
 )
 from killstats.models.killboard import Attacker
 from killstats.providers import esi
 
 logger = LoggerAddTag(get_extension_logger(__name__), __title__)
-
-LAST_REQUEST_KEY = f"{__title__.upper()}_REDISQ_LAST_REQUEST"
-RETRY_AFTER_KEY = f"{__title__.upper()}_REDISQ_RETRY_AFTER"
-
-ZKB_REDISQ_URL = "https://zkillredisq.stream/listen.php"
-REQUESTS_TIMEOUT = (5, 30)
-RETRY_DELAY = 10
 
 
 # Example usage:
@@ -186,7 +183,7 @@ class KillmailZkb(_KillmailBase):
 
 @dataclass
 class KillmailBody(_KillmailBase):
-    """A killmail body as returned from ZKB RedisQ or ZKB API."""
+    """A killmail body as returned from ZKB or ZKB API."""
 
     _STORAGE_BASE_KEY = "killboard_storage_killmail_"
 
@@ -320,7 +317,7 @@ class KillmailBody(_KillmailBase):
     @staticmethod
     def _rate_limit() -> bool:
         """
-        Check and wait for RedisQ rate limit.
+        Check and wait for zKB rate limit.
         Returns True if it's ok to proceed, False if the rate limit was reached and
         the operation should be skipped.
         """
@@ -333,7 +330,7 @@ class KillmailBody(_KillmailBase):
             wait_time = (retry_after - timezone.now()).total_seconds()
             if wait_time > 0:
                 logger.warning(
-                    "ZKB RedisQ rate limit requires waiting %.3fs due to Too Many Requests",
+                    "ZKB rate limit requires waiting %.3fs due to Too Many Requests",
                     wait_time,
                 )
                 time.sleep(wait_time)
@@ -345,28 +342,26 @@ class KillmailBody(_KillmailBase):
             last_dt = parse_datetime(last_iso)
             if last_dt is not None:
                 # Minimum interval between requests in seconds
-                min_interval = 1.0 / float(KILLSTATS_REDISQ_MAX_PER_SEC)
+                min_interval = 1.0 / float(KILLSTATS_MAX_ZKB_PER_SEC)
                 elapsed = (timezone.now() - last_dt).total_seconds()
                 if elapsed >= min_interval:
                     return True
 
                 # Need to wait the remaining time (single sleep)
                 wait = min_interval - elapsed
-                if KILLSTATS_REDISQ_RATE_TIMEOUT and KILLSTATS_REDISQ_RATE_TIMEOUT > 0:
-                    if wait <= KILLSTATS_REDISQ_RATE_TIMEOUT:
-                        logger.debug(
-                            "ZKB RedisQ rate limit requires waiting %.3fs", wait
-                        )
+                if KILLSTATS_ZKB_RATE_TIMEOUT and KILLSTATS_ZKB_RATE_TIMEOUT > 0:
+                    if wait <= KILLSTATS_ZKB_RATE_TIMEOUT:
+                        logger.debug("ZKB rate limit requires waiting %.3fs", wait)
                         time.sleep(wait)
                         return True
                     logger.warning(
-                        "ZKB RedisQ rate limit requires waiting %.3fs which exceeds RATE_TIMEOUT (%.3fs). Skipping fetch.",
+                        "ZKB rate limit requires waiting %.3fs which exceeds RATE_TIMEOUT (%.3fs). Skipping fetch.",
                         wait,
-                        KILLSTATS_REDISQ_RATE_TIMEOUT,
+                        KILLSTATS_ZKB_RATE_TIMEOUT,
                     )
                     return False
                 logger.warning(
-                    "ZKB RedisQ rate limit reached (need %.3fs wait). Skipping fetch.",
+                    "ZKB rate limit reached (need %.3fs wait). Skipping fetch.",
                     wait,
                 )
                 return False
@@ -376,7 +371,7 @@ class KillmailBody(_KillmailBase):
     @staticmethod
     def _too_many_requests_delay(response: requests.Response) -> bool:
         """
-        Handles HTTP 429 Too Many Requests responses from ZKB RedisQ.
+        Handles HTTP 429 Too Many Requests responses from ZKB.
         If the response includes a 'Retry-After' header, sets a delay in the cache and returns True to indicate the operation should be retried later.
         If the header is missing, uses a default delay value.
         Returns False if the response status is not 429, indicating the operation can continue.
@@ -396,62 +391,93 @@ class KillmailBody(_KillmailBase):
                 wait_time = RETRY_DELAY
             # Set the retry after time in cache
             cache.set(
-                f"{__title__.upper()}_REDISQ_LAST_REQUEST_RETRY_AFTER",
+                f"{__title__.upper()}_R2Z2_LAST_REQUEST_RETRY_AFTER",
                 timezone.now() + timezone.timedelta(seconds=wait_time),
             )
             return True
         return False
 
     @classmethod
-    def create_from_zkb_redisq(cls) -> Optional["KillmailBody"]:
-        """Fetches and returns a killmail from ZKB.
+    def get_sequence_from_r2z2(cls) -> Optional["KillmailBody"]:
+        """Fetches and returns a sequence ID from ZKB R2Z2 endpoint.
 
-        Returns None if no killmail is received.
+        Returns None if no sequence is received.
         """
-        if not KILLSTATS_QUEUE_ID:
-            raise ImproperlyConfigured(
-                "You need to define a queue ID in your settings."
-            )
-
-        if "," in KILLSTATS_QUEUE_ID:
-            raise ImproperlyConfigured("A queue ID must not contains commas.")
 
         # Check rate limit before attempting to fetch
         if not cls._rate_limit():
             return None
 
-        params = {
-            "queueID": quote_plus(KILLSTATS_QUEUE_ID),
-            "ttw": KILLSTATS_REDISQ_TTW,
-        }
+        logger.debug("Trying to fetch sequence from ZKB R2Z2...")
 
-        logger.debug("Trying to fetch killmail from ZKB RedisQ...")
-
-        response = requests.get(
-            ZKB_REDISQ_URL,
-            params=params,
+        sequence = requests.get(
+            ZKILLBOARD_R2Z2_SEQUENCE_URL,
             timeout=REQUESTS_TIMEOUT,
             headers={"User-Agent": USER_AGENT_TEXT},
         )
+
+        try:
+            data = sequence.json()
+        except JSONDecodeError:
+            logger.error("Error from ZKB R2Z2 Sequence:\n%s", sequence.text)
+            return None
 
         # Log this request timestamp for rate limiting
         cache.set(LAST_REQUEST_KEY, timezone.now().isoformat())
 
         # Handle 429 Too Many Requests
-        if cls._too_many_requests_delay(response):
+        if cls._too_many_requests_delay(sequence):
+            return None
+
+        if data and "sequence" in data:
+            sequence_id = data["sequence"]
+            logger.debug("Received sequence from ZKB R2Z2: %s", sequence_id)
+            return sequence_id
+
+        logger.debug("Did not received a sequence from ZKB R2Z2")
+        return None
+
+    # pylint: disable=too-many-return-statements
+    @classmethod
+    def create_from_r2z2_sequence(cls, sequence_id: int) -> Optional["KillmailBody"]:
+        """Fetches killmail data from ZKB R2Z2 using the provided sequence ID, creates a KillmailBody object, and returns it.
+
+        Returns None if no killmail data is received or if the killmail cannot be created.
+        """
+        if not cls._rate_limit():
+            return None
+
+        if not cache.get(f"{__title__.upper()}_WORKER_SHUTDOWN") is None:
+            logger.debug("Worker shutdown detected; stopping zKB RedisQ processing")
+            return None
+
+        logger.debug("Trying to fetch killmail from ZKB R2Z2...")
+
+        # Log this request timestamp for rate limiting
+        cache.set(LAST_REQUEST_KEY, timezone.now().isoformat())
+
+        response = requests.get(
+            ZKILLBOARD_R2Z2_URL + str(sequence_id) + ".json",
+            timeout=REQUESTS_TIMEOUT,
+            headers={"User-Agent": USER_AGENT_TEXT},
+        )
+
+        # Handle 429 Too Many Requests
+        if KillmailBody._too_many_requests_delay(response):
+            return None
+
+        if response.status_code == HTTPStatus.NOT_FOUND:
+            logger.debug("No killmail found for sequence ID %s", sequence_id)
             return None
 
         try:
             data = response.json()
-        except JSONDecodeError:
+        except requests.JSONDecodeError:
             logger.error("Error from ZKB API:\n%s", response.text)
             return None
 
-        if data and "package" in data and data["package"]:
-            package_data = data["package"]
-            return cls._create_from_dict(package_data)
-
-        logger.debug("Did not received a killmail from ZKB RedisQ")
+        if data and "killmail_id" in data:
+            return cls._create_from_dict(data)
         return None
 
     def save(self) -> None:
@@ -646,7 +672,7 @@ class KillmailBody(_KillmailBase):
     @classmethod
     def _create_from_dict(cls, package_data: dict) -> Optional["KillmailBody"]:
         """creates a new object from given dict.
-        Needs to confirm with data structure returned from ZKB RedisQ
+        Needs to confirm with data structure returned from ZKB API
         """
         killmail = None
         if (

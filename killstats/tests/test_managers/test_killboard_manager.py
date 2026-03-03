@@ -1,9 +1,5 @@
 # Django
-from django.test import RequestFactory, TestCase
-from django.urls import reverse
-
-# Alliance Auth
-from allianceauth.eveonline.models import EveAllianceInfo, EveCorporationInfo
+from django.test import RequestFactory
 
 # Alliance Auth (External Libs)
 from app_utils.testing import create_user_from_evecharacter
@@ -11,12 +7,13 @@ from eveuniverse.models import EveEntity, EveType
 
 # AA Killstats
 from killstats.models.killboard import Killmail
+from killstats.tests import NoSocketsTestCase
 from killstats.tests.testdata.generate_killmail import create_killmail
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 
-class KillstatsManagerTest(TestCase):
+class KillstatsManagerTest(NoSocketsTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
