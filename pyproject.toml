@@ -35,6 +35,7 @@ dependencies = [
     "allianceauth>=4.12,<5",
     "dacite",
     "django-esi>=8,<9",
+    "django-eveonline-sde",
     "django-ninja",
 ]
 optional-dependencies.tests-allianceauth-latest = [
