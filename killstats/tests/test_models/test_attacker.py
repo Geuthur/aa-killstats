@@ -3,11 +3,12 @@ from django.test import TestCase
 from django.utils import timezone
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
+from eve_sde.models.types import ItemType
 
 # AA Killstats
+from killstats.models.general import EveEntity
+from killstats.tests.testdata.eveentity import load_eveentity
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 from killstats.tests.testdata.utils import create_attacker, create_killmail
 
 MODULE_PATH = "killstats.models.killstatsaudit"
@@ -18,12 +19,12 @@ class TestAttackertModel(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
+        load_eveentity()
         cls.killmail = create_killmail(
             killmail_id=119303113,
             killmail_date=timezone.now(),
             victim=EveEntity.objects.get(id=1001),
-            victim_ship=EveType.objects.get(id=670),
+            victim_ship=ItemType.objects.get(id=670),
             victim_corporation_id=2001,
             victim_alliance_id=3001,
             hash="hash",
@@ -42,7 +43,7 @@ class TestAttackertModel(TestCase):
             character=EveEntity.objects.get(id=1000),
             corporation=EveEntity.objects.get(id=1000125),
             alliance=EveEntity.objects.get(id=3001),
-            ship=EveType.objects.get(id=670),
+            ship=ItemType.objects.get(id=670),
             damage_done=500,
             final_blow=True,
         )

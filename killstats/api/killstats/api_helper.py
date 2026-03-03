@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.db.models import Count, Q, Sum
 
 # Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
+from allianceauth.services.hooks import ObjectDoesNotExist, get_extension_logger
 
 # AA Killstats
 from killstats import __title__
@@ -182,7 +182,7 @@ def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
         .filter(
             Q(victim_corporation_id__in=entities)
             | Q(victim_alliance_id__in=entities)
-            | Q(victim__id__in=entities)
+            | Q(victim_id__in=entities)
         )
         .order_by("-victim_total_value")[:5]
     )
@@ -235,6 +235,7 @@ def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
 
     for killmail in fame:
         zkillboard = killmail.killmail.evaluate_zkb_link()
+        portrait = ""
 
         try:
             character_id = killmail.character.id
@@ -245,8 +246,9 @@ def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
                     main_name = data["main"].character_name
                     # Hauptcharaktername verwenden
                     character_name = f"{character_name} ({main_name})"
+                    portrait = killmail.character.icon_url(512)
                     break
-        except AttributeError:
+        except (AttributeError, ObjectDoesNotExist):
             character_id = 0
             character_name = "Unknown"
 
@@ -258,7 +260,7 @@ def get_killstats_halls(request, month, year, entity_type: str, entity_id: int):
                 "ship": killmail.killmail.get_or_unknown_victim_ship_id(),
                 "ship_name": killmail.killmail.get_or_unknown_victim_ship_name(),
                 "totalValue": killmail.killmail.victim_total_value,
-                "portrait": killmail.character.icon_url(512),
+                "portrait": portrait,
                 "zkb_link": zkillboard,
             }
         )

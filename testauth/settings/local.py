@@ -36,26 +36,29 @@ SITE_NAME = "testauth"
 # Change this to enable/disable debug mode, which displays
 # useful error messages but can leak sensitive data.
 DEBUG = False
+LOGGING = None
 
 NOTIFICATIONS_REFRESH_TIME = 30
 NOTIFICATIONS_MAX_PER_USER = 50
 
-# Enter credentials to use MySQL/MariaDB. Comment out to use sqlite3
-DATABASES["default"] = {
-    "ENGINE": "django.db.backends.mysql",
-    "NAME": "temp_allianceauth",
-    "USER": "root",
-    "PASSWORD": "temp_password_aa_tox_tests",
-    "HOST": "127.0.0.1",
-    "PORT": "3306",
-    "OPTIONS": {"charset": "utf8mb4"},
-}
+# Use the USE_MYSQL environment variable to select the database backend (MySQL or Memcached).
+# NOTE: On Windows, set this variable in the system/user environment variables.
+if os.environ.get("USE_MYSQL", True) is True:
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "temp_allianceauth",
+        "USER": "root",
+        "PASSWORD": "temp_password_aa_tox_tests",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
+        "OPTIONS": {"charset": "utf8mb4"},
+    }
 
 # Add any additional apps to this list.
 INSTALLED_APPS += [
     #'allianceauth.theme.bootstrap',
+    "eve_sde",
     PACKAGE,
-    "eveuniverse",
 ]
 # By default, apps are prevented from having public views for security reasons.
 # If you want to allow specific apps to have public views,

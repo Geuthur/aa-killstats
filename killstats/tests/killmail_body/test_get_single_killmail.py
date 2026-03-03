@@ -10,7 +10,7 @@ from django.core.cache import cache
 from django.utils.timezone import datetime
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
+from eve_sde.models.types import ItemType
 
 # AA Killstats
 # Create a properly structured killmail object
@@ -20,10 +20,11 @@ from killstats.helpers.killmail import (
     KillmailVictim,
     KillmailZkb,
 )
+from killstats.models.general import EveEntity
 from killstats.models.killboard import Killmail
 from killstats.tests import NoSocketsTestCase
+from killstats.tests.testdata.eveentity import load_eveentity
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 MODULE_PATH = "killstats.helpers.killmail"
 
@@ -35,7 +36,7 @@ class TestKillmailBody(NoSocketsTestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
+        load_eveentity()
 
         # Load test data
         with open("killstats/tests/zkb_package.json", encoding="utf-8") as f:
@@ -163,7 +164,7 @@ class TestKillmailBody(NoSocketsTestCase):
 
         # Create required entities for the killmail
         victim_entity = EveEntity.objects.get(id=1001)
-        victim_ship = EveType.objects.get(id=670)
+        victim_ship = ItemType.objects.get(id=670)
 
         # Create existing killmail in database
         Killmail.objects.create(

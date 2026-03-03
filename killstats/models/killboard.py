@@ -1,4 +1,5 @@
 # Django
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -6,11 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from allianceauth.services.hooks import get_extension_logger
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
+from eve_sde.models.types import ItemType
 
 # AA Killstats
 from killstats import __title__
 from killstats.managers.killboard_manager import EveKillmailManager
+from killstats.models.general import EveEntity
 from killstats.providers import AppLogger
 
 logger = AppLogger(get_extension_logger(__name__), __title__)
@@ -20,7 +22,7 @@ class Killmail(models.Model):
     killmail_id = models.PositiveIntegerField(primary_key=True)
     killmail_date = models.DateTimeField(null=True, blank=True, max_length=0)
     victim = models.ForeignKey(EveEntity, on_delete=models.CASCADE, null=True)
-    victim_ship = models.ForeignKey(EveType, on_delete=models.CASCADE, null=True)
+    victim_ship = models.ForeignKey(ItemType, on_delete=models.CASCADE, null=True)
     victim_corporation_id = models.PositiveIntegerField()
     victim_alliance_id = models.PositiveIntegerField(null=True, blank=True)
     hash = models.CharField(max_length=255, unique=True)
@@ -54,11 +56,16 @@ class Killmail(models.Model):
         return self.victim_ship.name if self.victim_ship else _("Unknown")
 
     def evaluate_zkb_link(self):
-        zkb = f"https://zkillboard.com/character/{self.victim.id}/"
-        if self.victim.category == "corporation":
-            zkb = f"https://zkillboard.com/corporation/{self.victim_corporation_id}/"
-        if self.victim.category == "alliance":
-            zkb = f"https://zkillboard.com/alliance/{self.victim_alliance_id}/"
+        try:
+            zkb = f"https://zkillboard.com/character/{self.victim.id}/"
+            if self.victim.category == "corporation":
+                zkb = (
+                    f"https://zkillboard.com/corporation/{self.victim_corporation_id}/"
+                )
+            if self.victim.category == "alliance":
+                zkb = f"https://zkillboard.com/alliance/{self.victim_alliance_id}/"
+        except ObjectDoesNotExist:
+            zkb = _("Unknown")
         return zkb
 
     class Meta:
@@ -91,7 +98,7 @@ class Attacker(models.Model):
         blank=True,
     )
     ship = models.ForeignKey(
-        EveType,
+        ItemType,
         on_delete=models.CASCADE,
         related_name="attacker_ship",
         null=True,

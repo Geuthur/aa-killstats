@@ -4,12 +4,10 @@ from django.core.management.base import BaseCommand
 # Alliance Auth
 from allianceauth.services.hooks import get_extension_logger
 
-# Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity
-
 # AA Killstats
 from killstats import __title__
 from killstats.helpers.killmail import KillmailBody
+from killstats.models.general import EveEntity
 from killstats.models.killboard import Killmail
 from killstats.providers import AppLogger
 
@@ -32,19 +30,19 @@ class Command(BaseCommand):
             try:
                 if killmail.victim_id:
                     _, created = EveEntity.objects.get_or_create_esi(
-                        id=killmail.victim_id
+                        eve_id=killmail.victim_id
                     )
                     if created:
                         characters = characters + 1
                 if killmail.victim_corporation_id:
                     _, created = EveEntity.objects.get_or_create_esi(
-                        id=killmail.victim_corporation_id
+                        eve_id=killmail.victim_corporation_id
                     )
                     if created:
                         corporations = corporations + 1
                 if killmail.victim_alliance_id:
                     _, created = EveEntity.objects.get_or_create_esi(
-                        id=killmail.victim_alliance_id
+                        eve_id=killmail.victim_alliance_id
                     )
                     if created:
                         alliances = alliances + 1

@@ -2,13 +2,14 @@
 from django.test import RequestFactory
 
 # Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
+from eve_sde.models.types import ItemType
 
 # AA Killstats
+from killstats.models.general import EveEntity
 from killstats.models.killboard import Killmail
 from killstats.tests import NoSocketsTestCase
+from killstats.tests.testdata.eveentity import load_eveentity
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 from killstats.tests.testdata.utils import (
     create_killmail,
     create_user_from_evecharacter,
@@ -20,7 +21,7 @@ class KillstatsManagerTest(NoSocketsTestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
+        load_eveentity()
         cls.factory = RequestFactory()
 
         cls.killmail = create_killmail(
@@ -34,7 +35,7 @@ class KillstatsManagerTest(NoSocketsTestCase):
             victim_position_y=1.0,
             victim_position_z=1.0,
             victim=EveEntity.objects.get(id=1001),
-            victim_ship=EveType.objects.get(id=670),
+            victim_ship=ItemType.objects.get(id=670),
             victim_total_value=1000,
             victim_fitted_value=500,
             victim_destroyed_value=500,
@@ -82,13 +83,13 @@ class KillstatsManagerTest(NoSocketsTestCase):
     def test_filter_structure_exclude_false(self):
         queryset = Killmail.objects.filter_structure(exclude=False)
         expected_count = Killmail.objects.filter(
-            victim_ship__eve_group__eve_category_id=65
+            victim_ship__group__category_id=65
         ).count()
         self.assertEqual(queryset.count(), expected_count)
 
     def test_filter_structure_exclude_true(self):
         queryset = Killmail.objects.filter_structure(exclude=True)
         expected_count = Killmail.objects.exclude(
-            victim_ship__eve_group__eve_category_id=65
+            victim_ship__group__category_id=65
         ).count()
         self.assertEqual(queryset.count(), expected_count)

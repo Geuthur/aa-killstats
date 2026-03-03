@@ -8,7 +8,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("eveuniverse", "0010_alter_eveindustryactivityduration_eve_type_and_more"),
         ("killstats", "0002_rename_killstatsaudit_corporationsaudit_and_more"),
     ]
 

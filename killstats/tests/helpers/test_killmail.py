@@ -5,11 +5,7 @@ from unittest.mock import Mock, patch
 # Django
 from django.core.cache import cache
 from django.test import RequestFactory, override_settings
-from django.urls import reverse
 from django.utils import timezone
-
-# Alliance Auth (External Libs)
-from eveuniverse.models import EveEntity, EveType
 
 # AA Killstats
 from killstats import __title__
@@ -17,7 +13,6 @@ from killstats.constants import LAST_REQUEST_KEY, RETRY_AFTER_KEY
 from killstats.helpers.killmail import KillmailBody
 from killstats.tests import NoSocketsTestCase
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
-from killstats.tests.testdata.load_eveuniverse import load_eveuniverse
 
 MODULE_PATH = "killstats.helpers.killmail"
 
@@ -29,7 +24,6 @@ class TestKillmailHelper(NoSocketsTestCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         load_allianceauth()
-        load_eveuniverse()
         cls.factory = RequestFactory()
 
     def setUp(self) -> None:
