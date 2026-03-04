@@ -5,6 +5,43 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+def on_migrate(apps, schema_editor):
+    try:
+        OldEveEntity = apps.get_model("eveuniverse", "EveEntity")
+    except LookupError:
+        print("EVE Universe Model not found skipping migration.")
+        return
+    EveEntity = apps.get_model("killstats", "EveEntity")
+    batch_size = 1000
+    old_entities = OldEveEntity.objects.exclude(
+        id__in=EveEntity.objects.values_list("id", flat=True)
+    ).only("id", "name", "category")
+    migrated = 0
+    bulk_list = []
+
+    for old_entity in old_entities.iterator(chunk_size=batch_size):
+        bulk_list.append(
+            EveEntity(
+                id=old_entity.id,
+                name=old_entity.name,
+                category=old_entity.category,
+            )
+        )
+
+        if len(bulk_list) >= batch_size:
+            created = EveEntity.objects.bulk_create(
+                bulk_list, ignore_conflicts=True, batch_size=batch_size
+            )
+            migrated += len(created)
+            bulk_list = []
+
+    if bulk_list:
+        created = EveEntity.objects.bulk_create(
+            bulk_list, ignore_conflicts=True, batch_size=batch_size
+        )
+        migrated += len(created)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,6 +50,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(on_migrate),
         migrations.AlterField(
             model_name="attacker",
             name="alliance",
