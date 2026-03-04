@@ -54,8 +54,9 @@ if "killstats" in INSTALLED_APPS:
 ```
 
 > [!IMPORTANT]
-> For the Migration you need to have eveuniverse installed after that you can remove it if you don't need it anymore
+> This is only for installed Killstats Enviroment
 > The Migration can take long if you have a big Killstats DB
+> You need to have eveuniverse installed during the migration otherwise it will not migrate the old entries.
 
 After running migrations, make sure to run the following commands to import the SDE data into your database.
 

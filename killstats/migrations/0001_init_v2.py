@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         ("killstats", "0005_alter_general_options"),
         ("killstats", "0006_alter_attacker_weapon_type_id_and_more"),
         ("killstats", "0007_eveentity"),
-        ("killstats", "0008_alter_attacker_alliance_alter_attacker_character_and_more"),
+        ("killstats", "0008_migrate_eveentity_alter_fields"),
     ]
 
     initial = True
