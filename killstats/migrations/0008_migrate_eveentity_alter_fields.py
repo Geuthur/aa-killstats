@@ -6,7 +6,11 @@ from django.db import migrations, models
 
 
 def on_migrate(apps, schema_editor):
-    OldEveEntity = apps.get_model("eveuniverse", "EveEntity")
+    try:
+        OldEveEntity = apps.get_model("eveuniverse", "EveEntity")
+    except LookupError:
+        print("EVE Universe Model not found skipping migration.")
+        return
     EveEntity = apps.get_model("killstats", "EveEntity")
     batch_size = 1000
     old_entities = OldEveEntity.objects.exclude(
