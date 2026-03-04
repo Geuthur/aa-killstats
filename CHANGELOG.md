@@ -11,6 +11,8 @@ Section Order:
 ### Removed
 -->
 
+## [2.0.0] - 2026-03-04
+
 > [!WARNING]
 >
 > Please note that this release involves structural dependency changes.
@@ -449,3 +451,10 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 ### Added
 
 - Initial public release
+
+[1.0.1]: https://github.com/Geuthur/aa-killstats/compare/v1.0.0...v1.0.1 "1.0.1"
+[1.0.2]: https://github.com/Geuthur/aa-killstats/compare/v1.0.1...v1.0.2 "1.0.2"
+[1.0.3]: https://github.com/Geuthur/aa-killstats/compare/v1.0.2...v1.0.3 "1.0.3"
+[1.0.4]: https://github.com/Geuthur/aa-killstats/compare/v1.0.3...v1.0.4 "1.0.4"
+[2.0.0]: https://github.com/Geuthur/aa-killstats/compare/v1.0.4...v2.0.0 "2.0.0"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.0...HEAD "In Development"
