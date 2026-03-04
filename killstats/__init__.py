@@ -14,4 +14,5 @@ USER_AGENT_TEXT = f"{__app_name_useragent__} v{__version__} @ {__github_url__}"
 
 __killmail_operations__ = [
     "GetKillmailsKillmailIdKillmailHash",
+    "PostUniverseNames",
 ]
