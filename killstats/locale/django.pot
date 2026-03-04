@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AA Killstats \n"
 "Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issues\n"
-"POT-Creation-Date: 2025-12-22 10:02+0100\n"
+"POT-Creation-Date: 2026-03-04 22:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,8 +21,20 @@ msgstr ""
 msgid "Killmail ID"
 msgstr ""
 
-#: killstats/models/killboard.py:46 killstats/models/killboard.py:54
-#: killstats/models/killboard.py:113
+#: killstats/models/general.py:62
+msgid "ID"
+msgstr ""
+
+#: killstats/models/general.py:65
+msgid "Category"
+msgstr ""
+
+#: killstats/models/general.py:67
+msgid "Name"
+msgstr ""
+
+#: killstats/models/killboard.py:48 killstats/models/killboard.py:56
+#: killstats/models/killboard.py:68 killstats/models/killboard.py:120
 msgid "Unknown"
 msgstr ""
 
@@ -155,24 +167,24 @@ msgstr ""
 msgid "No data found..."
 msgstr ""
 
-#: killstats/views.py:143
+#: killstats/views.py:141
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr ""
 
-#: killstats/views.py:147
+#: killstats/views.py:145
 #, python-brace-format
 msgid "Failed to fetch Alliance data for {alliance_name}"
 msgstr ""
 
-#: killstats/views.py:203
+#: killstats/views.py:201
 #, python-brace-format
 msgid ""
 "Killmail {killmail_id} already exists. Please check the killmail ID and try "
 "again."
 msgstr ""
 
-#: killstats/views.py:218
+#: killstats/views.py:216
 #, python-brace-format
 msgid "Killmail {killmail_id} has been added to Killstats."
 msgstr ""
