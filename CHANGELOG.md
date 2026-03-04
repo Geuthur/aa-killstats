@@ -53,11 +53,14 @@ if "killstats" in INSTALLED_APPS:
     }
 ```
 
+> [!IMPORTANT]
+> For the Migration you need to have eveuniverse installed after that you can remove it if you don't need it anymore
+> The Migration can take long if you have a big Killstats DB
+
 After running migrations, make sure to run the following commands to import the SDE data into your database.
 
 ```shell
 python manage.py esde_load_sde
-python manage.py killstats_migrate_eveentity
 ```
 
 Restart your Auth via `supervisor` after running these commands
