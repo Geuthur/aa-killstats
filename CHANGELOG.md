@@ -11,6 +11,16 @@ Section Order:
 ### Removed
 -->
 
+## [2.0.1] - 2026-03-11
+
+> [!WARNING]
+>
+> If you updating from older version then v2 Please read the Notes from Version v2
+
+### Fixed
+
+- update victim ship retrieval to use ItemType model
+
 ## [2.0.0] - 2026-03-04
 
 > [!WARNING]
@@ -457,4 +467,4 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [1.0.3]: https://github.com/Geuthur/aa-killstats/compare/v1.0.2...v1.0.3 "1.0.3"
 [1.0.4]: https://github.com/Geuthur/aa-killstats/compare/v1.0.3...v1.0.4 "1.0.4"
 [2.0.0]: https://github.com/Geuthur/aa-killstats/compare/v1.0.4...v2.0.0 "2.0.0"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.0...HEAD "In Development"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.1...HEAD "In Development"
