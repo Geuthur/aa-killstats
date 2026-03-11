@@ -6,6 +6,9 @@ from typing import TYPE_CHECKING, Any
 # Django
 from django.db import models, transaction
 
+# Alliance Auth (External Libs)
+from eve_sde.models import ItemType
+
 if TYPE_CHECKING:
     # AA Killstats
     from killstats.helpers.killmail import KillmailBody
@@ -150,9 +153,7 @@ class KillmailBaseManager(models.Manager):
             region_id = killmail_body.get_or_create_region_id(
                 killmail_body.solar_system_id
             )
-            victim_ship = killmail_body.get_or_create_evetype(
-                killmail_body.victim.ship_type_id
-            )
+            victim_ship = ItemType.objects.get(killmail_body.victim.ship_type_id)
             victim = None
 
             if killmail_body.victim.character_id:
