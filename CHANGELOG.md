@@ -11,6 +11,10 @@ Section Order:
 ### Removed
 -->
 
+### Fixed
+
+- update ItemType retrieval to use 'id'
+
 ## [2.0.1] - 2026-03-11
 
 > [!WARNING]

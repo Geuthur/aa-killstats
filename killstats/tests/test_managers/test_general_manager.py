@@ -1,5 +1,4 @@
 # Standard Library
-from types import SimpleNamespace
 from unittest.mock import patch
 
 # AA Killstats

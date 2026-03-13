@@ -531,7 +531,7 @@ class KillmailBody(_KillmailBase):
 
             ship = None
             if attacker.ship_type_id:
-                ship = ItemType.objects.get(attacker.ship_type_id)
+                ship = ItemType.objects.get(id=attacker.ship_type_id)
 
             Attacker.objects.get_or_create(
                 killmail=killmail,
