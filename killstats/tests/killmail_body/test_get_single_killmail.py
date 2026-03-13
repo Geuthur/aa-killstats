@@ -275,7 +275,7 @@ class TestKillmailBody(NoSocketsTestCase):
         # Mock zKillboard API error
         mock_zkb_response = Mock()
         mock_zkb_response.raise_for_status.side_effect = requests.HTTPError(
-            "404 Not Found"
+            "Test 404 Not Found"
         )
         mock_requests_get.return_value = mock_zkb_response
 
