@@ -59,3 +59,4 @@ build.include = [
     "/killstats",
 ]
 version.path = "killstats/__init__.py"
+metadata.allow-direct-references = true
