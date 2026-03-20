@@ -13,9 +13,19 @@ from allianceauth.eveonline.models import (
     EveCharacter,
     EveCorporationInfo,
 )
-from allianceauth.eveonline.providers import ObjectNotFound, provider
+from allianceauth.eveonline.providers import ObjectNotFound
 from allianceauth.services.hooks import get_extension_logger
 from esi.decorators import token_required
+
+# Fix AAv5 Test
+try:
+    # V5.#
+    # Alliance Auth
+    from allianceauth.eveonline.providers import open_api_provider as provider
+except ImportError:
+    # V4.#
+    from allianceauth.eveonline.providers import provider
+
 
 # AA Killstats
 from killstats import __title__
