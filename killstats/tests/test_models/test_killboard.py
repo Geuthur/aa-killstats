@@ -23,7 +23,7 @@ class TestKillstatsAuditModel(TestCase):
 
         cls.killmail = create_killmail(
             killmail_id=1,
-            killmail_date=timezone.datetime(2023, 1, 30, 0, 0, 0, tzinfo=timezone.utc),
+            killmail_date=timezone.datetime(2023, 1, 30, 0, 0, 0),
             victim=EveEntity.objects.get(id=1001),
             victim_ship=ItemType.objects.get(id=10001),
             victim_corporation_id=2001,
@@ -79,7 +79,7 @@ class TestKillstatsAuditModel(TestCase):
     def test_str(self):
         self.assertEqual(
             str(self.killmail),
-            "Killmail 1 - 2023-01-30 00:00:00+00:00 - Gneuten - Victim Ship I (10001)",
+            "Killmail 1 - 2023-01-30 00:00:00 - Gneuten - Victim Ship I (10001)",
         )
 
     def test_get_victim_name(self):

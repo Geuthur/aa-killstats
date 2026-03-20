@@ -4,9 +4,9 @@
 import datetime as dt
 import json
 from typing import Any
+from zoneinfo import ZoneInfo
 
 # Third Party
-from pytz import timezone
 from redis import Redis
 
 # Django
@@ -62,7 +62,7 @@ class JSONDateTimeDecoder(json.JSONDecoder):
         type_str = dct.pop("__type__")
         zone, _ = dct.pop("tz")
         if zone:
-            dct["tzinfo"] = timezone(zone)
+            dct["tzinfo"] = ZoneInfo(zone)
         try:
             date_obj = dt.datetime(**dct)
             return date_obj
