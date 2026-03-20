@@ -56,8 +56,7 @@ if os.environ.get("USE_MYSQL", True) is True:
 
 # Add any additional apps to this list.
 INSTALLED_APPS += [
-    #'allianceauth.theme.bootstrap',
-    "eve_sde",
+    "allianceauth.services.modules.discord",
     PACKAGE,
 ]
 # By default, apps are prevented from having public views for security reasons.
