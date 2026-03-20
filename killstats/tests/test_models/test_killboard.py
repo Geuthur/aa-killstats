@@ -23,7 +23,7 @@ class TestKillstatsAuditModel(TestCase):
 
         cls.killmail = create_killmail(
             killmail_id=1,
-            killmail_date=timezone.datetime(2023, 1, 30, 0, 0, 0, tzinfo=timezone.utc),
+            killmail_date=timezone.datetime(2023, 1, 30, 0, 0, 0),
             victim=EveEntity.objects.get(id=1001),
             victim_ship=ItemType.objects.get(id=10001),
             victim_corporation_id=2001,

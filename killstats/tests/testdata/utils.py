@@ -1,10 +1,10 @@
 # Standard Library
-import datetime as dt
 import random
 import string
 
 # Django
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Alliance Auth
 from allianceauth.authentication.backends import StateBackend
@@ -18,7 +18,7 @@ from killstats.models.killboard import Attacker, Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 
 
-def dt_eveformat(my_dt: dt.datetime) -> str:
+def dt_eveformat(my_dt: timezone.datetime) -> str:
     """Convert datetime to EVE Online ISO format (YYYY-MM-DDTHH:MM:SS)
 
     Args:
@@ -27,7 +27,7 @@ def dt_eveformat(my_dt: dt.datetime) -> str:
         str: datetime in EVE Online ISO format
     """
 
-    my_dt_2 = dt.datetime(
+    my_dt_2 = timezone.datetime(
         my_dt.year, my_dt.month, my_dt.day, my_dt.hour, my_dt.minute, my_dt.second
     )
 
@@ -48,7 +48,7 @@ def _generate_token(
     access_token: str = "access_token",
     refresh_token: str = "refresh_token",
     scopes: list | None = None,
-    timestamp_dt: dt.datetime | None = None,
+    timestamp_dt: timezone.datetime | None = None,
     expires_in: int = 1200,
 ) -> dict:
     """Generates the input to create a new SSO test token.
@@ -66,7 +66,7 @@ def _generate_token(
         dict: The generated token dict
     """
     if timestamp_dt is None:
-        timestamp_dt = dt.datetime.utcnow()
+        timestamp_dt = timezone.now()
     if scopes is None:
         scopes = [
             "esi-mail.read_mail.v1",
@@ -83,7 +83,9 @@ def _generate_token(
         "timestamp": int(timestamp_dt.timestamp()),
         "CharacterID": character_id,
         "CharacterName": character_name,
-        "ExpiresOn": dt_eveformat(timestamp_dt + dt.timedelta(seconds=expires_in)),
+        "ExpiresOn": dt_eveformat(
+            timestamp_dt + timezone.timedelta(seconds=expires_in)
+        ),
         "Scopes": " ".join(list(scopes)),
         "TokenType": "Character",
         "CharacterOwnerHash": owner_hash,
