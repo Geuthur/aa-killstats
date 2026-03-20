@@ -79,7 +79,7 @@ class TestKillstatsAuditModel(TestCase):
     def test_str(self):
         self.assertEqual(
             str(self.killmail),
-            "Killmail 1 - 2023-01-30 00:00:00+00:00 - Gneuten - Victim Ship I (10001)",
+            "Killmail 1 - 2023-01-30 00:00:00 - Gneuten - Victim Ship I (10001)",
         )
 
     def test_get_victim_name(self):
