@@ -11,6 +11,16 @@ Section Order:
 ### Removed
 -->
 
+## [2.0.2] - 2026-03-23
+
+> [!WARNING]
+>
+> If you updating from older version then v2 Please read the Notes from Version v2
+
+### Added
+
+- AAv5 Test Enviroment
+
 ### Fixed
 
 - update ItemType retrieval to use 'id'
@@ -471,4 +481,6 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [1.0.3]: https://github.com/Geuthur/aa-killstats/compare/v1.0.2...v1.0.3 "1.0.3"
 [1.0.4]: https://github.com/Geuthur/aa-killstats/compare/v1.0.3...v1.0.4 "1.0.4"
 [2.0.0]: https://github.com/Geuthur/aa-killstats/compare/v1.0.4...v2.0.0 "2.0.0"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.1...HEAD "In Development"
+[2.0.1]: https://github.com/Geuthur/aa-killstats/compare/v2.0.0...v2.0.1 "2.0.1"
+[2.0.2]: https://github.com/Geuthur/aa-killstats/compare/v2.0.1...v2.0.2 "2.0.2"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.2...HEAD "In Development"
