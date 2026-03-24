@@ -39,8 +39,8 @@ dependencies = [
     "django-ninja",
 ]
 optional-dependencies.tests-allianceauth-development = [
+    "allianceauth==5.0.0b1",
     "coverage",
-    "django-esi>=9,<10",
     "factory-boy",
 ]
 optional-dependencies.tests-allianceauth-latest = [
