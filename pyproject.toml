@@ -39,7 +39,6 @@ dependencies = [
     "django-ninja",
 ]
 optional-dependencies.tests-allianceauth-development = [
-    "allianceauth @ git+https://gitlab.com/allianceauth/allianceauth#egg=master",
     "coverage",
     "factory-boy",
 ]
@@ -59,4 +58,3 @@ build.include = [
     "/killstats",
 ]
 version.path = "killstats/__init__.py"
-metadata.allow-direct-references = true
