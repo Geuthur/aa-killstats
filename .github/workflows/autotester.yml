@@ -186,7 +186,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install system dependencies for Python wheels
+      # AAv5 development branch requires libbz2-dev for some reason, so we need to install it before running Tox
+      - name: Install libbz2-dev
         run: |
           sudo apt-get update
           sudo apt-get install -y libbz2-dev
