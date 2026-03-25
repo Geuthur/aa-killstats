@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # AA Killstats
-from killstats.auth_hooks import KillstatsMenuItem
+from killstats.auth_hooks import KillstatsMenuItem, register_charlink_hook
 from killstats.tests.testdata.load_allianceauth import load_allianceauth
 from killstats.tests.testdata.utils import create_user_from_evecharacter_with_access
 
@@ -57,3 +57,16 @@ class TestAuthHooks(TestCase):
             "",
             "Expected render method to return an empty string for users without permission",
         )
+
+    def test_register_charlink_hook(self):
+        """
+        Test that the register_charlink_hook function returns the expected value.
+
+        This test calls the register_charlink_hook function and verifies that it returns
+        the correct string indicating the charlink hook location.
+        """
+        # Test Action
+        result = register_charlink_hook()
+
+        # Expected Result
+        self.assertEqual(result, "killstats.thirdparty.charlink_hook")
