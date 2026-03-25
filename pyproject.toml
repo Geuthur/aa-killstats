@@ -32,13 +32,14 @@ dynamic = [
     "version",
 ]
 dependencies = [
-    "allianceauth>=4.12,<6",
+    "allianceauth>=4.12,<=5",
     "dacite",
-    "django-esi>=8,<9.1",
+    "django-esi>=8,<=9",
     "django-eveonline-sde",
     "django-ninja",
 ]
 optional-dependencies.tests-allianceauth-development = [
+    "allianceauth==5.0.0b1",
     "coverage",
     "factory-boy",
 ]
