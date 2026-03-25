@@ -40,3 +40,8 @@ def register_urls():
     """Register app urls"""
 
     return UrlHook(urls, "killstats", r"^killstats/")
+
+
+@hooks.register("charlink")
+def register_charlink_hook():
+    return "killstats.thirdparty.charlink_hook"
