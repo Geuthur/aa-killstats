@@ -11,6 +11,16 @@ Section Order:
 ### Removed
 -->
 
+## [2.0.3] - 2026-03-31
+
+> [!WARNING]
+>
+> If you updating from older version then v2 Please read the Notes from Version v2
+
+### Added
+
+- charlink hook and implement character audit functionality
+
 ### Changed
 
 - Optimize killmail processing and update test data structure
@@ -487,4 +497,4 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [2.0.0]: https://github.com/Geuthur/aa-killstats/compare/v1.0.4...v2.0.0 "2.0.0"
 [2.0.1]: https://github.com/Geuthur/aa-killstats/compare/v2.0.0...v2.0.1 "2.0.1"
 [2.0.2]: https://github.com/Geuthur/aa-killstats/compare/v2.0.1...v2.0.2 "2.0.2"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.2...HEAD "In Development"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.3...HEAD "In Development"
