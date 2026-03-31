@@ -646,48 +646,35 @@ class KillmailBody(_KillmailBase):
         return KillmailZkb(**params)
 
     @classmethod
-    def _get_killmail_data_from_ccp(cls, href: str) -> dict | None:
-        """Fetch killmail data from zKillboard href URL."""
-        headers = {"User-Agent": USER_AGENT_TEXT, "Content-Type": "application/json"}
-        try:
-            response = requests.get(url=href, headers=headers, timeout=5)
-            response.raise_for_status()
-            killmail_data = response.json()
-            return killmail_data
-        except requests.RequestException as exc:
-            logger.error("Error fetching killmail data from href %s: %s", href, exc)
-            return None
-
-    @classmethod
     def _create_from_dict(cls, package_data: dict) -> Optional["KillmailBody"]:
         """creates a new object from given dict.
         Needs to confirm with data structure returned from ZKB API
         """
-        killmail = None
-        if (
-            package_data
-            and "zkb" in package_data
-            and package_data["zkb"]
-            and "href" in package_data["zkb"]
-        ):
-            killmail_data = cls._get_killmail_data_from_ccp(package_data["zkb"]["href"])
-            if not killmail_data:
-                return None
-            victim, position = cls._extract_victim_and_position(killmail_data)
-            attackers = cls._extract_attackers(killmail_data)
-            zkb = cls._extract_zkb(package_data)
+        if not package_data:
+            return None
 
-            params = {
-                "id": killmail_data["killmail_id"],
-                "time": parse_datetime(killmail_data["killmail_time"]),
-                "victim": victim,
-                "position": position,
-                "attackers": attackers,
-                "zkb": zkb,
-            }
-            if "solar_system_id" in killmail_data:
-                params["solar_system_id"] = killmail_data["solar_system_id"]
+        try:
+            killmail_id = package_data["killmail_id"]
+            esi_data = package_data["esi"]
+            zkb = package_data["zkb"]
+            killmail_time = esi_data["killmail_time"]
+        except KeyError:
+            logger.warning("Incomplete Response: %s", package_data)
+            return None
+        victim, position = cls._extract_victim_and_position(package_data)
+        attackers = cls._extract_attackers(package_data)
+        zkb = cls._extract_zkb(package_data)
 
-            killmail = KillmailBody(**params)
+        params = {
+            "id": killmail_id,
+            "time": parse_datetime(killmail_time),
+            "victim": victim,
+            "position": position,
+            "attackers": attackers,
+            "zkb": zkb,
+        }
+        if "solar_system_id" in package_data:
+            params["solar_system_id"] = package_data["solar_system_id"]
 
+        killmail = KillmailBody(**params)
         return killmail
