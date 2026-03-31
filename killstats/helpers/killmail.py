@@ -279,38 +279,15 @@ class KillmailBody(_KillmailBase):
 
             raise ValueError(error_str) from exc
 
-        try:
-            killmail_id = zkb_killmail["killmail_id"]
+        killmail_id = zkb_killmail["killmail_id"]
 
-            # Check if killmail already exists
-            existing_killmail = Killmail.objects.filter(killmail_id=killmail_id).first()
-            if existing_killmail:
-                logger.debug("Killmail %s exists already..", killmail_id)
-                return None
+        # Check if killmail already exists
+        existing_killmail = Killmail.objects.filter(killmail_id=killmail_id).first()
+        if existing_killmail:
+            logger.debug("Killmail %s exists already..", killmail_id)
+            return None
 
-            zkb = zkb_killmail["zkb"]
-            killmail_url = zkb.get("href")
-            if not killmail_url:
-                km_id = zkb_killmail.get("killID") or zkb_killmail.get("killmail_id")
-                km_hash = zkb.get("hash")
-                if km_id and km_hash:
-                    killmail_url = (
-                        f"https://esi.evetech.net/v1/killmails/{km_id}/{km_hash}/"
-                    )
-                    zkb["href"] = killmail_url
-                    logger.debug(f"Generated href: {killmail_url}")
-                else:
-                    raise ValueError("Cannot generate href: killID or hash missing.")
-        except Exception as exc:
-            raise ValueError(
-                "Some error occurred while processing the killmail."
-            ) from exc
-
-        killmail_dict = {
-            "killID": killmail_id,
-            "zkb": zkb_killmail["zkb"],
-        }
-        killmail = cls._create_from_dict(killmail_dict)
+        killmail = cls._create_from_dict(zkb_killmail)
         if killmail:
             cache.set(key=cache_key, value=killmail.asjson())
         return killmail

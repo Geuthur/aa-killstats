@@ -1,6 +1,27 @@
 [
    {
       "killmail_id":121152845,
+      "hash": "test_zkb",
+      "esi": {
+         "attackers":[],
+         "killmail_id":121152845,
+         "killmail_time":"2024-05-01T12:34:56Z",
+         "solar_system_id":30004993,
+         "victim":{
+            "character_id":2124253410,
+            "corporation_id":98828892,
+            "damage_taken":489,
+            "items":[
+
+            ],
+            "position":{
+               "x":1500660092924.493,
+               "y":-296175083365.2572,
+               "z":-1870466919191.3386
+            },
+            "ship_type_id":11129
+         }
+      },
       "zkb":{
          "locationID":40297587,
          "hash":"15ceb3b90831b2d77936e0e5170ebbac6a2c8389",
@@ -18,11 +39,34 @@
             "pvp",
             "loc:nullsec"
          ],
-         "href":"https://esi.evetech.net/v1/killmails/121152845/15ceb3b90831b2d77936e0e5170ebbac6a2c8389/"
+         "href":"https://esi.evetech.net/v1/killmails/121152845/15ceb3b90831b2d77936e0e5170ebbac6a2c8389/",
+         "uploaded_at": 0,
+         "sequence_id": 1
       }
    },
    {
       "killmail_id":120885941,
+      "hash": "9ac74758129a7b8ead50839dbb33f3ad9e0d2c68",
+      "esi": {
+         "attackers":[],
+         "killmail_id":120885941,
+         "killmail_time":"2024-05-02T12:34:56Z",
+         "solar_system_id":30004993,
+         "victim":{
+            "character_id":2124253410,
+            "corporation_id":98828892,
+            "damage_taken":489,
+            "items":[
+
+            ],
+            "position":{
+               "x":1500660092924.493,
+               "y":-296175083365.2572,
+               "z":-1870466919191.3386
+            },
+            "ship_type_id":11129
+         }
+      },
       "zkb":{
          "locationID":40201517,
          "hash":"9ac74758129a7b8ead50839dbb33f3ad9e0d2c68",
@@ -40,7 +84,9 @@
             "pvp",
             "loc:nullsec"
          ],
-         "href":"https://esi.evetech.net/v1/killmails/120885941/9ac74758129a7b8ead50839dbb33f3ad9e0d2c68/"
+         "href":"https://esi.evetech.net/v1/killmails/120885941/9ac74758129a7b8ead50839dbb33f3ad9e0d2c68/",
+         "uploaded_at": 0,
+         "sequence_id": 2
       }
    }
 ]
