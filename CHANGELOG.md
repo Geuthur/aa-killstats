@@ -11,6 +11,10 @@ Section Order:
 ### Removed
 -->
 
+### Changed
+
+- Optimize killmail processing and update test data structure
+
 ## [2.0.2] - 2026-03-23
 
 > [!WARNING]

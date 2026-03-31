@@ -45,28 +45,38 @@ class TestKillmailBody(NoSocketsTestCase):
         # Sample killmail data from ESI
         cls.esi_killmail_data = {
             "killmail_id": 121152845,
-            "killmail_time": "2024-06-15T12:30:45Z",
-            "solar_system_id": 30004608,
-            "victim": {
-                "character_id": 95538921,
-                "corporation_id": 98711194,
-                "alliance_id": 99012345,
-                "ship_type_id": 670,
-                "damage_taken": 1234,
-                "position": {"x": 123.0, "y": 456.0, "z": 789.0},
+            "hash": "test_hash",
+            "esi": {
+                "killmail_id": 121152845,
+                "killmail_time": "2024-06-15T12:30:45Z",
+                "solar_system_id": 30004608,
+                "victim": {
+                    "character_id": 95538921,
+                    "corporation_id": 98711194,
+                    "alliance_id": 99012345,
+                    "ship_type_id": 670,
+                    "damage_taken": 1234,
+                    "position": {"x": 123.0, "y": 456.0, "z": 789.0},
+                },
+                "attackers": [
+                    {
+                        "character_id": 1234567,
+                        "corporation_id": 98098098,
+                        "alliance_id": 99011111,
+                        "ship_type_id": 11176,
+                        "weapon_type_id": 3520,
+                        "damage_done": 1234,
+                        "final_blow": True,
+                        "security_status": -10.0,
+                    }
+                ],
             },
-            "attackers": [
-                {
-                    "character_id": 1234567,
-                    "corporation_id": 98098098,
-                    "alliance_id": 99011111,
-                    "ship_type_id": 11176,
-                    "weapon_type_id": 3520,
-                    "damage_done": 1234,
-                    "final_blow": True,
-                    "security_status": -10.0,
-                }
-            ],
+            "zkb": {
+                "hash": "zkb_test_hash",
+                "fitted_value": 1000000.0,
+                "total_value": 1000000.0,
+                "points": 1,
+            },
         }
 
     def setUp(self):
@@ -88,18 +98,10 @@ class TestKillmailBody(NoSocketsTestCase):
         mock_zkb_response.raise_for_status = Mock()
         mock_zkb_response.status_code = 200
 
-        # Mock ESI API response (second call)
-        mock_esi_response = Mock()
-        mock_esi_response.json.return_value = self.esi_killmail_data
-        mock_esi_response.raise_for_status = Mock()
-        mock_esi_response.status_code = 200
-
         # Configure requests.get to return different responses based on URL
         def get_side_effect(url, **kwargs):
             if "zkillboard.com" in url:
                 return mock_zkb_response
-            elif "esi.evetech.net" in url:
-                return mock_esi_response
             return Mock()
 
         mock_requests_get.side_effect = get_side_effect
@@ -111,7 +113,7 @@ class TestKillmailBody(NoSocketsTestCase):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, KillmailBody)
         self.assertEqual(result.id, killmail_id)
-        self.assertEqual(mock_requests_get.call_count, 2)  # zKillboard + ESI
+        self.assertEqual(mock_requests_get.call_count, 1)  # zKillboard
 
     @patch("killstats.helpers.killmail.requests.get")
     def test_get_single_killmail_from_cache(self, mock_requests_get):
@@ -192,82 +194,6 @@ class TestKillmailBody(NoSocketsTestCase):
         mock_requests_get.assert_called_once()
 
     @patch(MODULE_PATH + ".requests.get")
-    def test_get_single_killmail_generate_href(self, mock_requests_get):
-        """Test that href is generated when missing from zKillboard response"""
-        killmail_id = 121152845
-
-        # Mock zKillboard response without href
-        zkb_data_no_href = {
-            "killmail_id": killmail_id,
-            "zkb": {"hash": "15ceb3b90831b2d77936e0e5170ebbac6a2c8389", "points": 1},
-        }
-
-        mock_zkb_response = Mock()
-        mock_zkb_response.json.return_value = [zkb_data_no_href]
-        mock_zkb_response.raise_for_status = Mock()
-        mock_zkb_response.status_code = 200
-
-        # Mock ESI API response
-        mock_esi_response = Mock()
-        mock_esi_response.json.return_value = self.esi_killmail_data
-        mock_esi_response.raise_for_status = Mock()
-        mock_esi_response.status_code = 200
-
-        # Configure requests.get to return different responses based on URL
-        def get_side_effect(url, **kwargs):
-            if "zkillboard.com" in url:
-                return mock_zkb_response
-            elif "esi.evetech.net" in url:
-                return mock_esi_response
-            return Mock()
-
-        mock_requests_get.side_effect = get_side_effect
-
-        # Call the method
-        result = KillmailBody.get_single_killmail(killmail_id)
-
-        # Assertions
-        self.assertIsNotNone(result)
-
-        # Verify that ESI was called with the generated href
-        expected_href = f"https://esi.evetech.net/v1/killmails/{killmail_id}/15ceb3b90831b2d77936e0e5170ebbac6a2c8389/"
-
-        # Check ESI call
-        esi_calls = [
-            call
-            for call in mock_requests_get.call_args_list
-            if "esi.evetech.net" in str(call)
-        ]
-        self.assertEqual(len(esi_calls), 1, "ESI should be called once")
-
-        # Verify the expected URL was used
-        called_urls = [str(call) for call in esi_calls]
-        url_found = any(expected_href in url for url in called_urls)
-        self.assertTrue(
-            url_found,
-            f"Expected href {expected_href} not found in ESI calls: {called_urls}",
-        )
-
-    @patch(MODULE_PATH + ".requests.get")
-    def test_get_single_killmail_missing_hash(self, mock_requests_get):
-        """Test ValueError is raised when hash is missing"""
-        killmail_id = 121152845
-
-        # Mock zKillboard response without hash
-        zkb_data_no_hash = {"killmail_id": killmail_id, "zkb": {"points": 1}}
-
-        mock_zkb_response = Mock()
-        mock_zkb_response.json.return_value = [zkb_data_no_hash]
-        mock_zkb_response.raise_for_status = Mock()
-        mock_requests_get.return_value = mock_zkb_response
-
-        # Call the method and expect ValueError
-        with self.assertRaises(ValueError) as context:
-            KillmailBody.get_single_killmail(killmail_id)
-
-        self.assertIn("Some error occurred", str(context.exception))
-
-    @patch(MODULE_PATH + ".requests.get")
     def test_get_single_killmail_zkb_http_error(self, mock_requests_get):
         """Test that HTTPError from zKillboard is handled"""
         killmail_id = 121152845
@@ -308,18 +234,10 @@ class TestKillmailBody(NoSocketsTestCase):
         mock_zkb_response.raise_for_status = Mock()
         mock_zkb_response.status_code = 200
 
-        # Mock ESI API response
-        mock_esi_response = Mock()
-        mock_esi_response.json.return_value = self.esi_killmail_data
-        mock_esi_response.raise_for_status = Mock()
-        mock_esi_response.status_code = 200
-
         # Configure requests.get to return different responses based on URL
         def get_side_effect(url, **kwargs):
             if "zkillboard.com" in url:
                 return mock_zkb_response
-            elif "esi.evetech.net" in url:
-                return mock_esi_response
             return Mock()
 
         mock_requests_get.side_effect = get_side_effect
