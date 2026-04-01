@@ -5,7 +5,6 @@ from celery import chain as Chain
 from celery import shared_task
 
 # Django
-from django.core.cache import cache
 from django.db import IntegrityError
 
 # Alliance Auth
@@ -50,14 +49,6 @@ def run_zkb_r2z2():
         return
 
     while True:
-        if cache.get(f"{__title__.upper()}_{sequence_id}"):
-            logger.debug(
-                "Killmail with sequence ID %s already processed recently; skipping",
-                sequence_id,
-            )
-            sequence_id += 1
-            continue
-
         # Process the killmail for the current sequence ID
         killmail = KillmailBody.create_from_r2z2_sequence(sequence_id)
         if not killmail:
@@ -69,6 +60,7 @@ def run_zkb_r2z2():
         # Save temporary to Cache
         killmail.save()
 
+        # Get all corporations and alliances that are tracked and run the tracker for each of them
         corps_qs = CorporationsAudit.objects.all()
         allys_qs = AlliancesAudit.objects.all()
 
@@ -79,14 +71,15 @@ def run_zkb_r2z2():
                 killmail_id=killmail.id,
             )
 
+        # Iterate over all alliances and run the tracker for each of them
         for alliance in allys_qs:
             run_tracker_alliance.delay(
                 alliance_id=alliance.alliance.alliance_id, killmail_id=killmail.id
             )
 
+        # Increment the total killmail count and move to the next sequence ID
         total_killmails += 1
         sequence_id += 1
-        cache.set(key=f"{__title__.upper()}_{sequence_id}", value=True, timeout=60 * 5)
     logger.info(
         "Killboard runs completed. %s killmails received from zKB",
         total_killmails,
