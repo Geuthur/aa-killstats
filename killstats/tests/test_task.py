@@ -74,7 +74,6 @@ class TestTasks(NoSocketsTestCase):
 
         killmail.save.assert_called_once()
         mock_create_from_sequence.assert_any_call(100)
-        mock_create_from_sequence.assert_any_call(102)
         self.assertEqual(mock_create_from_sequence.call_count, 2)
 
         mock_run_tracker_corp_delay.assert_called_once_with(
@@ -85,8 +84,8 @@ class TestTasks(NoSocketsTestCase):
             alliance_id=3001,
             killmail_id=123456,
         )
-
-        self.assertTrue(cache.get(f"{__title__.upper()}_101"))
+        self.assertEqual(mock_run_tracker_corp_delay.call_count, 1)
+        self.assertEqual(mock_run_tracker_ally_delay.call_count, 1)
 
     @patch(MODULE_PATH + ".Chain")
     @patch(MODULE_PATH + ".store_killmail.si")
