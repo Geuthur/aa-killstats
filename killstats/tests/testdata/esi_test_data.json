@@ -35,5 +35,39 @@
             }
          ]
       }
+   },
+   "Killmails": {
+      "GetKillmailsKillmailIdKillmailHash": {
+         "134398778": {
+            "attackers": [
+               {
+                  "character_id": 2118452166,
+                  "corporation_id": 98828892,
+                  "damage_done": 489,
+                  "faction_id": 500004,
+                  "final_blow": true,
+                  "security_status": 0.4,
+                  "ship_type_id": 4306,
+                  "weapon_type_id": 3090
+               }
+            ],
+            "killmail_id": 134398778,
+            "killmail_time": "2026-03-31T09:23:11Z",
+            "solar_system_id": 30004993,
+            "victim":
+               {
+                     "character_id": 2124253410,
+                     "corporation_id": 98828892,
+                     "damage_taken": 489,
+                     "items": [],
+                     "position":
+                        {
+                        "x": 1500660092924.493,
+                        "y": -296175083365.2572,
+                        "z": -1870466919191.3386},
+                        "ship_type_id": 11129
+               }
+         }
+      }
    }
 }
