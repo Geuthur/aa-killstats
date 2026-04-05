@@ -14,6 +14,7 @@ Section Order:
 ### Changed
 
 - Optimized Manager Pylance
+- Store KM Log Level to debug
 
 ## [2.0.4] - 2026-04-04
 
