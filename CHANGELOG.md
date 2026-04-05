@@ -11,6 +11,10 @@ Section Order:
 ### Removed
 -->
 
+### Fixed
+
+- No Character Portrait in Hall of Fame
+
 ### Changed
 
 - Optimized Manager Pylance
