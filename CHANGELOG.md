@@ -11,6 +11,10 @@ Section Order:
 ### Removed
 -->
 
+### Changed
+
+- Optimized Manager Pylance
+
 ## [2.0.4] - 2026-04-04
 
 ### Fixed
