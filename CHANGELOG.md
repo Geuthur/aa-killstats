@@ -11,6 +11,14 @@ Section Order:
 ### Removed
 -->
 
+### Added
+
+- Python 3.13 Support
+
+### Changed
+
+- Optimized EVE_SDE Migration Process for more clarity
+
 ## [2.0.5] - 2026-04-05
 
 ### Fixed
