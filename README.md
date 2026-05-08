@@ -46,7 +46,7 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 ## Installation<a name="installation"></a>
 
 > [!NOTE]
-> AA Killstats needs at least Alliance Auth v4.12.0
+> AA Killstats needs at least Alliance Auth v5.0.1
 > Please make sure to update your Alliance Auth before you install this APP
 
 ### Step 1 - Install the Package<a name="step1"></a>
