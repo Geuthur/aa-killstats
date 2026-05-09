@@ -11,6 +11,21 @@ Section Order:
 ### Removed
 -->
 
+## [3.0.0] - 2026-05-09
+
+> [!IMPORTANT]
+>
+> This Release needs at least Alliance Auth v5
+> Please make sure to update your Alliance Auth before you install this APP
+
+### Added
+
+- Compatibility to Alliance Auth v5
+
+### Removed
+
+- Compatibility to Alliance Auth v4
+
 ## [2.0.6] - 2026-05-08
 
 ### Added
@@ -524,4 +539,9 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [2.0.0]: https://github.com/Geuthur/aa-killstats/compare/v1.0.4...v2.0.0 "2.0.0"
 [2.0.1]: https://github.com/Geuthur/aa-killstats/compare/v2.0.0...v2.0.1 "2.0.1"
 [2.0.2]: https://github.com/Geuthur/aa-killstats/compare/v2.0.1...v2.0.2 "2.0.2"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v2.0.6...HEAD "In Development"
+[2.0.3]: https://github.com/Geuthur/aa-killstats/compare/v2.0.2...v2.0.3 "2.0.3"
+[2.0.4]: https://github.com/Geuthur/aa-killstats/compare/v2.0.3...v2.0.4 "2.0.4"
+[2.0.5]: https://github.com/Geuthur/aa-killstats/compare/v2.0.4...v2.0.5 "2.0.5"
+[2.0.6]: https://github.com/Geuthur/aa-killstats/compare/v2.0.5...v2.0.6 "2.0.6"
+[3.0.0]: https://github.com/Geuthur/aa-killstats/compare/v2.0.6...v3.0.0 "3.0.0"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v3.0.0...HEAD "In Development"
