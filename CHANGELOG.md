@@ -11,6 +11,12 @@ Section Order:
 ### Removed
 -->
 
+## [3.0.1] - 28.05.2026
+
+### Fixed
+
+- Import Error for Exception
+
 ## [3.0.0] - 2026-05-09
 
 > [!IMPORTANT]
@@ -544,4 +550,5 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [2.0.5]: https://github.com/Geuthur/aa-killstats/compare/v2.0.4...v2.0.5 "2.0.5"
 [2.0.6]: https://github.com/Geuthur/aa-killstats/compare/v2.0.5...v2.0.6 "2.0.6"
 [3.0.0]: https://github.com/Geuthur/aa-killstats/compare/v2.0.6...v3.0.0 "3.0.0"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v3.0.0...HEAD "In Development"
+[3.0.1]: https://github.com/Geuthur/aa-killstats/compare/v3.0.0...v3.0.1 "3.0.1"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v3.0.1...HEAD "In Development"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AA Killstats \n"
 "Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issues\n"
-"POT-Creation-Date: 2026-05-09 11:06+0200\n"
+"POT-Creation-Date: 2026-05-28 16:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,24 +167,24 @@ msgstr ""
 msgid "No data found..."
 msgstr ""
 
-#: killstats/views.py:151
+#: killstats/views.py:150
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr ""
 
-#: killstats/views.py:155
+#: killstats/views.py:154
 #, python-brace-format
 msgid "Failed to fetch Alliance data for {alliance_name}"
 msgstr ""
 
-#: killstats/views.py:211
+#: killstats/views.py:215
 #, python-brace-format
 msgid ""
 "Killmail {killmail_id} already exists. Please check the killmail ID and try "
 "again."
 msgstr ""
 
-#: killstats/views.py:226
+#: killstats/views.py:230
 #, python-brace-format
 msgid "Killmail {killmail_id} has been added to Killstats."
 msgstr ""
