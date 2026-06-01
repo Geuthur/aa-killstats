@@ -51,7 +51,7 @@ urls.Source = "https://github.com/Geuthur/aa-killstats"
 urls.Tracker = "https://github.com/Geuthur/aa-killstats/issues"
 
 [tool.hatch]
+version.path = "killstats/__init__.py"
 build.include = [
     "/killstats",
 ]
-version.path = "killstats/__init__.py"
