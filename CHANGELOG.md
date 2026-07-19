@@ -11,6 +11,10 @@ Section Order:
 ### Removed
 -->
 
+### Fixed
+
+- AttributeError in Permission Model since AAv5.2
+
 ## [3.0.1] - 28.05.2026
 
 ### Fixed
