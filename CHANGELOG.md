@@ -3,6 +3,21 @@
 ## [In Development] - Unreleased
 
 <!--
+> [!NOTE]
+>
+
+> [!TIP]
+>
+
+> [!IMPORTANT]
+>
+
+> [!WARNING]
+>
+
+> [!CAUTION]
+>
+
 Section Order:
 
 ### Added
@@ -10,6 +25,26 @@ Section Order:
 ### Changed
 ### Removed
 -->
+
+<!-- Your changes go here -->
+
+### Added
+
+- CODEOWNERS file to define code ownership.
+
+### Changed
+
+- Enhance Makefile and configuration management
+- Added pre-commit hooks management in pre-commit.mk with commands for installation, uninstallation, updates, and checks.
+- Improved Redis command management in redis.mk with better echo messages.
+- Updated tests.mk to enhance test running and coverage reporting.
+- Modified .pre-commit-config.yaml to use regex for JSON file exclusion.
+- Updated CHANGELOG.md to include a section for new changes.
+- Enhanced CODE_OF_CONDUCT.md with a structured table of contents.
+- Improved CONTRIBUTING.md with a structured table of contents.
+- Refactored Makefile to include dynamic configuration loading from .ini files. @thanks to (@ppfeufer)
+- Added database management tasks in database.mk for backup, restore, list, and delete operations.
+- Introduced npm.mk for managing npm dependencies and scripts.
 
 ### Fixed
 
