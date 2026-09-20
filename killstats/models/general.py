@@ -33,6 +33,8 @@ class General(models.Model):
 
     class Meta:
         managed = False
+        verbose_name = "AA-Killstats"
+        verbose_name_plural = "AA-Killstats"
         default_permissions = ()
         permissions = (
             ("basic_access", "Can access this app, Killstats."),
