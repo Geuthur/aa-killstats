@@ -151,3 +151,98 @@ class TestKillmailHelper(NoSocketsTestCase):
         self.assertEqual(result, expected_killmail)
         mock_create_from_dict.assert_called_once_with({"killmail_id": 999999})
         self.assertIsNotNone(cache.get(LAST_REQUEST_KEY))
+
+    def test_create_from_zkb_dict_with_killmail_format(self):
+        zkb_data = {
+            "killmail_id": 12345678,
+            "zkb": {
+                "hash": "abcdef123456",
+                "fittedValue": 1000.0,
+                "totalValue": 1500.0,
+                "points": 5,
+                "npc": False,
+                "solo": True,
+                "awox": False,
+            },
+            "killmail": {
+                "killmail_id": 12345678,
+                "killmail_time": "2026-09-25T10:00:00Z",
+                "solar_system_id": 30000142,
+                "victim": {
+                    "character_id": 1001,
+                    "corporation_id": 2001,
+                    "damage_taken": 500,
+                    "ship_type_id": 601,
+                },
+                "attackers": [
+                    {
+                        "character_id": 1002,
+                        "corporation_id": 2002,
+                        "damage_done": 500,
+                        "final_blow": True,
+                    }
+                ],
+            },
+        }
+        body = KillmailBody.create_from_zkb_dict(zkb_data)
+        self.assertIsNotNone(body)
+        self.assertEqual(body.id, 12345678)
+        self.assertEqual(body.solar_system_id, 30000142)
+        self.assertEqual(body.zkb.hash, "abcdef123456")
+        self.assertEqual(body.zkb.total_value, 1500.0)
+        self.assertTrue(body.zkb.is_solo)
+        self.assertFalse(body.zkb.is_npc)
+        self.assertEqual(body.victim.character_id, 1001)
+        self.assertEqual(len(body.attackers), 1)
+        self.assertEqual(body.attackers[0].character_id, 1002)
+
+    def test_create_from_zkb_dict_with_flat_format(self):
+        flat_data = {
+            "killmail_id": 138458220,
+            "killmail_time": "2026-09-15T11:41:44Z",
+            "solar_system_id": 30004419,
+            "victim": {
+                "alliance_id": 1900696668,
+                "character_id": 2123450534,
+                "corporation_id": 98808697,
+                "damage_taken": 876568,
+                "ship_type_id": 85230,
+            },
+            "attackers": [
+                {
+                    "alliance_id": 1354830081,
+                    "character_id": 96821579,
+                    "corporation_id": 679900455,
+                    "damage_done": 73293,
+                    "final_blow": False,
+                    "security_status": 5,
+                    "ship_type_id": 12038,
+                    "weapon_type_id": 24523,
+                }
+            ],
+            "zkb": {
+                "hash": "87ec69ef8fc7a78e25f08feaa3f59a4981f09892",
+                "fittedValue": 20045316.28,
+                "droppedValue": 90894516,
+                "destroyedValue": 20045316.28,
+                "totalValue": 110939832.28,
+                "points": 1,
+                "npc": False,
+                "solo": False,
+                "awox": False,
+            },
+        }
+        body = KillmailBody.create_from_zkb_dict(flat_data)
+        self.assertIsNotNone(body)
+        self.assertEqual(body.id, 138458220)
+        self.assertEqual(body.solar_system_id, 30004419)
+        self.assertEqual(body.victim.character_id, 2123450534)
+        self.assertEqual(body.victim.corporation_id, 98808697)
+        self.assertEqual(len(body.attackers), 1)
+        self.assertEqual(body.attackers[0].character_id, 96821579)
+        self.assertEqual(body.zkb.hash, "87ec69ef8fc7a78e25f08feaa3f59a4981f09892")
+
+    def test_create_from_zkb_dict_invalid(self):
+        self.assertIsNone(KillmailBody.create_from_zkb_dict({}))
+        self.assertIsNone(KillmailBody.create_from_zkb_dict(None))
+        self.assertIsNone(KillmailBody.create_from_zkb_dict({"killmail_id": 123}))

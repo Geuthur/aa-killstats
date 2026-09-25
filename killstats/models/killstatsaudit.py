@@ -34,6 +34,12 @@ class CorporationsAudit(models.Model):
     )
 
     last_update = models.DateTimeField(auto_now=True)
+    last_missing_check = models.DateTimeField(
+        _("last missing check"),
+        null=True,
+        blank=True,
+        default=None,
+    )
 
     owner = models.ForeignKey(EveCharacter, on_delete=models.CASCADE)
 
@@ -64,6 +70,12 @@ class AlliancesAudit(models.Model):
     )
 
     last_update = models.DateTimeField(auto_now=True)
+    last_missing_check = models.DateTimeField(
+        _("last missing check"),
+        null=True,
+        blank=True,
+        default=None,
+    )
 
     owner = models.ForeignKey(EveCharacter, on_delete=models.CASCADE)
 

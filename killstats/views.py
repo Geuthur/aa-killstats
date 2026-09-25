@@ -105,21 +105,21 @@ def add_corp(request, token):
     char = get_object_or_404(EveCharacter, character_id=token.character_id)
 
     # Check if it is a NPC Corporation
-    if char.corporation_id < 10_000_000:
-        msg = "Cannot add NPC Corporation to Killstats"
+    if not char.corporation_id or char.corporation_id < 10_000_000:
+        msg = _("Cannot add NPC Corporation to Killstats")
         messages.error(request, msg)
         return redirect("killstats:index")
 
-    corp, _ = EveCorporationInfo.objects.get_or_create(
+    corp = EveCorporationInfo.objects.get_or_create(
         corporation_id=char.corporation_id,
         defaults={
             "member_count": 0,
             "corporation_ticker": char.corporation_ticker,
             "corporation_name": char.corporation_name,
         },
-    )
+    )[0]
 
-    audit, __ = CorporationsAudit.objects.update_or_create(corporation=corp, owner=char)
+    audit = CorporationsAudit.objects.update_or_create(corporation=corp, owner=char)[0]
 
     msg = (
         f"{audit.corporation.corporation_name} successfully added/updated to Killstats"
@@ -134,19 +134,36 @@ def add_corp(request, token):
 def add_alliance(request, token):
     char = get_object_or_404(EveCharacter, character_id=token.character_id)
 
+    # Check if character belongs to an NPC Corporation
+    if not char.corporation_id or char.corporation_id < 10_000_000:
+        msg = _("Cannot add Alliance for a character belonging to an NPC Corporation")
+        messages.error(request, msg)
+        return redirect("killstats:index")
+
+    # Check if character belongs to a valid player Alliance
+    if not char.alliance_id or char.alliance_id < 10_000_000:
+        msg = _("Character does not belong to a valid player Alliance")
+        messages.error(request, msg)
+        return redirect("killstats:index")
+
     try:
         ally_data = provider.get_alliance(char.alliance_id)
-        alliance, __ = EveAllianceInfo.objects.get_or_create(
+        if ally_data.executor_corp_id and ally_data.executor_corp_id < 10_000_000:
+            msg = _("Cannot add Alliance belonging to an NPC Corporation")
+            messages.error(request, msg)
+            return redirect("killstats:index")
+
+        alliance = EveAllianceInfo.objects.get_or_create(
             alliance_id=ally_data.id,
             defaults={
                 "alliance_name": ally_data.name,
                 "alliance_ticker": ally_data.ticker,
                 "executor_corp_id": ally_data.executor_corp_id,
             },
-        )
-        audit, __ = AlliancesAudit.objects.update_or_create(
-            alliance=alliance, owner=char
-        )
+        )[0]
+        audit = AlliancesAudit.objects.update_or_create(alliance=alliance, owner=char)[
+            0
+        ]
         msg = _("{alliance_name} successfully added/updated to Killstats").format(
             alliance_name=audit.alliance.alliance_name,
         )

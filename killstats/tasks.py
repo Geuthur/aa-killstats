@@ -1,24 +1,24 @@
-"""App Tasks"""
-
 # Third Party
 from celery import chain as Chain
 from celery import shared_task
 
 # Django
-from django.db import IntegrityError
+from django.db import IntegrityError, models
+from django.utils import timezone
 
 # Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 
 # AA Killstats
 from killstats import __title__, app_settings
 from killstats.helpers.killmail import KillmailBody
+from killstats.helpers.tasks import (
+    check_missing_killmails,
+    get_esi_killmail_bucket_remaining,
+)
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
-from killstats.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
+from killstats.providers import esi, logger
 
 MAX_RETRIES_DEFAULT = 3
 
@@ -31,6 +31,11 @@ TASK_DEFAULTS = {
 
 # Default params for tasks that need run once only.
 TASK_DEFAULTS_ONCE = {**TASK_DEFAULTS, **{"base": QueueOnce}}
+TASK_DEFAULTS_ONCE_GRACE = {
+    **TASK_DEFAULTS,
+    "base": QueueOnce,
+    "once": {"graceful": True},
+}
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
@@ -123,6 +128,49 @@ def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
 
 
 @shared_task(**TASK_DEFAULTS)
+def run_tracker_missing_data(pages: int = 3, batch_size: int = 200) -> None:
+    """
+    Run the tracker for missing data, including corporations, alliances, and solar systems.
+
+    Args:
+        pages (int): Number of pages to check for missing killmails.
+        batch_size (int): Number of entities to process in each batch.
+    """
+    # 1. Process Corporation(s)
+    corps_to_check = CorporationsAudit.objects.select_related("corporation").order_by(
+        models.F("last_missing_check").asc(nulls_first=True)
+    )[:1]
+
+    for corp_audit in corps_to_check:
+        corp_id = corp_audit.corporation.corporation_id
+        corp_audit.last_missing_check = timezone.now()
+        corp_audit.save(update_fields=["last_missing_check"])
+
+        check_and_import_corporation_killmails_task.delay(
+            corporation_id=corp_id, pages=pages
+        )
+
+    # 2. Process Alliance(s)
+    alliances_to_check = AlliancesAudit.objects.select_related("alliance").order_by(
+        models.F("last_missing_check").asc(nulls_first=True)
+    )[:1]
+
+    for alliance_audit in alliances_to_check:
+        alliance_id = alliance_audit.alliance.alliance_id
+        alliance_audit.last_missing_check = timezone.now()
+        alliance_audit.save(update_fields=["last_missing_check"])
+
+        check_and_import_alliance_killmails_task.delay(
+            alliance_id=alliance_id, pages=pages
+        )
+
+    # 3. Update missing solar systems (batch of 100, min 600 token reserve)
+    update_missing_solar_systems_task.delay(
+        batch_size=batch_size, min_reserve_tokens=600
+    )
+
+
+@shared_task(**TASK_DEFAULTS_ONCE_GRACE)
 def store_killmail(killmail_id: int) -> None:
     """stores killmail as EveKillmail object"""
     killmail = KillmailBody.get(killmail_id)
@@ -134,3 +182,177 @@ def store_killmail(killmail_id: int) -> None:
         )
     else:
         logger.debug("%s: Stored killmail", killmail.id)
+
+
+@shared_task(**TASK_DEFAULTS_ONCE)
+def check_and_import_corporation_killmails_task(
+    corporation_id: int, pages: int = 3
+) -> dict:
+    """
+    Checks missing killmails for a corporation from zKillboard and directly imports them from the response data.
+    Also updates killmails with missing solar systems.
+    """
+    missing_killmails = check_missing_killmails(
+        corporation_id=corporation_id, pages=pages
+    )
+    if not missing_killmails:
+        logger.info("No missing killmails found for corporation %s", corporation_id)
+    else:
+        import_missing_killmails_from_zkb.delay(
+            missing_killmails=missing_killmails, corporation_id=corporation_id
+        )
+
+
+@shared_task(**TASK_DEFAULTS_ONCE)
+def check_and_import_alliance_killmails_task(alliance_id: int, pages: int = 3) -> dict:
+    """
+    Checks missing killmails for an alliance from zKillboard and directly imports them from the response data.
+    Also updates killmails with missing solar systems.
+    """
+    missing_killmails = check_missing_killmails(alliance_id=alliance_id, pages=pages)
+
+    if not missing_killmails:
+        logger.info("No missing killmails found for alliance %s", alliance_id)
+    else:
+        import_missing_killmails_from_zkb.delay(
+            missing_killmails=missing_killmails, alliance_id=alliance_id
+        )
+
+
+@shared_task(**TASK_DEFAULTS)
+def import_missing_killmails_from_zkb(
+    missing_killmails: list[dict],
+    corporation_id: int | None = None,
+    alliance_id: int | None = None,
+) -> dict:
+    """
+    Directly converts a list of raw zKB killmail dicts into KillmailBody objects
+    and creates them in the database via Killmail.objects.create_from_killmail.
+    Zero extra HTTP requests required.
+    """
+    imported = 0
+    skipped = 0
+    failed = 0
+
+    target = ""
+    if corporation_id:
+        target = f" for corporation {corporation_id}"
+    elif alliance_id:
+        target = f" for alliance {alliance_id}"
+
+    logger.info(
+        "Directly importing %d missing killmails%s...",
+        len(missing_killmails),
+        target,
+    )
+
+    for raw_data in missing_killmails:
+        km_id = None
+        try:
+            km_id = (
+                raw_data.get("killmail_id")
+                or raw_data.get("killID")
+                or (raw_data.get("killmail", {}).get("killmail_id"))
+            )
+            if not km_id:
+                failed += 1
+                continue
+
+            km_id = int(km_id)
+            if Killmail.objects.filter(killmail_id=km_id).exists():
+                skipped += 1
+                continue
+
+            killmail_body = KillmailBody.create_from_zkb_dict(raw_data)
+            if not killmail_body:
+                failed += 1
+                continue
+
+            killmail_body.save()
+            Killmail.objects.create_from_killmail(killmail_body)
+            imported += 1
+        except IntegrityError:
+            skipped += 1
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.error("Error importing killmail %s: %s", km_id, exc, exc_info=True)
+            failed += 1
+
+    logger.info(
+        "Direct import finished%s: %d imported, %d skipped, %d failed out of %d total",
+        target,
+        imported,
+        skipped,
+        failed,
+        len(missing_killmails),
+    )
+
+
+@shared_task(**TASK_DEFAULTS_ONCE)
+def update_missing_solar_systems_task(
+    batch_size: int = 100, min_reserve_tokens: int = 600
+) -> dict:
+    killmails = Killmail.objects.filter(
+        models.Q(victim_solar_system_id__isnull=True)
+        | models.Q(victim_solar_system_id=0)
+    ).order_by("-killmail_id")[:batch_size]
+
+    total_missing = killmails.count()
+    if total_missing == 0:
+        logger.info("No killmails with missing solar_system_id found.")
+
+    logger.info(
+        "Processing batch of %d killmails (out of %d missing) to update solar systems.",
+        len(killmails),
+        total_missing,
+    )
+
+    runs = 0
+    for km in killmails:
+        remaining = get_esi_killmail_bucket_remaining()
+        if remaining is not None and remaining <= min_reserve_tokens:
+            logger.warning(
+                "ESI killmail bucket tokens (%d) at or below reserve (%d). "
+                "Stopping task early after updating %d killmails.",
+                remaining,
+                min_reserve_tokens,
+                runs,
+            )
+            break
+        fetch_solar_system_id_for_killmail.apply_async(
+            args=(km.killmail_id, km.hash),
+            kwargs={"min_reserve_tokens": min_reserve_tokens},
+        )
+        runs += 1
+
+
+@shared_task(**TASK_DEFAULTS_ONCE_GRACE)
+def fetch_solar_system_id_for_killmail(
+    killmail_id: int, killmail_hash: str, min_reserve_tokens: int = 600
+) -> int | None:
+    """
+    Fetch solar_system_id for a killmail from ESI, preserving token reserve in bucket.
+    Falls back to zKillboard API.
+    """
+    # 1. Check rate limit reserve in django-esi killmail bucket
+    remaining = get_esi_killmail_bucket_remaining()
+
+    # If the remaining tokens are below the minimum reserve, skip the ESI request to preserve the bucket.
+    if remaining is not None and remaining <= min_reserve_tokens:
+        return None
+
+    # 2. Attempt to fetch from ESI using the Alliance Auth ESI client
+    try:
+        killmail = esi.client.Killmails.GetKillmailsKillmailIdKillmailHash(
+            killmail_hash=killmail_hash,
+            killmail_id=killmail_id,
+        ).result(use_etag=False)
+
+        region_id = KillmailBody.get_region_id(killmail.solar_system_id)
+        Killmail.objects.filter(killmail_id=killmail_id, hash=killmail_hash).update(
+            victim_solar_system_id=killmail.solar_system_id,
+            victim_region_id=region_id,
+        )
+        return int(killmail.solar_system_id)
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.debug("ESI client fetch failed for killmail %s: %s", killmail_id, exc)
+        return None

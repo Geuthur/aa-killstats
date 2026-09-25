@@ -588,6 +588,16 @@ class KillmailBody(_KillmailBase):
 
                 position = KillmailPosition(**params)
 
+        if "position" in killmail_data and not any(
+            [position.x, position.y, position.z]
+        ):
+            position_data = killmail_data["position"]
+            params = {}
+            for prop in ["x", "y", "z"]:
+                if prop in position_data:
+                    params[prop] = position_data[prop]
+            position = KillmailPosition(**params)
+
         return victim, position
 
     @classmethod
@@ -632,35 +642,82 @@ class KillmailBody(_KillmailBase):
         return KillmailZkb(**params)
 
     @classmethod
+    def create_from_zkb_dict(cls, package_data: dict) -> Optional["KillmailBody"]:
+        """creates a new KillmailBody from a given zKB dictionary.
+        Supports both R2Z2 format ('esi') and zKB Page API format ('killmail').
+        """
+        return cls._create_from_dict(package_data)
+
+    @classmethod
     def _create_from_dict(cls, package_data: dict) -> Optional["KillmailBody"]:
         """creates a new object from given dict.
-        Needs to confirm with data structure returned from ZKB API
+        Needs to conform with data structure returned from ZKB API
         """
-        if not package_data:
+        if not package_data or not isinstance(package_data, dict):
             return None
 
-        try:
-            killmail_id = package_data["killmail_id"]
-            esi_data = package_data["esi"]
-            zkb = package_data["zkb"]
-            killmail_time = esi_data["killmail_time"]
-        except KeyError:
-            logger.warning("Incomplete Response: %s", package_data)
+        # Supports:
+        # 1. R2Z2 format: package_data['esi']
+        # 2. zKB nested format: package_data['killmail']
+        # 3. Flat zKB format: package_data itself contains victim/attackers directly
+        esi_data = (
+            package_data.get("esi")
+            or package_data.get("killmail")
+            or (
+                package_data
+                if ("victim" in package_data or "attackers" in package_data)
+                else None
+            )
+        )
+        if not esi_data or not isinstance(esi_data, dict):
+            logger.warning(
+                "Incomplete Response (no esi/killmail data): %s", package_data
+            )
             return None
+
+        killmail_id = (
+            package_data.get("killmail_id")
+            or package_data.get("killID")
+            or esi_data.get("killmail_id")
+        )
+        zkb = package_data.get("zkb", {})
+        killmail_time = esi_data.get("killmail_time")
+
+        if not killmail_id or not killmail_time:
+            logger.warning("Incomplete Response (missing id/time): %s", package_data)
+            return None
+
         victim, position = cls._extract_victim_and_position(esi_data)
         attackers = cls._extract_attackers(esi_data)
         zkb = cls._extract_zkb(zkb)
 
+        parsed_time = (
+            parse_datetime(killmail_time)
+            if isinstance(killmail_time, str)
+            else killmail_time
+        )
+
         params = {
-            "id": killmail_id,
-            "time": parse_datetime(killmail_time),
+            "id": int(killmail_id),
+            "time": parsed_time,
             "victim": victim,
             "position": position,
             "attackers": attackers,
             "zkb": zkb,
         }
-        if "solar_system_id" in package_data:
-            params["solar_system_id"] = package_data["solar_system_id"]
+        solar_system_id = package_data.get("solar_system_id") or esi_data.get(
+            "solar_system_id"
+        )
+        if solar_system_id:
+            params["solar_system_id"] = solar_system_id
+
+        moon_id = package_data.get("moon_id") or esi_data.get("moon_id")
+        if moon_id:
+            params["moon_id"] = moon_id
+
+        war_id = package_data.get("war_id") or esi_data.get("war_id")
+        if war_id:
+            params["war_id"] = war_id
 
         killmail = KillmailBody(**params)
         return killmail

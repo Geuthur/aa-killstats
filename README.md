@@ -83,6 +83,10 @@ if "killstats" in INSTALLED_APPS:
         "task": "killstats.tasks.run_zkb_r2z2",
         "schedule": crontab(minute="*/1"),
     }
+    CELERYBEAT_SCHEDULE["Killstats :: Check for Missing Killmail Data"] = {
+        "task": "killstats.tasks.run_tracker_missing_data",
+        "schedule": crontab(minute="*/15"),
+    }
 ```
 
 ### Step 3.1 - (Optional) Add own Logger File

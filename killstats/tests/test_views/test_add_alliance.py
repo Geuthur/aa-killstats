@@ -40,6 +40,14 @@ class KillstatsAllianceAuditTest(TestCase):
                 "killstats.admin_access",
             ],
         )
+        char = cls.character_ownership.character
+        char.corporation_id = 98000001
+        char.corporation_name = "Player Corp"
+        char.corporation_ticker = "PC"
+        char.alliance_id = 99000001
+        char.alliance_name = "Test Alliance"
+        char.alliance_ticker = "TEST"
+        char.save()
 
     def _add_alliance(self, user, token):
         request = self.factory.get(reverse("killstats:add_alliance"))
@@ -57,21 +65,87 @@ class KillstatsAllianceAuditTest(TestCase):
         token = user.token_set.get(character_id=1001)
 
         alliance = EveAllianceInfo.objects.create(
-            alliance_id=9999,
+            alliance_id=99000001,
             alliance_name="Test Alliance",
             alliance_ticker="TEST",
-            executor_corp_id=2001,
+            executor_corp_id=98000001,
         )
         mock_alliance.return_value = (alliance, True)
-        mock_provider.return_value = Mock()
+        mock_ally_data = Mock()
+        mock_ally_data.id = 99000001
+        mock_ally_data.name = "Test Alliance"
+        mock_ally_data.ticker = "TEST"
+        mock_ally_data.executor_corp_id = 98000001
+        mock_provider.return_value = mock_ally_data
 
         # when
         response = self._add_alliance(user, token)
 
         # then
-        alliance_audit = AlliancesAudit.objects.get(alliance__alliance_id=9999)
+        alliance_audit = AlliancesAudit.objects.get(alliance__alliance_id=99000001)
 
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(response.url, reverse("killstats:alliance", args=[9999]))
+        self.assertEqual(response.url, reverse("killstats:alliance", args=[99000001]))
         self.assertEqual(mock_messages.info.call_count, 1)
-        self.assertEqual(alliance_audit.alliance.alliance_id, 9999)
+        self.assertEqual(alliance_audit.alliance.alliance_id, 99000001)
+
+    def test_add_alliance_npc_corporation_rejected(self, mock_provider, mock_messages):
+        # given
+        user = self.user
+        token = user.token_set.get(character_id=1001)
+        char = self.character_ownership.character
+        char.corporation_id = 1000125  # NPC Corp
+        char.save()
+
+        # when
+        response = self._add_alliance(user, token)
+
+        # then
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(mock_messages.error.call_count, 1)
+        self.assertFalse(
+            AlliancesAudit.objects.filter(alliance__alliance_id=99000001).exists()
+        )
+
+    def test_add_alliance_no_alliance_rejected(self, mock_provider, mock_messages):
+        # given
+        user = self.user
+        token = user.token_set.get(character_id=1001)
+        char = self.character_ownership.character
+        char.alliance_id = None
+        char.save()
+
+        # when
+        response = self._add_alliance(user, token)
+
+        # then
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(mock_messages.error.call_count, 1)
+        self.assertFalse(
+            AlliancesAudit.objects.filter(alliance__alliance_id=99000001).exists()
+        )
+
+    def test_add_alliance_npc_executor_rejected(self, mock_provider, mock_messages):
+        # given
+        user = self.user
+        token = user.token_set.get(character_id=1001)
+
+        mock_ally_data = Mock()
+        mock_ally_data.id = 99000001
+        mock_ally_data.name = "Test Alliance"
+        mock_ally_data.ticker = "TEST"
+        mock_ally_data.executor_corp_id = 1000125  # NPC executor corp
+        mock_provider.return_value = mock_ally_data
+
+        # when
+        response = self._add_alliance(user, token)
+
+        # then
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(mock_messages.error.call_count, 1)
+        self.assertFalse(
+            AlliancesAudit.objects.filter(alliance__alliance_id=99000001).exists()
+        )

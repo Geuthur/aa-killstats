@@ -84,6 +84,12 @@ class TestKillstatsAuditAdmin(TestCase):
             self.killstats_audit.last_update,
         )
 
+    def test_last_missing_check(self):
+        self.assertEqual(
+            self.killstats_audit_admin._last_missing_check(self.killstats_audit),
+            self.killstats_audit.last_missing_check,
+        )
+
     def test_has_add_permission(self):
         self.client.force_login(self.superuser)
         request = self.factory.get("/")
@@ -216,6 +222,12 @@ class TestAlliancesAuditAdmin(TestCase):
         self.assertEqual(
             self.killstats_audit_admin._last_update(self.killstats_audit),
             self.killstats_audit.last_update,
+        )
+
+    def test_last_missing_check(self):
+        self.assertEqual(
+            self.killstats_audit_admin._last_missing_check(self.killstats_audit),
+            self.killstats_audit.last_missing_check,
         )
 
     def test_has_add_permission(self):
