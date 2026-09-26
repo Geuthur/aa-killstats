@@ -34,10 +34,9 @@ Section Order:
 - Management command `killstats_update_solar_systems` to scan killmails for missing `victim_solar_system_id`, re-fetch killmail data from ESI/zKillboard, and populate both `victim_solar_system_id` and `victim_region_id` with rate limit protection preserving token reserve in django-esi 'killmail' bucket (supports `-m`/`--missing-only`, `-r`/`--min-reserve`, `-d`/`--dry-run`, `-l`/`--limit`, and `-s`/`--sleep`).
 - Management command `killstats_delete_npc_killmails` to detect and delete killmails from NPC corporations that do not belong to any audited corporation or alliance, with interactive 'y' confirmation prompt, `-y`/`--yes`, `--dry-run`, and `--all-orphans` options.
 - Validation in `add_corp` and `add_alliance` to prevent adding NPC corporations, characters belonging to NPC corporations, characters without a valid player alliance, or alliances belonging to/executed by an NPC corporation.
-- Missing killmail tracking and background import Celery tasks (`check_missing_killmails`, `run_tracker_missing_killmails`, `import_missing_killmails_from_zkb`, etc.).
+- Missing killmail tracking and background Celery tasks (`check_missing_killmails`, `run_tracker_missing_data`, `import_missing_killmails_from_zkb`, etc.).
 - `last_missing_check` DateTime field to `CorporationsAudit` and `AlliancesAudit` models for sequential Round-Robin FIFO tracking.
 - `_last_missing_check` display in Django Admin for corporation and alliance audits.
-- Ninja API endpoints for corporation and alliance missing killmail checks and manual import queuing (`/corporation/{id}/missing/`, `/corporation/{id}/import/`, `/alliance/{id}/missing/`, `/alliance/{id}/import/`).
 - Direct in-memory `KillmailBody` creation via `KillmailBody.create_from_zkb_dict` supporting R2Z2 (`esi`), nested zKB (`killmail`), and flat zKB response formats without secondary HTTP requests.
 - CODEOWNERS file to define code ownership.
 
@@ -57,7 +56,7 @@ Section Order:
 
 ### Fixed
 
-- Fixed Create NPC Corporation/Alliance Tracker
+- Fixed Create NPC Corporation/Alliance Tracking
 - Support flat zKillboard payload format in `KillmailBody._create_from_dict` where `victim` and `attackers` are located directly at the root level, preventing `Incomplete Response (no esi/killmail data)` warning.
 - Extraction of position coordinates when provided at root level in `KillmailBody._extract_victim_and_position`.
 - AttributeError in Permission Model since AAv5.2
