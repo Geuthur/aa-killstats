@@ -11,11 +11,7 @@ from allianceauth.services.tasks import QueueOnce
 
 # AA Killstats
 from killstats import __title__, app_settings
-from killstats.helpers.killmail import KillmailBody
-from killstats.helpers.tasks import (
-    check_missing_killmails,
-    get_esi_killmail_bucket_remaining,
-)
+from killstats.helpers.killmailbody import KillmailBody
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.providers import esi, logger
@@ -39,23 +35,23 @@ TASK_DEFAULTS_ONCE_GRACE = {
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
-def run_zkb_r2z2():
+def run_tracker_zkb():
     total_killmails = 0
     sequence_id = None
 
     try:
-        sequence_id = KillmailBody.get_sequence_from_r2z2()
+        sequence_id = KillmailBody.get_sequence()
     except Exception as e:  # pylint: disable=broad-exception-caught
-        logger.error("Error fetching killmail from zKB R2Z2: %s", e)
+        logger.error("Error fetching killmail from zKB: %s", e)
         return
 
     if not sequence_id:
-        logger.debug("No killmail received from zKB R2Z2.")
+        logger.debug("No killmail received from zKB.")
         return
 
     while True:
         # Process the killmail for the current sequence ID
-        killmail = KillmailBody.create_from_r2z2_sequence(sequence_id)
+        killmail = KillmailBody.create_from_sequence(sequence_id)
         if not killmail:
             logger.debug(
                 "No valid killmail data received for sequence ID %s", sequence_id
@@ -73,13 +69,14 @@ def run_zkb_r2z2():
         for corporation in corps_qs:
             run_tracker_corporation.delay(
                 corporation_id=corporation.corporation.corporation_id,
-                killmail_id=killmail.id,
+                killmail_id=killmail.killmail_id,
             )
 
         # Iterate over all alliances and run the tracker for each of them
         for alliance in allys_qs:
             run_tracker_alliance.delay(
-                alliance_id=alliance.alliance.alliance_id, killmail_id=killmail.id
+                alliance_id=alliance.alliance.alliance_id,
+                killmail_id=killmail.killmail_id,
             )
 
         # Increment the total killmail count and move to the next sequence ID
@@ -98,14 +95,14 @@ def run_tracker_corporation(corporation_id: int, killmail_id: int) -> None:
         corporation__corporation_id=corporation_id
     )
     killmail = KillmailBody.get(killmail_id)
-    killmail_new = corporation.process_killmail(killmail)
-    if killmail_new:
+    valid_killmail = corporation.is_corporation(killmail)
+    if valid_killmail:
         Chain(
-            store_killmail.si(killmail.id),
+            store_killmail.si(killmail.killmail_id),
         ).delay()
         logger.debug(
             "%s: Start storing killmail for %s",
-            killmail.id,
+            killmail.killmail_id,
             corporation.corporation.corporation_name,
         )
 
@@ -115,14 +112,14 @@ def run_tracker_alliance(alliance_id: int, killmail_id: int) -> None:
     """Run the tracker for the given killmail"""
     alliance = AlliancesAudit.objects.get(alliance__alliance_id=alliance_id)
     killmail = KillmailBody.get(killmail_id)
-    killmail_new = alliance.process_killmail(killmail)
-    if killmail_new:
+    valid_killmail = alliance.is_alliance(killmail)
+    if valid_killmail:
         Chain(
-            store_killmail.si(killmail.id),
+            store_killmail.si(killmail.killmail_id),
         ).delay()
         logger.debug(
             "%s: Start storing killmail for %s",
-            killmail.id,
+            killmail.killmail_id,
             alliance.alliance.alliance_name,
         )
 
@@ -178,112 +175,54 @@ def store_killmail(killmail_id: int) -> None:
         Killmail.objects.create_from_killmail(killmail)
     except IntegrityError:
         logger.debug(
-            "%s: Failed to store killmail, because it already exists", killmail.id
+            "%s: Failed to store killmail, because it already exists",
+            killmail.killmail_id,
         )
     else:
-        logger.debug("%s: Stored killmail", killmail.id)
+        logger.debug("%s: Stored killmail", killmail.killmail_id)
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
 def check_and_import_corporation_killmails_task(
     corporation_id: int, pages: int = 3
-) -> dict:
+) -> None:
     """
     Checks missing killmails for a corporation from zKillboard and directly imports them from the response data.
-    Also updates killmails with missing solar systems.
     """
-    missing_killmails = check_missing_killmails(
+    missing_killmails = Killmail.objects.check_missing_killmails(
         corporation_id=corporation_id, pages=pages
     )
-    if not missing_killmails:
-        logger.info("No missing killmails found for corporation %s", corporation_id)
-    else:
-        import_missing_killmails_from_zkb.delay(
-            missing_killmails=missing_killmails, corporation_id=corporation_id
-        )
+
+    imported_km = 0
+    for killmail in missing_killmails:
+        Killmail.objects.create_from_killmail(killmail)
+        imported_km += 1
+
+    logger.info(
+        "Imported %d missing killmails for corporation %s",
+        imported_km,
+        corporation_id,
+    )
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
-def check_and_import_alliance_killmails_task(alliance_id: int, pages: int = 3) -> dict:
+def check_and_import_alliance_killmails_task(alliance_id: int, pages: int = 3) -> None:
     """
     Checks missing killmails for an alliance from zKillboard and directly imports them from the response data.
-    Also updates killmails with missing solar systems.
     """
-    missing_killmails = check_missing_killmails(alliance_id=alliance_id, pages=pages)
-
-    if not missing_killmails:
-        logger.info("No missing killmails found for alliance %s", alliance_id)
-    else:
-        import_missing_killmails_from_zkb.delay(
-            missing_killmails=missing_killmails, alliance_id=alliance_id
-        )
-
-
-@shared_task(**TASK_DEFAULTS)
-def import_missing_killmails_from_zkb(
-    missing_killmails: list[dict],
-    corporation_id: int | None = None,
-    alliance_id: int | None = None,
-) -> dict:
-    """
-    Directly converts a list of raw zKB killmail dicts into KillmailBody objects
-    and creates them in the database via Killmail.objects.create_from_killmail.
-    Zero extra HTTP requests required.
-    """
-    imported = 0
-    skipped = 0
-    failed = 0
-
-    target = ""
-    if corporation_id:
-        target = f" for corporation {corporation_id}"
-    elif alliance_id:
-        target = f" for alliance {alliance_id}"
-
-    logger.info(
-        "Directly importing %d missing killmails%s...",
-        len(missing_killmails),
-        target,
+    missing_killmails = Killmail.objects.check_missing_killmails(
+        alliance_id=alliance_id, pages=pages
     )
 
-    for raw_data in missing_killmails:
-        km_id = None
-        try:
-            km_id = (
-                raw_data.get("killmail_id")
-                or raw_data.get("killID")
-                or (raw_data.get("killmail", {}).get("killmail_id"))
-            )
-            if not km_id:
-                failed += 1
-                continue
-
-            km_id = int(km_id)
-            if Killmail.objects.filter(killmail_id=km_id).exists():
-                skipped += 1
-                continue
-
-            killmail_body = KillmailBody.create_from_zkb_dict(raw_data)
-            if not killmail_body:
-                failed += 1
-                continue
-
-            killmail_body.save()
-            Killmail.objects.create_from_killmail(killmail_body)
-            imported += 1
-        except IntegrityError:
-            skipped += 1
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.error("Error importing killmail %s: %s", km_id, exc, exc_info=True)
-            failed += 1
+    imported_km = 0
+    for killmail in missing_killmails:
+        Killmail.objects.create_from_killmail(killmail)
+        imported_km += 1
 
     logger.info(
-        "Direct import finished%s: %d imported, %d skipped, %d failed out of %d total",
-        target,
-        imported,
-        skipped,
-        failed,
-        len(missing_killmails),
+        "Imported %d missing killmails for alliance %s",
+        imported_km,
+        alliance_id,
     )
 
 
@@ -308,8 +247,8 @@ def update_missing_solar_systems_task(
 
     runs = 0
     for km in killmails:
-        remaining = get_esi_killmail_bucket_remaining()
-        if remaining is not None and remaining <= min_reserve_tokens:
+        remaining = KillmailBody.get_esi_killmail_bucket_remaining()
+        if remaining <= min_reserve_tokens:
             logger.warning(
                 "ESI killmail bucket tokens (%d) at or below reserve (%d). "
                 "Stopping task early after updating %d killmails.",
@@ -334,10 +273,10 @@ def fetch_solar_system_id_for_killmail(
     Falls back to zKillboard API.
     """
     # 1. Check rate limit reserve in django-esi killmail bucket
-    remaining = get_esi_killmail_bucket_remaining()
+    remaining = KillmailBody.get_esi_killmail_bucket_remaining()
 
     # If the remaining tokens are below the minimum reserve, skip the ESI request to preserve the bucket.
-    if remaining is not None and remaining <= min_reserve_tokens:
+    if remaining <= min_reserve_tokens:
         return None
 
     # 2. Attempt to fetch from ESI using the Alliance Auth ESI client

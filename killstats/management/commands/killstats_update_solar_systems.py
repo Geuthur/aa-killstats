@@ -16,8 +16,7 @@ from allianceauth.services.hooks import get_extension_logger
 
 # AA Killstats
 from killstats import USER_AGENT_TEXT, __title__
-from killstats.helpers.killmail import KillmailBody
-from killstats.helpers.tasks import get_esi_killmail_bucket_remaining
+from killstats.helpers.killmailbody import KillmailBody
 from killstats.models.killboard import Killmail
 from killstats.providers import AppLogger, esi
 
@@ -167,15 +166,9 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f"Found {total_matching} killmail(s) matching criteria.")
 
-        current_tokens = get_esi_killmail_bucket_remaining()
-        if current_tokens is not None:
-            self.stdout.write(
-                f"ESI killmail bucket: {current_tokens} tokens remaining (reserve: {min_reserve})."
-            )
-        else:
-            self.stdout.write(
-                f"ESI killmail bucket: not initialized in cache (reserve threshold: {min_reserve})."
-            )
+        self.stdout.write(
+            f"ESI killmail bucket: {KillmailBody.get_esi_killmail_bucket_remaining()} tokens remaining (reserve: {min_reserve})."
+        )
 
         if dry_run:
             self.stdout.write(
@@ -193,8 +186,8 @@ class Command(BaseCommand):
         total_to_process = query.count()
 
         for idx, km in enumerate(query.iterator(), start=1):
-            remaining_tokens = get_esi_killmail_bucket_remaining()
-            if remaining_tokens is not None and remaining_tokens <= min_reserve:
+            remaining_tokens = KillmailBody.get_esi_killmail_bucket_remaining()
+            if remaining_tokens <= min_reserve:
                 self.stdout.write(
                     self.style.WARNING(
                         f"\n[RATE-LIMIT] ESI killmail bucket tokens ({remaining_tokens}) at or below reserve ({min_reserve}). "
@@ -249,7 +242,7 @@ class Command(BaseCommand):
                 time.sleep(sleep_interval)
 
         total_processed = updated_count + skipped_count + failed_count
-        final_tokens = get_esi_killmail_bucket_remaining()
+        final_tokens = Killmail.get_esi_killmail_bucket_remaining()
         tokens_info = (
             f" (ESI tokens remaining: {final_tokens})"
             if final_tokens is not None

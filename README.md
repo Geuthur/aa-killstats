@@ -80,7 +80,7 @@ To set up the Scheduled Tasks add following code to your `local.py`
 ```python
 if "killstats" in INSTALLED_APPS:
     CELERYBEAT_SCHEDULE["Killstats :: Check for Killmails"] = {
-        "task": "killstats.tasks.run_zkb_r2z2",
+        "task": "killstats.tasks.run_tracker_zkb",
         "schedule": crontab(minute="*/1"),
     }
     CELERYBEAT_SCHEDULE["Killstats :: Check for Missing Killmail Data"] = {

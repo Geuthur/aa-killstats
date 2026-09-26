@@ -1,8 +1,15 @@
 # Standard Library
 import socket
+from unittest.mock import Mock
 
 # Django
-from django.test import TestCase
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.handlers.wsgi import WSGIRequest
+from django.test import RequestFactory, TestCase
+
+# AA Killstats
+from killstats.tests.testdata.killstats import UserMainFactory
 
 
 class SocketAccessError(Exception):
@@ -35,3 +42,29 @@ class NoSocketsTestCase(TestCase):
     @staticmethod
     def guard(*args, **kwargs):
         raise SocketAccessError("Attempted to access network")
+
+
+class AuthTestCase(NoSocketsTestCase):
+    """Base test case for authentication-related tests that prevents network access."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        # Request Factory
+        cls.factory = RequestFactory()
+
+        # User with Standard Access
+        cls.user = UserMainFactory()
+
+        # User with Superuser Access
+        cls.superuser = UserMainFactory()
+        cls.superuser.is_superuser = True
+        cls.superuser.save()
+
+    def _middleware_process_request(self, request: WSGIRequest):
+        """Helper method to process middleware for a request."""
+        session_middleware = SessionMiddleware(Mock())
+        session_middleware.process_request(request)
+        message_middleware = MessageMiddleware(Mock())
+        message_middleware.process_request(request)

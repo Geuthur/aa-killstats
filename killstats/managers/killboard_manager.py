@@ -1,7 +1,15 @@
 """Managers for killboard."""
 
 # Standard Library
+import time
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
+
+# Third Party
+import requests
+
+# Pydantic
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 # Django
 from django.db import models, transaction
@@ -11,17 +19,65 @@ from eve_sde.models import ItemType
 
 if TYPE_CHECKING:
     # AA Killstats
-    from killstats.helpers.killmail import KillmailBody
+    from killstats.helpers.killmailbody import (
+        KillmailBody,
+        KillmailAttacker,
+        KillmailVictim,
+        zKBKillmail,
+        esiKillmail,
+    )
     from killstats.models.killboard import Killmail as KillmailContext
 
 # Alliance Auth
 from allianceauth.services.hooks import get_extension_logger
 
 # AA Killstats
-from killstats import __title__
+from killstats import USER_AGENT_TEXT, __title__, app_settings
 from killstats.providers import AppLogger
 
 logger = AppLogger(get_extension_logger(__name__), __title__)
+
+
+class zKBWebKillmail(BaseModel):  # pylint: disable=invalid-name
+    """Helper class for interacting with the zKillboard API."""
+
+    attackers: list["KillmailAttacker"]
+    killmail_id: int
+    killmail_time: datetime
+    solar_system_id: int
+    victim: "KillmailVictim"
+    zkb: "zKBKillmail"
+
+    @property
+    def create_esi_killmail(self) -> "esiKillmail":
+        """Creates a esiKillmail compatible object from the zKBWebKillmail instance."""
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.helpers.killmailbody import esiKillmail
+
+        return esiKillmail(
+            attackers=self.attackers,
+            killmail_id=self.killmail_id,
+            killmail_time=self.killmail_time,
+            solar_system_id=self.solar_system_id,
+            victim=self.victim,
+        )
+
+    def convert_to_killmail_body(self) -> "KillmailBody":
+        """Convert the zKBWebKillmail instance as a KillmailBody object."""
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.helpers.killmailbody import KillmailBody
+
+        return KillmailBody(
+            killmail_id=self.killmail_id,
+            hash=self.zkb.hash,
+            esi=self.create_esi_killmail,
+            zkb=self.zkb,
+        )
+
+
+zKBWebKillmailAdapter = TypeAdapter(list[zKBWebKillmail])
 
 
 class KillmailQueryCore(models.QuerySet):
@@ -153,6 +209,81 @@ class KillmailManager(models.Manager["KillmailContext"]):
     def filter_structure(self, exclude=False):
         return self.get_queryset().filter_structure(exclude=exclude)
 
+    # pylint: disable=too-many-locals
+    def check_missing_killmails(
+        self,
+        corporation_id: int | None = None,
+        alliance_id: int | None = None,
+        pages: int = 3,
+        delay_between_pages: float = 1.0,
+    ) -> list["KillmailBody"]:
+        """
+        Fetch up to `pages` from zKillboard for corporation_id and/or alliance_id and compare against database.
+        Pre-caches missing killmails as KillmailBody objects.
+
+        Args:
+            corporation_id: The ID of the corporation to fetch killmails for.
+            alliance_id: The ID of the alliance to fetch killmails for.
+            pages: The number of pages to fetch from zKillboard.
+            delay_between_pages: The delay between fetching each page, in seconds.
+
+        Returns:
+            A list of KillmailBody objects representing the missing killmails.
+        """
+        if not corporation_id and not alliance_id:
+            raise ValueError("Either corporation_id or alliance_id must be provided.")
+
+        path_parts = []
+        if corporation_id:
+            path_parts.append(f"corporationID/{corporation_id}")
+        if alliance_id:
+            path_parts.append(f"allianceID/{alliance_id}")
+
+        base_path = "/".join(path_parts) + "/"
+
+        all_killmail_ids = set()
+        killmail_bodies: dict[int, KillmailBody] = {}
+        pages_fetched = 0
+        headers = {"User-Agent": USER_AGENT_TEXT, "Content-Type": "application/json"}
+
+        for page in range(1, max(1, pages) + 1):
+            if page > 1 and delay_between_pages > 0:
+                time.sleep(delay_between_pages)
+
+            try:
+                url = f"{app_settings.ZKILLBOARD_API_URL}{base_path}page/{page}/"
+                response = requests.get(url, headers=headers, timeout=15)
+                response.raise_for_status()
+                # Validate and parse the response JSON into a list of zKBWebKillmail objects.
+                killmails: list[zKBWebKillmail] = zKBWebKillmailAdapter.validate_python(
+                    response.json()
+                )
+            except (ValidationError, requests.RequestException) as exc:
+                logger.error(
+                    "Error fetching zKillboard page %s in check_missing: %s",
+                    page,
+                    exc,
+                    exc_info=True,
+                )
+                break
+
+            for km in killmails:
+                # Add the killmail ID to the set of all killmail IDs and store the raw killmail data by ID.
+                all_killmail_ids.add(km.killmail_id)
+                killmail_bodies[km.killmail_id] = km.convert_to_killmail_body()
+            pages_fetched += 1
+
+        # Determine which killmail IDs are already present in the database.
+        existing_ids = set(
+            self.filter(killmail_id__in=all_killmail_ids).values_list(
+                "killmail_id", flat=True
+            )
+        )
+
+        # Determine which killmail IDs are missing from the database.
+        missing_ids = sorted(list(all_killmail_ids - existing_ids), reverse=True)
+        return [killmail_bodies[km_id] for km_id in missing_ids]
+
     def create_from_killmail(self, killmail_body: "KillmailBody"):
         """create a new EveKillmail from a Killmail object and returns it"""
         # AA Killstats
@@ -162,25 +293,25 @@ class KillmailManager(models.Manager["KillmailContext"]):
         with transaction.atomic():
             attackers_list = []
 
-            corporation_id = killmail_body.victim.corporation_id
-            region_id = killmail_body.get_region_id(killmail_body.solar_system_id)
-            victim_ship = ItemType.objects.get(id=killmail_body.victim.ship_type_id)
+            corporation_id = killmail_body.esi.victim.corporation_id
+            region_id = killmail_body.get_region_id(killmail_body.esi.solar_system_id)
+            victim_ship = ItemType.objects.get(id=killmail_body.esi.victim.ship_type_id)
             victim = None
 
-            if killmail_body.victim.character_id:
+            if killmail_body.esi.victim.character_id:
                 victim = killmail_body.get_or_create_entity(
-                    killmail_body.victim.character_id
+                    killmail_body.esi.victim.character_id
                 )
-            elif killmail_body.victim.alliance_id:
+            elif killmail_body.esi.victim.alliance_id:
                 victim = killmail_body.get_or_create_entity(
-                    killmail_body.victim.alliance_id
+                    killmail_body.esi.victim.alliance_id
                 )
-            elif killmail_body.victim.corporation_id:
+            elif killmail_body.esi.victim.corporation_id:
                 victim = killmail_body.get_or_create_entity(
-                    killmail_body.victim.corporation_id
+                    killmail_body.esi.victim.corporation_id
                 )
 
-            for attacker in killmail_body.attackers:
+            for attacker in killmail_body.esi.attackers:
                 if attacker.character_id:
                     attackers_list.append(attacker.character_id)
 
@@ -193,22 +324,22 @@ class KillmailManager(models.Manager["KillmailContext"]):
                     logger.debug("Error on Create Names: %s", e, exc_info=True)
 
             km = Killmail.objects.create(
-                killmail_id=killmail_body.id,
-                killmail_date=killmail_body.time,
+                killmail_id=killmail_body.esi.killmail_id,
+                killmail_date=killmail_body.esi.killmail_time,
                 victim=victim,
                 victim_ship=victim_ship,
                 victim_corporation_id=corporation_id,
-                victim_alliance_id=killmail_body.victim.alliance_id,
+                victim_alliance_id=killmail_body.esi.victim.alliance_id,
                 hash=killmail_body.zkb.hash,
-                victim_total_value=killmail_body.zkb.total_value,
-                victim_fitted_value=killmail_body.zkb.fitted_value,
-                victim_destroyed_value=killmail_body.zkb.destroyed_value,
-                victim_dropped_value=killmail_body.zkb.dropped_value,
+                victim_total_value=killmail_body.zkb.totalValue,
+                victim_fitted_value=killmail_body.zkb.fittedValue,
+                victim_destroyed_value=killmail_body.zkb.destroyedValue,
+                victim_dropped_value=killmail_body.zkb.droppedValue,
                 victim_region_id=region_id,
-                victim_solar_system_id=killmail_body.solar_system_id,
-                victim_position_x=killmail_body.position.x,
-                victim_position_y=killmail_body.position.y,
-                victim_position_z=killmail_body.position.z,
+                victim_solar_system_id=killmail_body.esi.solar_system_id,
+                victim_position_x=killmail_body.esi.victim.position.x,
+                victim_position_y=killmail_body.esi.victim.position.y,
+                victim_position_z=killmail_body.esi.victim.position.z,
             )
 
             killmail_body.get_or_create_attackers(km, killmail_body)
@@ -221,7 +352,7 @@ class KillmailManager(models.Manager["KillmailContext"]):
         """Update or create new EveKillmail from a Killmail object."""
         with transaction.atomic():
             try:
-                self.get(killmail_id=killmail.id).delete()
+                self.get(killmail_id=killmail.killmail_id).delete()
                 created = False
             except self.model.DoesNotExist:
                 created = True

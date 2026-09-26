@@ -9,8 +9,8 @@ KILLSTATS_APP_NAME = getattr(settings, "KILLSTATS_APP_NAME", "Killstats")
 # zKillboard - https://zkillboard.com/
 ZKILLBOARD_BASE_URL = "https://zkillboard.com/"
 ZKILLBOARD_API_URL = "https://zkillboard.com/api/"
-ZKILLBOARD_R2Z2_URL = "https://r2z2.zkillboard.com/ephemeral/"
-ZKILLBOARD_R2Z2_SEQUENCE_URL = "https://r2z2.zkillboard.com/ephemeral/sequence.json"
+ZKILLBOARD_URL = "https://r2z2.zkillboard.com/ephemeral/"
+ZKILLBOARD_SEQUENCE_URL = "https://r2z2.zkillboard.com/ephemeral/sequence.json"
 
 ZKILLBOARD_BASE_URL_REGEX = r"^http[s]?:\/\/zkillboard\.com\/"
 ZKILLBOARD_KILLMAIL_URL_REGEX = r"^http[s]?:\/\/zkillboard\.com\/kill\/\d+\/"

@@ -3,6 +3,7 @@
 # Django
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.functions import ExtractYear
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
@@ -16,24 +17,11 @@ from allianceauth.eveonline.models import (
 from allianceauth.services.hooks import get_extension_logger
 from esi.decorators import token_required
 
-# Fix AAv5 Test
-try:
-    # V5.#
-    # Alliance Auth
-    from allianceauth.eveonline.providers import open_api_provider as provider
-except ImportError:
-    # V4.#
-    from allianceauth.eveonline.providers import provider
-
-
 # AA Killstats
 from killstats import __title__
-from killstats.forms import SingleKillmail
-from killstats.helpers.killmail import KillmailBody
 from killstats.models.killboard import Killmail
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.providers import AppLogger
-from killstats.tasks import store_killmail
 
 logger = AppLogger(get_extension_logger(__name__), __title__)
 
@@ -147,28 +135,17 @@ def add_alliance(request, token):
         return redirect("killstats:index")
 
     try:
-        ally_data = provider.get_alliance(char.alliance_id)
-        if ally_data.executor_corp_id and ally_data.executor_corp_id < 10_000_000:
-            msg = _("Cannot add Alliance belonging to an NPC Corporation")
-            messages.error(request, msg)
-            return redirect("killstats:index")
-
-        alliance = EveAllianceInfo.objects.get_or_create(
-            alliance_id=ally_data.id,
-            defaults={
-                "alliance_name": ally_data.name,
-                "alliance_ticker": ally_data.ticker,
-                "executor_corp_id": ally_data.executor_corp_id,
-            },
-        )[0]
+        alliance = EveAllianceInfo.objects.get(
+            alliance_id=char.alliance_id,
+        )
         audit = AlliancesAudit.objects.update_or_create(alliance=alliance, owner=char)[
             0
         ]
         msg = _("{alliance_name} successfully added/updated to Killstats").format(
             alliance_name=audit.alliance.alliance_name,
         )
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        msg = _("Failed to fetch Alliance data for {alliance_name}").format(
+    except ObjectDoesNotExist as exc:  # pylint: disable=broad-exception-caught
+        msg = _("Alliance {alliance_name} could not be found in Alliance Auth").format(
             alliance_name=char.alliance_name,
         )
         messages.warning(request, msg)
@@ -205,47 +182,3 @@ def alliance_admin(request):
         "title": "Alliance Overview",
     }
     return render(request, "killstats/admin/alliance_admin.html", context=context)
-
-
-@login_required
-@permission_required("killstats.basic_access")
-def add_killmail(request):
-    """
-    Test
-    """
-    context = {
-        "title": "Test",
-        "forms": {
-            "single_killmail": SingleKillmail(),
-        },
-    }
-    form = SingleKillmail(request.POST)
-
-    if form.is_valid():
-        killmail_id = int(form.cleaned_data["killmail_id"])
-
-        try:
-            killmail = Killmail.objects.get(killmail_id=killmail_id)
-            messages.error(
-                request,
-                _(
-                    "Killmail {killmail_id} already exists. "
-                    "Please check the killmail ID and try again."
-                ).format(killmail_id=killmail_id),
-            )
-            return render(request, "killstats/killmail_add.html", context=context)
-        except Killmail.DoesNotExist:
-            killmail = KillmailBody.get_single_killmail(killmail_id)
-            killmail.save()
-
-            killmail = KillmailBody.get(killmail_id)
-
-            if killmail:
-                store_killmail.apply_async((killmail.id,))
-                messages.success(
-                    request,
-                    _("Killmail {killmail_id} has been added to Killstats.").format(
-                        killmail_id=killmail_id
-                    ),
-                )
-    return render(request, "killstats/killmail_add.html", context=context)
