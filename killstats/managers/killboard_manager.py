@@ -2,14 +2,13 @@
 
 # Standard Library
 import time
-from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 # Third Party
 import requests
 
 # Pydantic
-from pydantic import BaseModel, TypeAdapter, ValidationError
+from pydantic import ValidationError
 
 # Django
 from django.db import models, transaction
@@ -17,67 +16,17 @@ from django.db import models, transaction
 # Alliance Auth (External Libs)
 from eve_sde.models import ItemType
 
+# AA Killstats
+from killstats.helpers.killmailbody import KillmailBody, zKBWebKillmail
+
 if TYPE_CHECKING:
     # AA Killstats
-    from killstats.helpers.killmailbody import (
-        KillmailBody,
-        KillmailAttacker,
-        KillmailVictim,
-        zKBKillmail,
-        esiKillmail,
-    )
     from killstats.models.killboard import Killmail as KillmailContext
 
-# Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
 
 # AA Killstats
 from killstats import USER_AGENT_TEXT, __title__, app_settings
-from killstats.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
-
-
-class zKBWebKillmail(BaseModel):  # pylint: disable=invalid-name
-    """Helper class for interacting with the zKillboard API."""
-
-    attackers: list["KillmailAttacker"]
-    killmail_id: int
-    killmail_time: datetime
-    solar_system_id: int
-    victim: "KillmailVictim"
-    zkb: "zKBKillmail"
-
-    @property
-    def create_esi_killmail(self) -> "esiKillmail":
-        """Creates a esiKillmail compatible object from the zKBWebKillmail instance."""
-        # pylint: disable=import-outside-toplevel
-        # AA Killstats
-        from killstats.helpers.killmailbody import esiKillmail
-
-        return esiKillmail(
-            attackers=self.attackers,
-            killmail_id=self.killmail_id,
-            killmail_time=self.killmail_time,
-            solar_system_id=self.solar_system_id,
-            victim=self.victim,
-        )
-
-    def convert_to_killmail_body(self) -> "KillmailBody":
-        """Convert the zKBWebKillmail instance as a KillmailBody object."""
-        # pylint: disable=import-outside-toplevel
-        # AA Killstats
-        from killstats.helpers.killmailbody import KillmailBody
-
-        return KillmailBody(
-            killmail_id=self.killmail_id,
-            hash=self.zkb.hash,
-            esi=self.create_esi_killmail,
-            zkb=self.zkb,
-        )
-
-
-zKBWebKillmailAdapter = TypeAdapter(list[zKBWebKillmail])
+from killstats.providers import logger
 
 
 class KillmailQueryCore(models.QuerySet):
@@ -216,7 +165,7 @@ class KillmailManager(models.Manager["KillmailContext"]):
         alliance_id: int | None = None,
         pages: int = 3,
         delay_between_pages: float = 1.0,
-    ) -> list["KillmailBody"]:
+    ) -> list[KillmailBody]:
         """
         Fetch up to `pages` from zKillboard for corporation_id and/or alliance_id and compare against database.
         Pre-caches missing killmails as KillmailBody objects.
@@ -255,9 +204,11 @@ class KillmailManager(models.Manager["KillmailContext"]):
                 response = requests.get(url, headers=headers, timeout=15)
                 response.raise_for_status()
                 # Validate and parse the response JSON into a list of zKBWebKillmail objects.
-                killmails: list[zKBWebKillmail] = zKBWebKillmailAdapter.validate_python(
-                    response.json()
-                )
+                killmails: list[zKBWebKillmail] = []
+                zkb_mails = response.json()
+                for zkb_mail in zkb_mails:
+
+                    killmails.append(zKBWebKillmail.model_validate(zkb_mail))
             except (ValidationError, requests.RequestException) as exc:
                 logger.error(
                     "Error fetching zKillboard page %s in check_missing: %s",
@@ -284,7 +235,7 @@ class KillmailManager(models.Manager["KillmailContext"]):
         missing_ids = sorted(list(all_killmail_ids - existing_ids), reverse=True)
         return [killmail_bodies[km_id] for km_id in missing_ids]
 
-    def create_from_killmail(self, killmail_body: "KillmailBody"):
+    def create_from_killmail(self, killmail_body: KillmailBody):
         """create a new EveKillmail from a Killmail object and returns it"""
         # AA Killstats
         # pylint: disable=import-outside-toplevel
@@ -347,7 +298,7 @@ class KillmailManager(models.Manager["KillmailContext"]):
         return km
 
     def update_or_create_from_killmail(
-        self, killmail: "KillmailBody"
+        self, killmail: KillmailBody
     ) -> tuple[Any, bool]:
         """Update or create new EveKillmail from a Killmail object."""
         with transaction.atomic():

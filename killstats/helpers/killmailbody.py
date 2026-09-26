@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 # Third Party
 import requests
@@ -20,8 +20,11 @@ from eve_sde.models import ItemType, SolarSystem
 
 # AA Killstats
 from killstats import USER_AGENT_TEXT, __title__, app_settings, constants
-from killstats.models import Attacker, EveEntity, Killmail
 from killstats.providers import logger
+
+if TYPE_CHECKING:
+    # AA Killstats
+    from killstats.models import EveEntity, Killmail
 
 
 class KillboardException(Exception):
@@ -360,20 +363,28 @@ class KillmailBody(BaseModel):
         Returns True if any EveEntity objects were created, False otherwise.
         """
         if len(eve_ids) > 0:
+            # pylint: disable=import-outside-toplevel
+            # AA Killstats
+            from killstats.models import EveEntity
+
             EveEntity.objects.create_bulk_from_esi(eve_ids)
             return True
         return False
 
     @staticmethod
-    def get_or_create_entity(eve_id: int) -> EveEntity:
+    def get_or_create_entity(eve_id: int) -> "EveEntity":
         """Get or create an entity from Eve ID."""
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models import EveEntity
+
         entity, new_entry = EveEntity.objects.get_or_create_esi(eve_id=eve_id)
         if new_entry:
             logger.debug("Killstats Manager EveName: %s added", entity.name)
         return entity
 
     @staticmethod
-    def get_region_id(solar_system_id: int) -> int:
+    def get_region_id(solar_system_id: int) -> int | None:
         """Get or create region ID from solar system ID."""
         try:
             solar_system = SolarSystem.objects.get(id=solar_system_id)
@@ -383,9 +394,13 @@ class KillmailBody(BaseModel):
         return region_id.id
 
     def get_or_create_attackers(
-        self, killmail: Killmail, killmail_body: "KillmailBody"
+        self, killmail: "Killmail", killmail_body: "KillmailBody"
     ):
         """Get or create attackers for a given killmail from the killmail body."""
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models import Attacker
+
         attacker_list = []
         for attacker in killmail_body.esi.attackers:
             character = None
@@ -419,3 +434,34 @@ class KillmailBody(BaseModel):
         # Bulk create all attacker objects to optimize database operations.
         Attacker.objects.bulk_create(attacker_list, ignore_conflicts=True)
         return True
+
+
+class zKBWebKillmail(BaseModel):  # pylint: disable=invalid-name
+    """Helper class for interacting with the zKillboard API."""
+
+    attackers: list[KillmailAttacker] = []
+    killmail_id: int
+    killmail_time: datetime
+    solar_system_id: int
+    victim: KillmailVictim | None = None
+    zkb: zKBKillmail | None = None
+
+    @property
+    def create_esi_killmail(self) -> esiKillmail:
+        """Creates a esiKillmail compatible object from the zKBWebKillmail instance."""
+        return esiKillmail(
+            attackers=self.attackers,
+            killmail_id=self.killmail_id,
+            killmail_time=self.killmail_time,
+            solar_system_id=self.solar_system_id,
+            victim=self.victim,
+        )
+
+    def convert_to_killmail_body(self) -> KillmailBody:
+        """Convert the zKBWebKillmail instance as a KillmailBody object."""
+        return KillmailBody(
+            killmail_id=self.killmail_id,
+            hash=self.zkb.hash if self.zkb and self.zkb.hash else "",
+            esi=self.create_esi_killmail,
+            zkb=self.zkb,
+        )
