@@ -242,7 +242,7 @@ class Command(BaseCommand):
                 time.sleep(sleep_interval)
 
         total_processed = updated_count + skipped_count + failed_count
-        final_tokens = Killmail.get_esi_killmail_bucket_remaining()
+        final_tokens = KillmailBody.get_esi_killmail_bucket_remaining()
         tokens_info = (
             f" (ESI tokens remaining: {final_tokens})"
             if final_tokens is not None

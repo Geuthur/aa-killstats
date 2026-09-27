@@ -192,14 +192,14 @@ class KillmailBody(_KillmailBodyBase):
 
     @staticmethod
     def get_esi_killmail_bucket_remaining() -> int:
-        """Return remaining tokens in django-esi 'killmail' bucket from cache, or 0 if not initialized."""
+        """Return remaining tokens in django-esi 'killmail' bucket from cache, or 1200 if not initialized (full bucket)."""
         val = cache.get("esi:bucket:killmail")
         if val is not None:
             try:
                 return int(val)
             except (ValueError, TypeError):
                 pass
-        return 0
+        return 1200
 
     @staticmethod
     def _rate_limit() -> bool:

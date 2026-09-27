@@ -52,6 +52,7 @@ if "killstats" in INSTALLED_APPS:
 
 ### Added
 
+- Test suite for management commands in `test_commands.py` (`killstats_delete_npc_killmails`, `killstats_update_solar_systems`, `killstats_migrate_eveentity`).
 - Model and serialization methods (`to_model`, `as_model`, `to_json`, `to_dict`, `as_json`, `as_dict`) across test factories via `BasePydanticFactory` and `BaseDjangoModelFactory`, typed with `BaseMetaFactory[T]` for full IDE autocompletion, plus `.as_dict()`, `.to_dict()`, `.as_json()`, `.to_json()` and convenience attribute properties (`id`, `killmail_time`, `solar_system_id`, `victim`, `attackers`) on `KillmailBody` and `zKBWebKillmail`.
 - Pydantic v2 `zKBWebKillmail` schema and `TypeAdapter` validation for zKillboard API responses in `helpers.tasks`.
 - Agent development, testing, API, and git commit guidelines in `.agents/rules/`.
@@ -67,6 +68,7 @@ if "killstats" in INSTALLED_APPS:
 
 ### Fixed
 
+- Fixed `test_add_alliance` view test by removing broken `EveAllianceInfo.objects.get_or_create` mock and ensuring isolated character setup.
 - Fixed Create NPC Corporation/Alliance Tracking
 - AttributeError in Permission Model since AAv5.2
 
