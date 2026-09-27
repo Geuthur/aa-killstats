@@ -52,6 +52,7 @@ if "killstats" in INSTALLED_APPS:
 
 ### Added
 
+- Unit test suite for Celery tasks in `killstats/tests/test_tasks.py`.
 - Unit test suite for core helpers (`JSONDateTimeEncoder`, `JSONDateTimeDecoder`, `get_redis_client`) in `killstats/tests/helpers/test_core.py`.
 - Unit test suite for API helper utilities (`set_cache_key`, `cache_sytem`, `get_unique_id`, `get_entities`, `get_killmails_data`, `get_killstats_halls`, `get_top_10`) in `killstats/tests/api/test_api_helper.py`.
 - Unit test suite for `KillmailManager` and querysets in `killstats/tests/test_managers/test_killboard_manager.py`.
@@ -81,6 +82,7 @@ if "killstats" in INSTALLED_APPS:
 
 ### Fixed
 
+- Handled `IntegrityError` (duplicate key on `hash` or `killmail_id`) in `check_and_import_corporation_killmails_task` and `check_and_import_alliance_killmails_task` caused by concurrent task execution, and enhanced `check_missing_killmails` to filter out existing hashes in addition to IDs.
 - Fixed `test_add_alliance` view test by removing broken `EveAllianceInfo.objects.get_or_create` mock and ensuring isolated character setup.
 - Fixed Create NPC Corporation/Alliance Tracking
 - AttributeError in Permission Model since AAv5.2

@@ -170,16 +170,16 @@ def run_tracker_missing_data(pages: int = 3, batch_size: int = 200) -> None:
 @shared_task(**TASK_DEFAULTS_ONCE_GRACE)
 def store_killmail(killmail_id: int) -> None:
     """stores killmail as EveKillmail object"""
-    killmail = KillmailBody.get(killmail_id)
+    killmail_body = KillmailBody.get(killmail_id)
     try:
-        Killmail.objects.create_from_killmail(killmail)
+        Killmail.objects.create_from_killmail(killmail_body)
     except IntegrityError:
         logger.debug(
             "%s: Failed to store killmail, because it already exists",
-            killmail.killmail_id,
+            killmail_body.killmail_id,
         )
     else:
-        logger.debug("%s: Stored killmail", killmail.killmail_id)
+        logger.debug("%s: Stored killmail", killmail_body.killmail_id)
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
@@ -195,8 +195,14 @@ def check_and_import_corporation_killmails_task(
 
     imported_km = 0
     for killmail in missing_killmails:
-        Killmail.objects.create_from_killmail(killmail)
-        imported_km += 1
+        try:
+            Killmail.objects.create_from_killmail(killmail)
+            imported_km += 1
+        except IntegrityError:
+            logger.debug(
+                "%s: Killmail already exists, skipping",
+                killmail.esi.killmail_id,
+            )
 
     logger.info(
         "Imported %d missing killmails for corporation %s",
@@ -216,8 +222,14 @@ def check_and_import_alliance_killmails_task(alliance_id: int, pages: int = 3) -
 
     imported_km = 0
     for killmail in missing_killmails:
-        Killmail.objects.create_from_killmail(killmail)
-        imported_km += 1
+        try:
+            Killmail.objects.create_from_killmail(killmail)
+            imported_km += 1
+        except IntegrityError:
+            logger.debug(
+                "%s: Killmail already exists, skipping",
+                killmail.esi.killmail_id,
+            )
 
     logger.info(
         "Imported %d missing killmails for alliance %s",

@@ -179,6 +179,10 @@ class KillmailManager(models.Manager["KillmailContext"]):
         Returns:
             A list of KillmailBody objects representing the missing killmails.
         """
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models import Killmail
+
         if not corporation_id and not alliance_id:
             raise ValueError("Either corporation_id or alliance_id must be provided.")
 
@@ -226,7 +230,7 @@ class KillmailManager(models.Manager["KillmailContext"]):
 
         # Determine which killmail IDs are already present in the database.
         existing_ids = set(
-            self.filter(killmail_id__in=all_killmail_ids).values_list(
+            Killmail.objects.filter(killmail_id__in=all_killmail_ids).values_list(
                 "killmail_id", flat=True
             )
         )
