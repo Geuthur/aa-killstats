@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 # Third Party
 import requests
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 # Django
 from django.core.cache import cache
@@ -62,7 +62,7 @@ class _KillmailBodyBase(BaseModel):
 
 
 class KillmailPosition(BaseModel):
-    "A position for a killmail."
+    """A position for a killmail."""
 
     x: float | None = None
     y: float | None = None
@@ -90,7 +90,7 @@ class KillmailVictim(_KillmailCharacter):
     """A victim on a killmail."""
 
     items: list[KillmailItems] = []
-    position: KillmailPosition | None = None
+    position: KillmailPosition | None = Field(default_factory=KillmailPosition)
     damage_taken: int | None = None
 
 
