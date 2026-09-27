@@ -41,6 +41,26 @@ class Sequence(BaseModel):
     sequence: int
 
 
+class _KillmailBodyBase(BaseModel):
+    """Base class for killmail body representations."""
+
+    def as_dict(self) -> dict:
+        """Return the killmail body as a JSON-serializable dictionary."""
+        return self.model_dump(mode="json")
+
+    def to_dict(self) -> dict:
+        """Alias for as_dict."""
+        return self.as_dict()
+
+    def as_json(self) -> str:
+        """Return the killmail body as a JSON string."""
+        return self.model_dump_json()
+
+    def to_json(self) -> str:
+        """Alias for as_json."""
+        return self.as_json()
+
+
 class KillmailPosition(BaseModel):
     "A position for a killmail."
 
@@ -112,7 +132,7 @@ class zKBKillmail(BaseModel):  # pylint: disable=invalid-name
     href: str | None = None
 
 
-class KillmailBody(BaseModel):
+class KillmailBody(_KillmailBodyBase):
     """A detailed representation of a killmail body."""
 
     _STORAGE_BASE_KEY: ClassVar[str] = "aakillstats_storage_"
@@ -130,6 +150,31 @@ class KillmailBody(BaseModel):
 
     def __repr__(self) -> str:
         return f"<KillmailBody id={self.killmail_id} time={self.esi.killmail_time} solar_system_id={self.esi.solar_system_id} moon_id={self.moon_id} war_id={self.war_id}>"
+
+    @property
+    def id(self) -> int:
+        """Return the killmail ID."""
+        return self.killmail_id
+
+    @property
+    def killmail_time(self) -> datetime:
+        """Return the killmail time from ESI data."""
+        return self.esi.killmail_time
+
+    @property
+    def solar_system_id(self) -> int:
+        """Return the solar system ID from ESI data."""
+        return self.esi.solar_system_id
+
+    @property
+    def victim(self) -> KillmailVictim | None:
+        """Return the victim from ESI data."""
+        return self.esi.victim
+
+    @property
+    def attackers(self) -> list[KillmailAttacker]:
+        """Return the attackers list from ESI data."""
+        return self.esi.attackers or []
 
     def attackers_distinct_alliance_ids(self) -> set[int]:
         return {
@@ -456,6 +501,27 @@ class zKBWebKillmail(BaseModel):  # pylint: disable=invalid-name
             solar_system_id=self.solar_system_id,
             victim=self.victim,
         )
+
+    @property
+    def id(self) -> int:
+        """Return the killmail ID."""
+        return self.killmail_id
+
+    def as_dict(self) -> dict:
+        """Return the web killmail as a JSON-serializable dictionary."""
+        return self.model_dump(mode="json")
+
+    def to_dict(self) -> dict:
+        """Alias for as_dict."""
+        return self.as_dict()
+
+    def as_json(self) -> str:
+        """Return the web killmail as a JSON string."""
+        return self.model_dump_json()
+
+    def to_json(self) -> str:
+        """Alias for as_json."""
+        return self.as_json()
 
     def convert_to_killmail_body(self) -> KillmailBody:
         """Convert the zKBWebKillmail instance as a KillmailBody object."""

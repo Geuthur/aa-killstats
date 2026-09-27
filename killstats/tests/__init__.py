@@ -8,6 +8,9 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.handlers.wsgi import WSGIRequest
 from django.test import RequestFactory, TestCase
 
+# Alliance Auth
+from allianceauth.authentication.models import User
+
 # AA Killstats
 from killstats.tests.testdata.killstats import UserMainFactory
 
@@ -55,10 +58,10 @@ class AuthTestCase(NoSocketsTestCase):
         cls.factory = RequestFactory()
 
         # User with Standard Access
-        cls.user = UserMainFactory()
+        cls.user: User = UserMainFactory()
 
         # User with Superuser Access
-        cls.superuser = UserMainFactory()
+        cls.superuser: User = UserMainFactory()
         cls.superuser.is_superuser = True
         cls.superuser.save()
 

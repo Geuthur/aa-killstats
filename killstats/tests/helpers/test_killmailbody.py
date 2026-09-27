@@ -2,6 +2,9 @@
 from datetime import timedelta
 from unittest.mock import Mock, patch
 
+# Third Party
+from pydantic import ValidationError
+
 # Django
 from django.core.cache import cache
 from django.test import override_settings
@@ -12,7 +15,9 @@ from killstats import __title__
 from killstats.constants import LAST_REQUEST_KEY, RETRY_AFTER_KEY
 from killstats.helpers.killmailbody import KillmailBody
 from killstats.tests import NoSocketsTestCase
+from killstats.tests.testdata.killstats import KillmailBodyFactory
 
+APP_SETTINGS_PATH = "killstats.app_settings"
 MODULE_PATH = "killstats.helpers.killmailbody"
 
 
@@ -48,8 +53,8 @@ class TestKillmailHelper(NoSocketsTestCase):
         cache.set(LAST_REQUEST_KEY, last_request.isoformat())
         # Test Action
         with (
-            patch(MODULE_PATH + ".KILLSTATS_MAX_ZKB_PER_SEC", 2),
-            patch(MODULE_PATH + ".KILLSTATS_ZKB_RATE_TIMEOUT", 0.5),
+            patch(APP_SETTINGS_PATH + ".KILLSTATS_MAX_ZKB_PER_SEC", 2),
+            patch(APP_SETTINGS_PATH + ".KILLSTATS_ZKB_RATE_TIMEOUT", 0.5),
             patch(MODULE_PATH + ".timezone.now", return_value=now),
         ):
             result = KillmailBody._rate_limit()
@@ -66,8 +71,8 @@ class TestKillmailHelper(NoSocketsTestCase):
         cache.set(LAST_REQUEST_KEY, last_request.isoformat())
         # Test Action
         with (
-            patch(MODULE_PATH + ".KILLSTATS_MAX_ZKB_PER_SEC", 2),
-            patch(MODULE_PATH + ".KILLSTATS_ZKB_RATE_TIMEOUT", 0.2),
+            patch(APP_SETTINGS_PATH + ".KILLSTATS_MAX_ZKB_PER_SEC", 2),
+            patch(APP_SETTINGS_PATH + ".KILLSTATS_ZKB_RATE_TIMEOUT", 0.2),
             patch(MODULE_PATH + ".timezone.now", return_value=now),
         ):
             result = KillmailBody._rate_limit()
@@ -78,7 +83,7 @@ class TestKillmailHelper(NoSocketsTestCase):
 
     @patch(MODULE_PATH + ".requests.get")
     @patch.object(KillmailBody, "_rate_limit", return_value=False)
-    def test_should_return_none_from_r2z2_when_rate_limited(
+    def test_should_return_none_from_sequence_when_rate_limited(
         self, _mock_rate_limit, mock_requests_get
     ):
         # Test Action
@@ -91,7 +96,7 @@ class TestKillmailHelper(NoSocketsTestCase):
     @patch(MODULE_PATH + ".requests.get")
     @patch.object(KillmailBody, "_too_many_requests_delay", return_value=False)
     @patch.object(KillmailBody, "_rate_limit", return_value=True)
-    def test_should_return_sequence_from_r2z2(
+    def test_should_return_sequence(
         self, _mock_rate_limit, _mock_delay, mock_requests_get
     ):
         # Test Data
@@ -110,7 +115,7 @@ class TestKillmailHelper(NoSocketsTestCase):
     @patch(MODULE_PATH + ".requests.get")
     @patch.object(KillmailBody, "_too_many_requests_delay", return_value=True)
     @patch.object(KillmailBody, "_rate_limit", return_value=True)
-    def test_should_return_none_from_r2z2_on_too_many_requests(
+    def test_should_return_none_from_sequence_on_too_many_requests(
         self, _mock_rate_limit, _mock_delay, mock_requests_get
     ):
         # Test Data
@@ -126,7 +131,7 @@ class TestKillmailHelper(NoSocketsTestCase):
 
     @patch(MODULE_PATH + ".requests.get")
     @patch.object(KillmailBody, "_rate_limit", return_value=True)
-    def test_should_return_none_from_r2z2_sequence_on_worker_shutdown(
+    def test_should_return_none_from_sequence_on_worker_shutdown(
         self, _mock_rate_limit, mock_requests_get
     ):
         # Test Data
@@ -139,28 +144,44 @@ class TestKillmailHelper(NoSocketsTestCase):
         mock_requests_get.assert_not_called()
 
     @patch(MODULE_PATH + ".requests.get")
-    @patch.object(KillmailBody, "_create_from_dict")
     @patch.object(KillmailBody, "_too_many_requests_delay", return_value=False)
     @patch.object(KillmailBody, "_rate_limit", return_value=True)
-    def test_should_return_killmail_from_r2z2_sequence(
+    def test_should_return_killmail_from_sequence(
         self,
         _mock_rate_limit,
         _mock_delay,
-        mock_create_from_dict,
+        mock_requests_get,
+    ):
+        # Test Data
+        killmailbody = KillmailBodyFactory()
+        response = Mock()
+        response.status_code = 200
+        response.json.return_value = killmailbody.as_dict()
+        mock_requests_get.return_value = response
+
+        # Test Action
+        result = KillmailBody.create_from_sequence(killmailbody.sequence_id)
+
+        # Expected Result
+        self.assertEqual(result.sequence_id, killmailbody.sequence_id)
+        self.assertEqual(result.victim.character_id, killmailbody.victim.character_id)
+        self.assertIsNotNone(cache.get(LAST_REQUEST_KEY))
+
+    @patch(MODULE_PATH + ".requests.get")
+    @patch.object(KillmailBody, "_too_many_requests_delay", return_value=False)
+    @patch.object(KillmailBody, "_rate_limit", return_value=True)
+    def test_should_raise_validation_error(
+        self,
+        _mock_rate_limit,
+        _mock_delay,
         mock_requests_get,
     ):
         # Test Data
         response = Mock()
         response.status_code = 200
-        response.json.return_value = {"killmail_id": 999999}
+        response.json.return_value = {"invalid": "data"}
         mock_requests_get.return_value = response
 
-        expected_killmail = Mock()
-        mock_create_from_dict.return_value = expected_killmail
-        # Test Action
-        result = KillmailBody.create_from_sequence(123456)
-
-        # Expected Result
-        self.assertEqual(result, expected_killmail)
-        mock_create_from_dict.assert_called_once_with({"killmail_id": 999999})
-        self.assertIsNotNone(cache.get(LAST_REQUEST_KEY))
+        # Test Action & Expected Result
+        killmail_body = KillmailBody.create_from_sequence(123456)
+        self.assertIsNone(killmail_body)

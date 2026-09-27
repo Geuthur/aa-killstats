@@ -52,6 +52,7 @@ if "killstats" in INSTALLED_APPS:
 
 ### Added
 
+- Model and serialization methods (`to_model`, `as_model`, `to_json`, `to_dict`, `as_json`, `as_dict`) across test factories via `BasePydanticFactory` and `BaseDjangoModelFactory`, typed with `BaseMetaFactory[T]` for full IDE autocompletion, plus `.as_dict()`, `.to_dict()`, `.as_json()`, `.to_json()` and convenience attribute properties (`id`, `killmail_time`, `solar_system_id`, `victim`, `attackers`) on `KillmailBody` and `zKBWebKillmail`.
 - Pydantic v2 `zKBWebKillmail` schema and `TypeAdapter` validation for zKillboard API responses in `helpers.tasks`.
 - Agent development, testing, API, and git commit guidelines in `.agents/rules/`.
 - Updated test datasets for zKillboard HTTP API responses (`zkb-http.json`, `validate.json`, etc.).
