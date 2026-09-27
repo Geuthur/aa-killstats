@@ -52,6 +52,19 @@ if "killstats" in INSTALLED_APPS:
 
 ### Added
 
+- Unit test suite for core helpers (`JSONDateTimeEncoder`, `JSONDateTimeDecoder`, `get_redis_client`) in `killstats/tests/helpers/test_core.py`.
+- Unit test suite for API helper utilities (`set_cache_key`, `cache_sytem`, `get_unique_id`, `get_entities`, `get_killmails_data`, `get_killstats_halls`, `get_top_10`) in `killstats/tests/api/test_api_helper.py`.
+- Unit test suite for `KillmailManager` and querysets in `killstats/tests/test_managers/test_killboard_manager.py`.
+- Unit test suite for `CorporationsAuditManager` and `AlliancesAuditManager` in `killstats/tests/test_managers/test_killboardaudit_manager.py`.
+- Refactored `EveEntityManager` unit tests in `killstats/tests/test_managers/test_general_manager.py` to use `pook` for all ESI HTTP calls.
+- Unit test suite for `General` and `EveEntity` models in `killstats/tests/test_models/test_general.py`.
+- Unit test suite for `EveEntityManager` in `killstats/tests/test_managers/test_general_manager.py`.
+- Expanded unit test suites for `CorporationsAudit` and `AlliancesAudit` models in `killstats/tests/test_models/test_killaudit.py`.
+- Expanded unit test suite for `KillmailBody` helper in `killstats/tests/helpers/test_killmailbody.py`.
+- Unit test suite for `AccountManager` in `killstats/tests/api/test_account_manager.py`.
+- Unit test suites for Django Ninja API endpoints (`KillboardAdmin`, `Killboard`, `Stats`) in `killstats/tests/api/test_admin_api.py`, `killstats/tests/api/test_killboard_api.py`, and `killstats/tests/api/test_stats_api.py`.
+- Unit test suite for Celery signals (`worker_ready`, `worker_shutting_down`, `worker_shutdown`) in `killstats/tests/test_signals.py`.
+- Unit test suite for API helpers (`get_corporations`, `get_alliances`, `get_permission`) in `killstats/tests/api/test_helpers.py`.
 - Test suite for management commands in `test_commands.py` (`killstats_delete_npc_killmails`, `killstats_update_solar_systems`, `killstats_migrate_eveentity`).
 - Model and serialization methods (`to_model`, `as_model`, `to_json`, `to_dict`, `as_json`, `as_dict`) across test factories via `BasePydanticFactory` and `BaseDjangoModelFactory`, typed with `BaseMetaFactory[T]` for full IDE autocompletion, plus `.as_dict()`, `.to_dict()`, `.as_json()`, `.to_json()` and convenience attribute properties (`id`, `killmail_time`, `solar_system_id`, `victim`, `attackers`) on `KillmailBody` and `zKBWebKillmail`.
 - Pydantic v2 `zKBWebKillmail` schema and `TypeAdapter` validation for zKillboard API responses in `helpers.tasks`.

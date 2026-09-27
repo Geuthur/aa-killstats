@@ -5,7 +5,7 @@ __title__ = "Killstats"
 
 __package_name__ = "aa-killstats"
 __app_name__ = "killstats"
-__esi_compatibility_date__ = "2025-09-30"
+__esi_compatibility_date__ = "2026-08-18"
 __app_name_useragent__ = "AA-Killstats"
 
 __github_url__ = f"https://github.com/Geuthur/{__package_name__}"

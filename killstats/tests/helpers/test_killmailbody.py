@@ -1,9 +1,12 @@
+"""Unit tests for KillmailBody helper class."""
+
 # Standard Library
 from datetime import timedelta
+from http import HTTPStatus
 from unittest.mock import Mock, patch
 
 # Third Party
-from pydantic import ValidationError
+import pook
 
 # Django
 from django.core.cache import cache
@@ -13,8 +16,13 @@ from django.utils import timezone
 # AA Killstats
 from killstats import __title__
 from killstats.constants import LAST_REQUEST_KEY, RETRY_AFTER_KEY
-from killstats.helpers.killmailbody import KillmailBody
-from killstats.tests import NoSocketsTestCase
+from killstats.helpers.killmailbody import (
+    KillboardException,
+    KillmailBody,
+    KillmailDoesNotExist,
+)
+from killstats.models import EveEntity
+from killstats.tests import AuthTestCase
 from killstats.tests.testdata.killstats import KillmailBodyFactory
 
 APP_SETTINGS_PATH = "killstats.app_settings"
@@ -22,12 +30,9 @@ MODULE_PATH = "killstats.helpers.killmailbody"
 
 
 @override_settings(CELERY_ALWAYS_EAGER=True, CELERY_EAGER_PROPAGATES_EXCEPTIONS=True)
-class TestKillmailHelper(NoSocketsTestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        super().setUpClass()
-
+class TestKillmailHelper(AuthTestCase):
     def setUp(self) -> None:
+        super().setUp()
         cache.clear()
 
     @patch(MODULE_PATH + ".time.sleep")
@@ -51,6 +56,7 @@ class TestKillmailHelper(NoSocketsTestCase):
         now = timezone.now()
         last_request = now - timedelta(seconds=0.2)
         cache.set(LAST_REQUEST_KEY, last_request.isoformat())
+
         # Test Action
         with (
             patch(APP_SETTINGS_PATH + ".KILLSTATS_MAX_ZKB_PER_SEC", 2),
@@ -69,6 +75,7 @@ class TestKillmailHelper(NoSocketsTestCase):
         now = timezone.now()
         last_request = now - timedelta(seconds=0.1)
         cache.set(LAST_REQUEST_KEY, last_request.isoformat())
+
         # Test Action
         with (
             patch(APP_SETTINGS_PATH + ".KILLSTATS_MAX_ZKB_PER_SEC", 2),
@@ -136,6 +143,7 @@ class TestKillmailHelper(NoSocketsTestCase):
     ):
         # Test Data
         cache.set(f"{__title__.upper()}_WORKER_SHUTDOWN", True)
+
         # Test Action
         result = KillmailBody.create_from_sequence(123456)
 
@@ -185,3 +193,147 @@ class TestKillmailHelper(NoSocketsTestCase):
         # Test Action & Expected Result
         killmail_body = KillmailBody.create_from_sequence(123456)
         self.assertIsNone(killmail_body)
+
+    def test_convenience_properties_should_return_underlying_values(self):
+        # Test Data
+        killmail = KillmailBodyFactory()
+
+        # Test Action & Expected Result
+        self.assertEqual(killmail.id, killmail.killmail_id)
+        self.assertEqual(killmail.killmail_time, killmail.esi.killmail_time)
+        self.assertEqual(killmail.solar_system_id, killmail.esi.solar_system_id)
+        self.assertEqual(killmail.victim, killmail.esi.victim)
+        self.assertEqual(killmail.attackers, killmail.esi.attackers)
+
+    def test_attackers_distinct_alliance_ids_should_return_unique_alliances(self):
+        # Test Data
+        killmail = KillmailBodyFactory()
+        killmail.esi.attackers[0].alliance_id = 99001
+
+        # Test Action
+        alliances = killmail.attackers_distinct_alliance_ids()
+
+        # Expected Result
+        self.assertIn(99001, alliances)
+
+    def test_attackers_distinct_corporation_ids_should_return_unique_corporations(self):
+        # Test Data
+        killmail = KillmailBodyFactory()
+        killmail.esi.attackers[0].corporation_id = 98001
+
+        # Test Action
+        corporations = killmail.attackers_distinct_corporation_ids()
+
+        # Expected Result
+        self.assertIn(98001, corporations)
+
+    def test_serialization_helpers_should_produce_valid_dict_and_json(self):
+        # Test Data
+        killmail = KillmailBodyFactory()
+
+        # Test Action
+        as_dict = killmail.as_dict()
+        to_dict = killmail.to_dict()
+        as_json = killmail.as_json()
+        to_json = killmail.to_json()
+        repr_str = repr(killmail)
+
+        # Expected Result
+        self.assertIsInstance(as_dict, dict)
+        self.assertEqual(as_dict, to_dict)
+        self.assertIsInstance(as_json, str)
+        self.assertEqual(as_json, to_json)
+        self.assertIn(str(killmail.killmail_id), repr_str)
+
+    def test_storage_lifecycle_save_get_and_delete(self):
+        # Test Data
+        killmail = KillmailBodyFactory()
+
+        # Test Action: Save
+        killmail.save()
+
+        # Expected Result: Get
+        loaded = KillmailBody.get(killmail.killmail_id)
+        self.assertEqual(loaded.killmail_id, killmail.killmail_id)
+
+        # Test Action: Delete
+        killmail.delete()
+
+        # Expected Result: Get raises DoesNotExist
+        with self.assertRaises(KillmailDoesNotExist):
+            KillmailBody.get(killmail.killmail_id)
+
+    def test_storage_get_should_raise_killboard_exception_on_corrupt_data(self):
+        # Test Data
+        cache_key = KillmailBody._storage_key(999999)
+        cache.set(cache_key, "{invalid_json")
+
+        # Test Action & Expected Result
+        with self.assertRaises(KillboardException):
+            KillmailBody.get(999999)
+
+    def test_get_esi_killmail_bucket_remaining_should_return_cached_or_default(self):
+        # Test Data: Default
+        cache.delete("esi:bucket:killmail")
+        self.assertEqual(KillmailBody.get_esi_killmail_bucket_remaining(), 1200)
+
+        # Test Data: Cached int
+        cache.set("esi:bucket:killmail", 450)
+        self.assertEqual(KillmailBody.get_esi_killmail_bucket_remaining(), 450)
+
+        # Test Data: Invalid value
+        cache.set("esi:bucket:killmail", "not_a_number")
+        self.assertEqual(KillmailBody.get_esi_killmail_bucket_remaining(), 1200)
+
+    @pook.on
+    def test_create_names_bulk_should_delegate_when_ids_provided(self):
+        # Test Data
+        killmail = KillmailBodyFactory()
+        pook.post(
+            "https://esi.evetech.net/universe/names",
+            reply=HTTPStatus.OK,
+            response_json=[
+                {"id": 1001, "name": "Test Name 1", "category": "character"},
+                {"id": 1002, "name": "Test Name 2", "category": "character"},
+            ],
+        )
+        # Test Action & Expected Result
+        self.assertTrue(killmail.create_names_bulk([1001, 1002]))
+        self.assertFalse(killmail.create_names_bulk([]))
+
+    @pook.on
+    def test_get_or_create_entity_should_delegate_to_manager(self):
+        # Test Data
+        pook.post(
+            "https://esi.evetech.net/universe/names",
+            reply=HTTPStatus.OK,
+            response_json=[
+                {"id": 1001, "name": "Test Name 1", "category": "character"}
+            ],
+        )
+        # Test Action
+        result = KillmailBody.get_or_create_entity(1001)
+        # Expected Result
+        self.assertEqual(result, EveEntity.objects.filter(id=1001).first())
+
+    def test_get_region_id_should_return_none_when_solar_system_not_found(self):
+        # Test Action & Expected Result
+        self.assertIsNone(KillmailBody.get_region_id(99999999))
+
+    def test_too_many_requests_delay_handling(self):
+        # Test Data: Status 200
+        ok_response = Mock()
+        ok_response.status_code = HTTPStatus.OK
+        self.assertFalse(KillmailBody._too_many_requests_delay(ok_response))
+
+        # Test Data: Status 429
+        rate_limited_response = Mock()
+        rate_limited_response.status_code = HTTPStatus.TOO_MANY_REQUESTS
+        rate_limited_response.headers = {"Retry-After": "5"}
+
+        # Test Action
+        result = KillmailBody._too_many_requests_delay(rate_limited_response)
+
+        # Expected Result
+        self.assertTrue(result)
+        self.assertIsNotNone(cache.get(f"{__title__.upper()}_RETRY_AFTER"))

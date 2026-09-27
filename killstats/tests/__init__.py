@@ -54,8 +54,9 @@ class AuthTestCase(NoSocketsTestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        # Request Factory
+        # Request Factory & Default Request
         cls.factory = RequestFactory()
+        cls.request = cls.factory.get("/")
 
         # User with Standard Access
         cls.user: User = UserMainFactory()
@@ -64,6 +65,10 @@ class AuthTestCase(NoSocketsTestCase):
         cls.superuser: User = UserMainFactory()
         cls.superuser.is_superuser = True
         cls.superuser.save()
+
+    def setUp(self):
+        super().setUp()
+        self.request = self.factory.get("/")
 
     def _middleware_process_request(self, request: WSGIRequest):
         """Helper method to process middleware for a request."""
