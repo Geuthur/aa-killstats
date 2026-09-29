@@ -6,7 +6,7 @@ import { ExternalLink, Flame, ShieldAlert, Skull, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 // AA Killstats
-import type { HallEntry, HallResponse } from '@/Api/types';
+import type { HallEntrySchema, HallResponse } from '@/Api/schema';
 import { FetchingLoader } from '@/Components/Loader';
 import { renderTooltip } from '@/Utils';
 import { formatNumber } from '@/Utils/eveOnline';
@@ -80,7 +80,7 @@ export default function KillboardHallOfFame({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'fame' | 'shame'>('fame');
 
-  const entries: HallEntry[] =
+  const entries: HallEntrySchema[] =
     (activeTab === 'fame' ? data?.hall_of_fame : data?.hall_of_shame) ?? [];
 
   return (

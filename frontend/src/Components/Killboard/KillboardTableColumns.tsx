@@ -3,13 +3,13 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { ExternalLink } from 'lucide-react';
 
 // AA Killstats
-import type { KillmailItem } from '@/Api/types';
+import type { KillmailItemSchema } from '@/Api/schema';
 import { renderTooltip } from '@/Utils';
 import { formatNumber, getSecColor, formatRelativeTime } from '@/Utils/eveOnline';
 
 export function getKillboardTableColumns(
   t: (key: string) => string,
-): ColumnDef<KillmailItem>[] {
+): ColumnDef<KillmailItemSchema>[] {
   return [
     {
       id: 'type',
@@ -171,6 +171,6 @@ export function getKillboardTableColumns(
   ];
 }
 
-export const columns: ColumnDef<KillmailItem>[] = getKillboardTableColumns(
+export const columns: ColumnDef<KillmailItemSchema>[] = getKillboardTableColumns(
   (key) => key,
 );

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 // AA Killstats
 import { fetchTopAttackers, fetchTopVictims } from '@/Api/ApiCalls';
 import { queryKeys } from '@/Api/query';
-import type { TopPilot } from '@/Api/types';
+import type { TopPilotSchema } from '@/Api/schema';
 import { FetchingLoader } from '@/Components/Loader';
 import BaseModal, { ModalSize, type ModalData, useModalQueryState } from '@/Components/Modals/BaseModal';
 import { formatNumber } from '@/Utils/eveOnline';
@@ -39,7 +39,7 @@ function PilotList({
     isVictims,
     isLoading,
 }: {
-    pilots?: TopPilot[];
+    pilots?: TopPilotSchema[];
     title: string;
     isVictims: boolean;
     isLoading: boolean;

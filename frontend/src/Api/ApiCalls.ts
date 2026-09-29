@@ -1,12 +1,6 @@
 import { apiClient } from "@/Api/Api";
 import type { components } from "@/Api/OpenApi";
-import type {
-  CombatStatsResponse,
-  CombatSummaryResponse,
-  HallResponse,
-  KillmailListResponse,
-  TopPilotsResponse,
-} from "@/Api/types";
+import type { CombatStatsResponse, CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse  } from "@/Api/schema";
 import { ProjectName } from "@/App";
 
 
