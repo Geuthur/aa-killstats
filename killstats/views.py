@@ -4,7 +4,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.functions import ExtractYear
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
@@ -18,8 +17,7 @@ from allianceauth.services.hooks import get_extension_logger
 from esi.decorators import token_required
 
 # AA Killstats
-from killstats import __title__
-from killstats.models.killboard import Killmail
+from killstats import __title__, __version__
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.providers import AppLogger
 
@@ -28,62 +26,91 @@ logger = AppLogger(get_extension_logger(__name__), __title__)
 
 @login_required
 @permission_required("killstats.basic_access")
+def react_base(request):
+    """React Frontend SPA Base View."""
+    context = {
+        "app_name": "killstats",
+        "title": "Killstats",
+        "version": __version__,
+    }
+    return render(request, "killstats/react_killboard.html", context=context)
+
+
+@login_required
+@permission_required("killstats.basic_access")
 def killboard_index(request):
-    return redirect(
-        "killstats:corporation", request.user.profile.main_character.corporation_id
-    )
+    main_char = getattr(getattr(request.user, "profile", None), "main_character", None)
+    corp_id = getattr(main_char, "corporation_id", None)
+    if corp_id:
+        return redirect("killstats:corporation", corporation_id=corp_id)
+    return redirect("killstats:react_base")
 
 
 @login_required
 @permission_required("killstats.basic_access")
 def corporation_view(request, corporation_id=None):
+    """Corporation Killboard View (React Frontend)."""
     if corporation_id is None:
-        corporation_id = request.user.profile.main_character.corporation_id
-
-    years = (
-        Killmail.objects.filter(victim_corporation_id=corporation_id)
-        .annotate(year=ExtractYear("killmail_date"))
-        .values_list("year", flat=True)
-        .distinct()
-        .order_by("-year")
-    )[:5]
+        main_char = getattr(
+            getattr(request.user, "profile", None), "main_character", None
+        )
+        corporation_id = getattr(main_char, "corporation_id", 0)
 
     context = {
+        "app_name": "killstats",
         "title": "Corporation Killstats",
-        "years": years,
-        "entity_pk": corporation_id,
+        "entity_pk": corporation_id or 0,
         "entity_type": "corporation",
+        "version": __version__,
     }
-    return render(request, "killstats/killboard.html", context=context)
+    return render(request, "killstats/react_killboard.html", context=context)
 
 
 @login_required
 @permission_required("killstats.basic_access")
 def alliance_view(request, alliance_id=None):
+    """Alliance Killboard View (React Frontend)."""
     if alliance_id is None:
-        try:
-            alliance_id = request.user.profile.main_character.alliance_id
-            if alliance_id is None:
-                raise AttributeError
-        except AttributeError:
-            messages.error(request, "You do not have an alliance.")
+        main_char = getattr(
+            getattr(request.user, "profile", None), "main_character", None
+        )
+        alliance_id = getattr(main_char, "alliance_id", None)
+        if alliance_id is None:
+            messages.error(request, _("You do not have an alliance."))
             return redirect("killstats:index")
 
-    years = (
-        Killmail.objects.filter(victim_alliance_id=alliance_id)
-        .annotate(year=ExtractYear("killmail_date"))
-        .values_list("year", flat=True)
-        .distinct()
-        .order_by("-year")
-    )[:5]
-
     context = {
+        "app_name": "killstats",
         "title": "Alliance Killstats",
-        "years": years,
         "entity_pk": alliance_id,
         "entity_type": "alliance",
+        "version": __version__,
     }
-    return render(request, "killstats/killboard.html", context=context)
+    return render(request, "killstats/react_killboard.html", context=context)
+
+
+@login_required
+@permission_required("killstats.basic_access")
+def corporation_admin(request):
+    """Corporation Overview (React Frontend)."""
+    context = {
+        "app_name": "killstats",
+        "title": "Corporation Overview",
+        "version": __version__,
+    }
+    return render(request, "killstats/react_killboard.html", context=context)
+
+
+@login_required
+@permission_required("killstats.basic_access")
+def alliance_admin(request):
+    """Alliance Overview (React Frontend)."""
+    context = {
+        "app_name": "killstats",
+        "title": "Alliance Overview",
+        "version": __version__,
+    }
+    return render(request, "killstats/react_killboard.html", context=context)
 
 
 @login_required
@@ -160,25 +187,6 @@ def add_alliance(request, token):
     return redirect("killstats:alliance", alliance_id=alliance.alliance_id)
 
 
-@login_required
-@permission_required("killstats.basic_access")
-def corporation_admin(request):
-    """
-    Corporation Admin
-    """
-    context = {
-        "title": "Corporation Overview",
-    }
-    return render(request, "killstats/admin/corporation_admin.html", context=context)
-
-
-@login_required
-@permission_required("killstats.basic_access")
-def alliance_admin(request):
-    """
-    Alliance Admin
-    """
-    context = {
-        "title": "Alliance Overview",
-    }
-    return render(request, "killstats/admin/alliance_admin.html", context=context)
+# Backwards compatibility aliases
+react_corporation_view = corporation_view
+react_alliance_view = alliance_view

@@ -24,7 +24,7 @@ from killstats.tests.testdata.killstats import (
     UserMainFactory,
 )
 
-MODULE_PATH = "killstats.api.killstats.admin"
+MODULE_PATH = "killstats.api.admin"
 
 
 class TestKillboardAdminApi(AuthTestCase):

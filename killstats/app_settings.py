@@ -38,3 +38,5 @@ KILLSTATS_TASKS_TIMEOUT = getattr(settings, "KILLSTATS_TASKS_TIMEOUT", 600)
 KILLSTATS_ZKB_RATE_TIMEOUT = getattr(settings, "KILLSTATS_ZKB_RATE_TIMEOUT", 10)
 # Maximum allowed requests per second across all workers/processes
 KILLSTATS_MAX_ZKB_PER_SEC = getattr(settings, "KILLSTATS_MAX_ZKB_PER_SEC", 2)
+
+KILLSTATS_ESI_BUCKET = getattr(settings, "KILLSTATS_ESI_BUCKET", 600)

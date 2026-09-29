@@ -540,3 +540,144 @@ class TestKillstatsMigrateEveEntity(AuthTestCase):
 
             # Expected Result
             self.assertIn("Migrated 0 EveEntity records out of 0", output)
+
+
+class TestKillstatsSyncKillmails(AuthTestCase):
+    """Unit tests for killstats_sync_killmails management command."""
+
+    def test_sync_killmails_without_args_should_show_error(self):
+        # Test Data
+        out = StringIO()
+        err = StringIO()
+
+        # Test Action
+        call_command("killstats_sync_killmails", stdout=out, stderr=err)
+
+        # Expected Result
+        self.assertIn(
+            "Please specify --corporation <id>, --alliance <id>, or --all",
+            err.getvalue(),
+        )
+
+    @patch("killstats.models.killboard.Killmail.objects.create_from_killmail")
+    @patch("killstats.models.killboard.Killmail.objects.check_missing_killmails")
+    def test_sync_killmails_corporation_should_fetch_and_import(
+        self, mock_check, mock_create
+    ):
+        # Test Data
+        mock_km = Mock()
+        mock_check.return_value = [mock_km]
+        out = StringIO()
+
+        # Test Action
+        call_command(
+            "killstats_sync_killmails",
+            "--corporation",
+            "98000001",
+            "--pages",
+            "5",
+            "--delay",
+            "0",
+            stdout=out,
+        )
+
+        # Expected Result
+        mock_check.assert_called_once_with(
+            corporation_id=98000001,
+            pages=5,
+            delay_between_pages=0.0,
+        )
+        mock_create.assert_called_once_with(mock_km)
+        self.assertIn("Found 1 missing killmail(s)", out.getvalue())
+        self.assertIn("Successfully imported 1/1 killmail(s)", out.getvalue())
+
+    @patch("killstats.models.killboard.Killmail.objects.create_from_killmail")
+    @patch("killstats.models.killboard.Killmail.objects.check_missing_killmails")
+    def test_sync_killmails_alliance_should_fetch_and_import(
+        self, mock_check, mock_create
+    ):
+        # Test Data
+        mock_km = Mock()
+        mock_check.return_value = [mock_km]
+        out = StringIO()
+
+        # Test Action
+        call_command(
+            "killstats_sync_killmails",
+            "--alliance",
+            "99000001",
+            "--pages",
+            "3",
+            "--delay",
+            "0",
+            stdout=out,
+        )
+
+        # Expected Result
+        mock_check.assert_called_once_with(
+            alliance_id=99000001,
+            pages=3,
+            delay_between_pages=0.0,
+        )
+        mock_create.assert_called_once_with(mock_km)
+        self.assertIn("Found 1 missing killmail(s)", out.getvalue())
+        self.assertIn("Successfully imported 1/1 killmail(s)", out.getvalue())
+
+    @patch("killstats.models.killboard.Killmail.objects.create_from_killmail")
+    @patch("killstats.models.killboard.Killmail.objects.check_missing_killmails")
+    def test_sync_killmails_all_should_sync_all_audited_entities(
+        self, mock_check, mock_create
+    ):
+        # Test Data
+        CorporationsAuditFactory()
+        AlliancesAuditFactory()
+        mock_km = Mock()
+        mock_check.return_value = [mock_km]
+        out = StringIO()
+
+        # Test Action
+        call_command(
+            "killstats_sync_killmails",
+            "--all",
+            "--pages",
+            "2",
+            "--delay",
+            "0",
+            stdout=out,
+        )
+
+        # Expected Result
+        self.assertEqual(mock_check.call_count, 2)
+        self.assertEqual(mock_create.call_count, 2)
+        self.assertIn("Sync complete", out.getvalue())
+
+    @patch("killstats.models.killboard.Killmail.objects.create_from_killmail")
+    @patch("killstats.models.killboard.Killmail.objects.check_missing_killmails")
+    def test_sync_killmails_should_handle_integrity_error_gracefully(
+        self, mock_check, mock_create
+    ):
+        # Test Data
+        # Django
+        from django.db import IntegrityError
+
+        mock_km = Mock()
+        mock_km.esi.killmail_id = 12345
+        mock_check.return_value = [mock_km]
+        mock_create.side_effect = IntegrityError("Duplicate")
+        out = StringIO()
+
+        # Test Action
+        call_command(
+            "killstats_sync_killmails",
+            "--corporation",
+            "98000001",
+            "--pages",
+            "1",
+            "--delay",
+            "0",
+            stdout=out,
+        )
+
+        # Expected Result
+        mock_create.assert_called_once_with(mock_km)
+        self.assertIn("Successfully imported 0/1 killmail(s)", out.getvalue())

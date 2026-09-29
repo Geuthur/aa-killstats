@@ -1,5 +1,6 @@
 # Standard Library
 import datetime
+from typing import TYPE_CHECKING
 
 # Django
 from django.core.validators import MinValueValidator
@@ -23,7 +24,12 @@ from killstats.helpers.eveonline import (
     get_corporation_logo_url,
 )
 from killstats.managers.general_manager import EveEntityManager
+from killstats.managers.killboard_manager import KillmailManager
 from killstats.providers import AppLogger
+
+if TYPE_CHECKING:
+    # AA Killstats
+    from killstats.models import Attacker
 
 logger = AppLogger(get_extension_logger(__name__), __title__)
 
@@ -45,10 +51,19 @@ class General(models.Model):
 class EveEntity(models.Model):
     """An Eve entity like a corporation or a character"""
 
+    if TYPE_CHECKING:
+        attacker_character: models.QuerySet["Attacker"]
+        attacker_corporation: models.QuerySet["Attacker"]
+        attacker_alliance: models.QuerySet["Attacker"]
+        victim_killmail: KillmailManager
+
     objects: EveEntityManager = EveEntityManager()
 
     class Meta:
         default_permissions = ()
+        indexes = [
+            models.Index(fields=["category", "name"], name="eveentity_cat_name_idx"),
+        ]
 
     CATEGORY_ALLIANCE = "alliance"
     CATEGORY_CHARACTER = "character"
@@ -74,14 +89,14 @@ class EveEntity(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         default=None,
-        related_name="corp",
+        related_name="+",
     )
     alliance = models.ForeignKey(
         "EveEntity",
         on_delete=models.SET_NULL,
         null=True,
         default=None,
-        related_name="alli",
+        related_name="+",
     )
     last_update = models.DateTimeField(auto_now=True)
 

@@ -462,7 +462,7 @@ class KillmailBody(_KillmailBodyBase):
 
             ship = None
             if attacker.ship_type_id:
-                ship = ItemType.objects.get(id=attacker.ship_type_id)
+                ship = ItemType.objects.filter(id=attacker.ship_type_id).first()
 
             attacker_obj = Attacker(
                 killmail=killmail,

@@ -5,12 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issues\n"
-"POT-Creation-Date: 2025-12-22 10:01+0100\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-killstats/\n"
+"POT-Creation-Date: 2026-09-28 16:01+0200\n"
 "PO-Revision-Date: 2026-01-11 20:50+0000\n"
 "Last-Translator: Geuthur <geuthur@users.noreply.github.com>\n"
-"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-"
-"killstats/de/>\n"
+"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-killstats/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,14 +17,26 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.15.1\n"
 
-#: killstats/forms.py:25
-msgid "Killmail ID"
-msgstr "Killmail ID"
+#: killstats/models/general.py:64
+msgid "ID"
+msgstr ""
 
-#: killstats/models/killboard.py:46 killstats/models/killboard.py:54
-#: killstats/models/killboard.py:113
+#: killstats/models/general.py:67
+msgid "Category"
+msgstr ""
+
+#: killstats/models/general.py:69
+msgid "Name"
+msgstr ""
+
+#: killstats/models/killboard.py:51 killstats/models/killboard.py:59
+#: killstats/models/killboard.py:71 killstats/models/killboard.py:120
 msgid "Unknown"
 msgstr "Unbekannt"
+
+#: killstats/models/killstatsaudit.py:38 killstats/models/killstatsaudit.py:74
+msgid "last missing check"
+msgstr ""
 
 #: killstats/templates/killstats/admin/alliance_admin.html:7
 #: killstats/templates/killstats/admin/corporation_admin.html:8
@@ -111,14 +122,9 @@ msgid "Month"
 msgstr "Monat"
 
 #: killstats/templates/killstats/killboard.html:8
-#: killstats/templates/killstats/killmail_add.html:8
+#: killstats/templates/killstats/react_killboard.html:5
 msgid "Killstats"
 msgstr "Killstats"
-
-#: killstats/templates/killstats/killmail_add.html:36
-#: killstats/templates/killstats/partials/menu/navigation.html:16
-msgid "Add Killmail"
-msgstr "Killmail hinzufügen"
 
 #: killstats/templates/killstats/partials/menu/administration.html:6
 msgid "Add Corporation"
@@ -156,26 +162,42 @@ msgstr "Kill-Zählung"
 msgid "No data found..."
 msgstr "Keine Daten gefunden..."
 
-#: killstats/views.py:143
+#: killstats/views.py:100
+msgid "Cannot add NPC Corporation to Killstats"
+msgstr ""
+
+#: killstats/views.py:130
+msgid "Cannot add Alliance for a character belonging to an NPC Corporation"
+msgstr ""
+
+#: killstats/views.py:136
+msgid "Character does not belong to a valid player Alliance"
+msgstr ""
+
+#: killstats/views.py:147
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr "{alliance_name} erfolgreich zu Killstats hinzugefügt/aktualisiert"
 
-#: killstats/views.py:147
+#: killstats/views.py:151
 #, python-brace-format
-msgid "Failed to fetch Alliance data for {alliance_name}"
-msgstr "Fehler beim Abrufen der Allianz-Daten für {alliance_name}"
-
-#: killstats/views.py:203
-#, python-brace-format
-msgid ""
-"Killmail {killmail_id} already exists. Please check the killmail ID and try "
-"again."
+msgid "Alliance {alliance_name} could not be found in Alliance Auth"
 msgstr ""
-"Killmail {killmail_id} existiert bereits. Bitte überprüfen Sie die Killmail-"
-"ID und versuchen Sie es erneut."
 
-#: killstats/views.py:218
+#~ msgid "Killmail ID"
+#~ msgstr "Killmail ID"
+
+#~ msgid "Add Killmail"
+#~ msgstr "Killmail hinzufügen"
+
 #, python-brace-format
-msgid "Killmail {killmail_id} has been added to Killstats."
-msgstr "Killmail {killmail_id} wurde zu Killstats hinzugefügt."
+#~ msgid "Failed to fetch Alliance data for {alliance_name}"
+#~ msgstr "Fehler beim Abrufen der Allianz-Daten für {alliance_name}"
+
+#, python-brace-format
+#~ msgid "Killmail {killmail_id} already exists. Please check the killmail ID and try again."
+#~ msgstr "Killmail {killmail_id} existiert bereits. Bitte überprüfen Sie die Killmail-ID und versuchen Sie es erneut."
+
+#, python-brace-format
+#~ msgid "Killmail {killmail_id} has been added to Killstats."
+#~ msgstr "Killmail {killmail_id} wurde zu Killstats hinzugefügt."

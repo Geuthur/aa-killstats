@@ -1,62 +1,154 @@
-"""Unit tests for KillboardApiEndpoints."""
+"""Unit tests for KillboardApiEndpoints (V2)."""
 
 # Standard Library
-from unittest.mock import patch
+from datetime import datetime, timezone
+from http import HTTPStatus
 
 # Third Party
 # Django Ninja
 from ninja.testing import TestClient
 
+# Django
+from django.core.cache import cache
+
 # AA Killstats
 from killstats.api import api
 from killstats.tests import AuthTestCase
-from killstats.tests.testdata.killstats import UserMainFactory
-
-MODULE_PATH = "killstats.api.killstats.killboard"
+from killstats.tests.testdata.killstats import (
+    AttackerFactory,
+    EveEntityCorporationFactory,
+    KillmailFactory,
+    UserMainFactory,
+)
 
 
 class TestKillboardApi(AuthTestCase):
     def setUp(self):
         super().setUp()
+        cache.clear()
         self.client = TestClient(api)
         self.user = UserMainFactory()
 
-    @patch(f"{MODULE_PATH}.api_helper")
-    def test_get_corporation_killmails_should_return_data(self, mock_api_helper):
+    def tearDown(self):
+        cache.clear()
+        super().tearDown()
+
+    def test_get_combat_summary_api_should_return_summary(self):
         # Test Data
-        expected_output = {"killmails": [], "total_kills": 0}
-        mock_api_helper.get_killmails_data.return_value = expected_output
+        corp_id = 98000001
+        corp_entity = EveEntityCorporationFactory(id=corp_id)
+        test_date = datetime(2026, 9, 15, 12, 0, 0, tzinfo=timezone.utc)
+        km = KillmailFactory(
+            killmail_date=test_date,
+            victim_corporation_id=corp_id,
+            victim_total_value=5000000,
+        )
+        AttackerFactory(
+            killmail=km,
+            corporation=corp_entity,
+        )
 
         # Test Action
         response = self.client.get(
-            "/killmail/month/9/year/2026/corporation/98000001/kills/",
+            f"/stats/v2/summary/year/2026/month/9/corporation/{corp_id}/",
             user=self.user,
         )
 
         # Expected Result
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_output)
-        mock_api_helper.get_killmails_data.assert_called_once()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertEqual(data["total_kills"], 1)
+        self.assertGreaterEqual(data["active_pvpers"], 1)
+        self.assertEqual(data["destroyed_isk"], 5000000)
+        self.assertEqual(data["lost_isk"], 5000000)
 
-    @patch(f"{MODULE_PATH}.api_helper")
-    def test_get_corporation_halls_should_return_cached_or_computed_data(
-        self, mock_api_helper
-    ):
+    def test_get_combat_summary_api_should_return_403_when_no_permission(self):
         # Test Data
-        expected_halls = [{"character_id": 1001, "character_name": "Test Pilot"}]
-        mock_api_helper.cache_sytem.return_value = (None, "cache_key_123")
-        mock_api_helper.get_killstats_halls.return_value = expected_halls
+        unauthed_user = UserMainFactory(permissions__=[])
 
         # Test Action
         response = self.client.get(
-            "/halls/month/9/year/2026/corporation/98000001/",
+            "/stats/v2/summary/year/2026/month/9/corporation/98000001/",
+            user=unauthed_user,
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_get_top_attackers_api_should_return_top_attackers(self):
+        # Test Data
+        corp_id = 98000002
+        corp_entity = EveEntityCorporationFactory(id=corp_id)
+        test_date = datetime(2026, 9, 15, 12, 0, 0, tzinfo=timezone.utc)
+        km = KillmailFactory(
+            killmail_date=test_date,
+            victim_total_value=10000000,
+        )
+        AttackerFactory(
+            killmail=km,
+            corporation=corp_entity,
+        )
+
+        # Test Action
+        response = self.client.get(
+            f"/stats/v2/attackers/year/2026/month/9/corporation/{corp_id}/",
             user=self.user,
         )
 
         # Expected Result
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_halls)
-        mock_api_helper.get_killstats_halls.assert_called_once()
-        mock_api_helper.set_cache_key.assert_called_once_with(
-            "cache_key_123", expected_halls
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertIn("pilots", data)
+        self.assertEqual(len(data["pilots"]), 1)
+        self.assertEqual(data["pilots"][0]["count"], 1)
+        self.assertEqual(data["pilots"][0]["total_value"], 10000000)
+
+    def test_get_top_attackers_api_should_return_403_when_no_permission(self):
+        # Test Data
+        unauthed_user = UserMainFactory(permissions__=[])
+
+        # Test Action
+        response = self.client.get(
+            "/stats/v2/attackers/year/2026/month/9/corporation/98000002/",
+            user=unauthed_user,
         )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_get_top_victims_api_should_return_top_victims(self):
+        # Test Data
+        corp_id = 98000003
+        test_date = datetime(2026, 9, 15, 12, 0, 0, tzinfo=timezone.utc)
+        KillmailFactory(
+            killmail_date=test_date,
+            victim_corporation_id=corp_id,
+            victim_total_value=25000000,
+        )
+
+        # Test Action
+        response = self.client.get(
+            f"/stats/v2/victims/year/2026/month/9/corporation/{corp_id}/",
+            user=self.user,
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertIn("pilots", data)
+        self.assertEqual(len(data["pilots"]), 1)
+        self.assertEqual(data["pilots"][0]["count"], 1)
+        self.assertEqual(data["pilots"][0]["total_value"], 25000000)
+
+    def test_get_top_victims_api_should_return_403_when_no_permission(self):
+        # Test Data
+        unauthed_user = UserMainFactory(permissions__=[])
+
+        # Test Action
+        response = self.client.get(
+            "/stats/v2/victims/year/2026/month/9/corporation/98000003/",
+            user=unauthed_user,
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)

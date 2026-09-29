@@ -210,6 +210,11 @@ class KillmailManager(models.Manager["KillmailContext"]):
                 # Validate and parse the response JSON into a list of zKBWebKillmail objects.
                 killmails: list[zKBWebKillmail] = []
                 zkb_mails = response.json()
+                if not zkb_mails:
+                    logger.debug(
+                        "Page %s returned 0 killmails; reached end of feed.", page
+                    )
+                    break
                 for zkb_mail in zkb_mails:
 
                     killmails.append(zKBWebKillmail.model_validate(zkb_mail))
