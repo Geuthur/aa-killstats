@@ -6,34 +6,44 @@
 {% endblock %}
 
 {% block content %}
-<div class="aa-killstats-react">
-    <div id="aa-killstats-root" data-entity-type="{{ entity_type }}" data-entity-id="{{ entity_pk }}">
-        <!-- Loading Spinner (hidden by React on mount) -->
-        <div
-            id="error-spinner"
-            class="d-none justify-content-center align-items-center gap-2"
-            role="alert"
-        >
-            <span class="text-danger fs-1" aria-hidden="true">
-                <i class="fa fa-exclamation-triangle"></i>
-            </span>
-            <span class="fs-4">Error loading page</span>
+    <div class="aa-killstats">
+        <!--- Belt Radar Header --->
+        <div class="aa-killstats-header">
+            {% block aa_killstats_header %}{% endblock aa_killstats_header %}
         </div>
+        <!--- Belt Radar Body --->
+        <div class="aa-killstats-body">
+            {% block aa_killstats_block %}
+            {% endblock aa_killstats_block %}
+                {% get_momentjs_language_code LANGUAGE_CODE as MOMENTJS_LANG_CODE %}
+                <div id="aa-killstats-root" lang="{{ MOMENTJS_LANG_CODE }}">
+                    <!-- React Data -->
+                    <div
+                        id="error-spinner"
+                        class="d-none justify-content-center align-items-center gap-2"
+                        role="alert"
+                    >
+                        <span class="br-shake text-danger fs-1" aria-hidden="true">
+                            <i class="fa fa-exclamation-triangle"></i>
+                        </span>
+                        <span class="fs-4">Error loading page</span>
+                    </div>
 
-        <div
-            id="loading-spinner"
-            class="d-flex justify-content-center align-items-center gap-2 py-5"
-            role="status"
-        >
-            <span
-                class="spinner-border flex-shrink-0"
-                style="width: 3rem; height: 3rem;"
-                aria-hidden="true"
-            ></span>
-            <span class="fs-4">Loading...</span>
+                    <div
+                        id="loading-spinner"
+                        class="d-flex justify-content-center align-items-center gap-2"
+                        role="status"
+                    >
+                        <span
+                            class="spinner-border flex-shrink-0"
+                            style="width: 3rem; height: 3rem;"
+                            aria-hidden="true"
+                        ></span>
+                        <span class="fs-4">Loading...</span>
+                    </div>
+                </div>
         </div>
     </div>
-</div>
 {% endblock content %}
 
 {% block extra_css %}

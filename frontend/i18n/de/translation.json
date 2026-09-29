@@ -94,5 +94,19 @@
   "Loading user data...": "Benutzerdaten werden geladen...",
   "Add Corporation": "Corporation hinzufügen",
   "Add Alliance": "Allianz hinzufügen",
-  "Note: In \"All\" view, only the latest 10,000 killmails are displayed.": "Hinweis: In der Gesamtansicht (\"All\") werden maximal die letzten 10.000 Killmails angezeigt."
+  "Note: In \"All\" view, only the latest 10,000 killmails are displayed.": "Hinweis: In der Gesamtansicht (\"All\") werden maximal die letzten 10.000 Killmails angezeigt.",
+  "View Killmail": "Killmail ansehen",
+  "View Killmail on zKillboard": "Killmail auf zKillboard ansehen",
+  "First page": "Erste Seite",
+  "Previous page": "Vorherige Seite",
+  "Next page": "Nächste Seite",
+  "Last page": "Letzte Seite",
+  "Total: {{count}} killmails_one": "Insgesamt: {{count}} Killmail",
+  "Total: {{count}} killmails_other": "Insgesamt: {{count}} Killmails",
+  "View on zKillboard": "Auf zKillboard ansehen",
+  "Loading...": "Wird geladen...",
+  "Confirm": "Bestätigen",
+  "Close": "Schließen",
+  "Corporation": "Corporation",
+  "Alliance": "Alliance"
 }

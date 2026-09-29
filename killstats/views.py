@@ -37,83 +37,6 @@ def react_base(request):
 
 
 @login_required
-@permission_required("killstats.basic_access")
-def killboard_index(request):
-    main_char = getattr(getattr(request.user, "profile", None), "main_character", None)
-    corp_id = getattr(main_char, "corporation_id", None)
-    if corp_id:
-        return redirect("killstats:corporation", corporation_id=corp_id)
-    return redirect("killstats:react_base")
-
-
-@login_required
-@permission_required("killstats.basic_access")
-def corporation_view(request, corporation_id=None):
-    """Corporation Killboard View (React Frontend)."""
-    if corporation_id is None:
-        main_char = getattr(
-            getattr(request.user, "profile", None), "main_character", None
-        )
-        corporation_id = getattr(main_char, "corporation_id", 0)
-
-    context = {
-        "app_name": "killstats",
-        "title": "Corporation Killstats",
-        "entity_pk": corporation_id or 0,
-        "entity_type": "corporation",
-        "version": __version__,
-    }
-    return render(request, "killstats/react_killboard.html", context=context)
-
-
-@login_required
-@permission_required("killstats.basic_access")
-def alliance_view(request, alliance_id=None):
-    """Alliance Killboard View (React Frontend)."""
-    if alliance_id is None:
-        main_char = getattr(
-            getattr(request.user, "profile", None), "main_character", None
-        )
-        alliance_id = getattr(main_char, "alliance_id", None)
-        if alliance_id is None:
-            messages.error(request, _("You do not have an alliance."))
-            return redirect("killstats:index")
-
-    context = {
-        "app_name": "killstats",
-        "title": "Alliance Killstats",
-        "entity_pk": alliance_id,
-        "entity_type": "alliance",
-        "version": __version__,
-    }
-    return render(request, "killstats/react_killboard.html", context=context)
-
-
-@login_required
-@permission_required("killstats.basic_access")
-def corporation_admin(request):
-    """Corporation Overview (React Frontend)."""
-    context = {
-        "app_name": "killstats",
-        "title": "Corporation Overview",
-        "version": __version__,
-    }
-    return render(request, "killstats/react_killboard.html", context=context)
-
-
-@login_required
-@permission_required("killstats.basic_access")
-def alliance_admin(request):
-    """Alliance Overview (React Frontend)."""
-    context = {
-        "app_name": "killstats",
-        "title": "Alliance Overview",
-        "version": __version__,
-    }
-    return render(request, "killstats/react_killboard.html", context=context)
-
-
-@login_required
 @token_required(scopes=("publicData"))
 @permission_required(["killstats.admin_access"])
 def add_corp(request, token):
@@ -123,7 +46,7 @@ def add_corp(request, token):
     if not char.corporation_id or char.corporation_id < 10_000_000:
         msg = _("Cannot add NPC Corporation to Killstats")
         messages.error(request, msg)
-        return redirect("killstats:index")
+        return redirect("killstats:react_base")
 
     corp = EveCorporationInfo.objects.get_or_create(
         corporation_id=char.corporation_id,
@@ -140,7 +63,7 @@ def add_corp(request, token):
         f"{audit.corporation.corporation_name} successfully added/updated to Killstats"
     )
     messages.info(request, msg)
-    return redirect("killstats:corporation", corporation_id=corp.corporation_id)
+    return redirect("killstats:react_base")
 
 
 @login_required
@@ -153,13 +76,13 @@ def add_alliance(request, token):
     if not char.corporation_id or char.corporation_id < 10_000_000:
         msg = _("Cannot add Alliance for a character belonging to an NPC Corporation")
         messages.error(request, msg)
-        return redirect("killstats:index")
+        return redirect("killstats:react_base")
 
     # Check if character belongs to a valid player Alliance
     if not char.alliance_id or char.alliance_id < 10_000_000:
         msg = _("Character does not belong to a valid player Alliance")
         messages.error(request, msg)
-        return redirect("killstats:index")
+        return redirect("killstats:react_base")
 
     try:
         alliance = EveAllianceInfo.objects.get(
@@ -181,12 +104,7 @@ def add_alliance(request, token):
             char.alliance_id,
             exc,
         )
-        return redirect("killstats:index")
+        return redirect("killstats:react_base")
 
     messages.info(request, msg)
-    return redirect("killstats:alliance", alliance_id=alliance.alliance_id)
-
-
-# Backwards compatibility aliases
-react_corporation_view = corporation_view
-react_alliance_view = alliance_view
+    return redirect("killstats:react_base")
