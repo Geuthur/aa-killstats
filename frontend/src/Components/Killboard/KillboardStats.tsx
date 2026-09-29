@@ -3,7 +3,7 @@ import { AlertTriangle, Crosshair, Skull, TrendingUp, Users } from 'lucide-react
 import { useTranslation } from 'react-i18next';
 
 // AA Killstats
-import type { CombatSummaryResponse } from '@/Api/types';
+import type { CombatSummaryResponse } from '@/Api/schema';
 import { FetchingLoader } from '@/Components/Loader';
 import { formatNumber } from '@/Utils/eveOnline';
 
