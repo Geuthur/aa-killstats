@@ -18,8 +18,10 @@ import KillboardFilterBar from '@/Components/Killboard/KillboardFilterBar';
 import KillboardHallOfFame from '@/Components/Killboard/KillboardHallOfFame';
 import KillboardStats from '@/Components/Killboard/KillboardStats';
 import KillboardTable from '@/Components/Killboard/KillboardTable';
-import TopPilotsSection from '@/Components/Killboard/TopPilotsSection';
+import TopPilotsSection from '@/Components/Sections/TopPilotsSection';
 import { useModalQueryState } from '@/Components/Modals';
+
+import styles from '@/Components/Sections/KillboardSection.module.css';
 
 export interface KillboardSectionProps {
     entityType: string;
@@ -57,121 +59,93 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
     const [pageSize, setPageSize] = useState(25);
     const { openModal } = useModalQueryState();
 
-    // --- Parallel queries: summary loads fast, top-lists load independently ---
-
-    /** Counters & ISK – lightweight, appears first */
     const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
         queryKey: queryKeys.CombatSummary(year, month, entityType, entityId),
         queryFn: () => fetchCombatSummary(year, month, entityType, entityId),
     });
 
-    /** Hall of Fame / Shame */
     const { data: hallData, isLoading: isLoadingHall } = useQuery({
         queryKey: queryKeys.HallStats(year, month, entityType, entityId),
         queryFn: () => fetchHallStats(year, month, entityType, entityId),
     });
 
-    /** Killmails list – filtered by mode and paginated */
     const { data: killmailsData, isLoading: isLoadingKillmails } = useQuery({
         queryKey: queryKeys.Killmails(year, month, entityType, entityId, killmailMode, page, pageSize),
         queryFn: () => fetchKillmails(year, month, entityType, entityId, killmailMode, page, pageSize),
-        refetchInterval: 60_000, // refresh every 60 seconds
-        refetchIntervalInBackground: false, // Do not refetch in the background
+        refetchInterval: 60_000,
+        refetchIntervalInBackground: false,
         retry: 1,
     });
 
     return (
-        <div className="flex flex-col gap-6 text-gray-100 p-4">
+        <div className={styles['killboard-section']}>
             <KillboardFilterBar
                 year={year}
                 month={month}
-                onYearChange={(newYear) => {
-                    setYear(newYear);
-                    setPage(1);
-                }}
-                onMonthChange={(newMonth) => {
-                    setMonth(newMonth);
-                    setPage(1);
-                }}
+                onYearChange={(newYear) => { setYear(newYear); setPage(1); }}
+                onMonthChange={(newMonth) => { setMonth(newMonth); setPage(1); }}
             />
 
-            {/* Stats bar: shows immediately when the fast summary arrives */}
             <KillboardStats data={summaryData} isLoading={isLoadingSummary} />
 
             {/* Banner with button to open Top 10 Modal */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border-killstats rounded-xl p-4">
-                <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-zinc-800/80 border-killstats text-amber-400">
-                        <Trophy className="h-5 w-5" />
+            <div className="aa-panel-lg ks-banner">
+                <div className="ks-banner-inner">
+                    <div className="ks-icon-badge" style={{ color: '#fbbf24' }}>
+                        <Trophy size="20" />
                     </div>
                     <div>
-                        <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-0.5">
+                        <h4 className="ks-banner-title">
                             {t('Top 10 Rankings')}
                         </h4>
-                        <p className="text-xs text-zinc-400 mb-0">
+                        <p className="ks-banner-subtitle">
                             {t('View the most active attackers and highest loss pilots.')}
                         </p>
                     </div>
                 </div>
                 <button
-                    className="flex items-center gap-2 px-3.5 py-1.5 self-start sm:self-auto bg-zinc-950/70 rounded-md text-xs border-killstats hover:border-zinc-500 font-bold tracking-wider transition-all cursor-pointer text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 cursor-pointer"
+                    className="ks-banner-btn"
                     onClick={() => openModal('top-pilots')}
                 >
-                    <Users className="w-4 h-4" />
+                    <Users size="16" />
                     <span>{t('Open Top 10 Pilots')}</span>
                 </button>
             </div>
 
-            {/* Hall of Fame in its own dedicated full-width container */}
             <KillboardHallOfFame data={hallData} isLoading={isLoadingHall} />
 
-            {/* Killmail Log Table - on the same page with mode filter */}
-            <div className="flex flex-col gap-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border-killstats rounded-xl p-4">
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2 m-0">
+            {/* Killmail Log Table */}
+            <div className={styles['killmail-log-container']}>
+                <div className="aa-panel-lg ks-log-header">
+                    <h3 className="ks-log-title">
                         <span>{t('Killmails Log')}</span>
                         {killmailsData?.total !== undefined && (
-                            <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 border-killstats text-zinc-300">
+                            <span className="ks-count-badge">
                                 {killmailsData.total}
                             </span>
                         )}
                     </h3>
 
-                    {/* Mode Filter: All / Kills / Losses */}
-                    <div className="flex items-center gap-1.5 p-1 bg-zinc-950/70 border-killstats rounded-lg self-start sm:self-auto">
+                    {/* Mode Filter */}
+                    <div className="aa-tab-bar" style={{ alignSelf: 'flex-start' }}>
                         <button
-                            onClick={() => {
-                                setKillmailMode('all');
-                                setPage(1);
-                            }}
-                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${killmailMode === 'all'
-                                    ? 'bg-blue-600 text-white shadow-sm'
-                                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
-                                }`}
+                            onClick={() => { setKillmailMode('all'); setPage(1); }}
+                            className={`ks-tab-btn${killmailMode === 'all' ? ' active ks-tab-btn-all' : ''}`}
+                            style={{ padding: '4px 12px' }}
                         >
                             {t('All')}
                         </button>
                         <button
-                            onClick={() => {
-                                setKillmailMode('kills');
-                                setPage(1);
-                            }}
-                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${killmailMode === 'kills'
-                                    ? 'bg-emerald-600 text-white shadow-sm'
-                                    : 'text-zinc-400 hover:text-emerald-300 hover:bg-zinc-800/50'
-                                }`}
+                            onClick={() => { setKillmailMode('kills'); setPage(1); }}
+                            className={`ks-tab-btn${killmailMode === 'kills' ? ' active ks-tab-btn-kills' : ''}`}
+                            style={{ padding: '4px 12px' }}
                         >
                             {t('Kills')}
                         </button>
                         <button
-                            onClick={() => {
-                                setKillmailMode('losses');
-                                setPage(1);
-                            }}
-                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${killmailMode === 'losses'
-                                    ? 'bg-rose-600 text-white shadow-sm'
-                                    : 'text-zinc-400 hover:text-rose-300 hover:bg-zinc-800/50'
-                                }`}
+                            onClick={() => { setKillmailMode('losses'); setPage(1); }}
+                            className={`ks-tab-btn${killmailMode === 'losses' ? ' active ks-tab-btn-losses' : ''}`}
+                            style={{ padding: '4px 12px' }}
                         >
                             {t('Losses')}
                         </button>
@@ -184,15 +158,11 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
                     page={page}
                     pageSize={pageSize}
                     onPageChange={setPage}
-                    onPageSizeChange={(newSize) => {
-                        setPageSize(newSize);
-                        setPage(1);
-                    }}
+                    onPageSizeChange={(newSize) => { setPageSize(newSize); setPage(1); }}
                     isLoading={isLoadingKillmails}
                 />
             </div>
 
-            {/* Top 10 Pilots Modal dialog managed via modal system */}
             <TopPilotsSection
                 year={year}
                 month={month}

@@ -1,5 +1,7 @@
 // Third Party
 import i18n from 'i18next';
+import { renderTooltip } from '@/Utils/bootsTrap';
+import { ExternalLink } from 'lucide-react';
 
 /**
  * Returns the URL for the image of a given ship type.
@@ -21,14 +23,44 @@ export function CharacterImageUrl(characterId: number, size: number = 512): stri
 }
 
 /**
+ * Returns the URL for the image of a given corporation.
+ * @param corporationId The ID of the corporation
+ * @param size The size of the logo in pixels (defaults to 128)
+ * @returns URL of the corporation logo
+ */
+export function CorporationImageUrl(corporationId: number, size: number = 128): string {
+    return `https://images.evetech.net/corporations/${corporationId}/logo?size=${size}`;
+}
+
+/**
+ * Returns the URL for the image of a given alliance.
+ * @param allianceId The ID of the alliance
+ * @param size The size of the logo in pixels (defaults to 128)
+ * @returns URL of the alliance logo
+ */
+export function AllianceImageUrl(allianceId: number, size: number = 128): string {
+    return `https://images.evetech.net/alliances/${allianceId}/logo?size=${size}`;
+}
+
+/**
+ * Returns the URL for the image of a given item type.
+ * @param typeId The ID of the item type
+ * @param size The size of the icon in pixels (defaults to 32)
+ * @returns URL of the item image
+ */
+export function ItemImageUrl(typeId: number, size: number = 32): string {
+    return `https://images.evetech.net/types/${typeId}/icon?size=${size}`;
+}
+
+/**
  * Returns the appropriate CSS classes for a given security status.
  * @param sec The security status of the solar system
  * @returns CSS classes for text color, background color, and border color
  */
 export const getSecColor = (sec: number) => {
-    if (sec >= 0.5) return '!text-emerald-400 !bg-emerald-950/60 border-emerald-500/40';
-    if (sec > 0.0) return '!text-amber-400 !bg-amber-950/60 border-amber-500/40';
-    return '!text-rose-400 !bg-rose-950/60 border-rose-500/40';
+    if (sec >= 0.5) return 'aa-badge-hisec';
+    if (sec > 0.0) return 'aa-badge-lowsec';
+    return 'aa-badge-nullsec';
 };
 
 /**
@@ -100,4 +132,45 @@ export function formatRelativeTime(value?: string | Date | null): string {
     const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
     return rtf.format(count, interval.unit);
+}
+
+
+/**
+ * Generates a link to a specific killmail on zKillboard.
+ * @param id The ID of the killmail
+ * @param name The display name for the link
+ * @returns A JSX element containing the link with a tooltip
+ */
+export function zKillboardLink({
+    id, 
+    name, 
+    size = 12,
+    className = "",
+    externalLink = false
+}: {id: number, name: string, size?: number, className?: string, externalLink?: boolean}) {
+    let url = `https://zkillboard.com/kill/${id}/`;
+    return renderTooltip(
+        name,
+        <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={className}
+        >
+            {name}
+            {externalLink && <ExternalLink size={size} />}
+        </a>
+    )
+}
+
+/**
+ * Generates a finished Portrait for a character react component.
+ * @param characterId The ID of the character
+ * @param size The size of the image in pixels (defaults to 32)
+ * @returns A React node containing the character portrait image
+ */
+export function renderCharacterPortrait(characterId: number, size: number = 32): React.ReactNode {
+    return (
+        <img src={`https://images.evetech.net/characters/${characterId}/portrait?size=${size}`} className="rounded"/>
+    );
 }

@@ -10,6 +10,8 @@ import { FetchingLoader } from '@/Components/Loader';
 import BaseModal, { ModalSize, type ModalData, useModalQueryState } from '@/Components/Modals/BaseModal';
 import { formatNumber } from '@/Utils/eveOnline';
 
+import styles from '@/Components/Sections/TopPilotSection.module.css';
+
 export interface TopPilotsSectionProps {
     year: number | 'all';
     month: number | 'all';
@@ -24,9 +26,9 @@ export interface TopPilotsSectionProps {
 function PilotCard({ title }: { title: string }) {
     const { t } = useTranslation();
     return (
-        <div className="flex-1 rounded-xl border-killstats bg-[#0b0e14] p-5 flex flex-col min-h-[320px] shadow-sm backdrop-blur-md">
-            <h3 className="text-base font-bold mb-4 text-white uppercase tracking-wider">{title}</h3>
-            <div className="flex-1 flex items-center justify-center">
+        <div className={`${styles['ks-inner-panel']} ${styles['ks-inner-card']}`}>
+            <h3 className={styles['ks-pilot-panel-title']}>{title}</h3>
+            <div className={styles['ks-inner-default-div']}>
                 <FetchingLoader message={t('Loading pilots...')} />
             </div>
         </div>
@@ -50,60 +52,57 @@ function PilotList({
 
     if (!pilots?.length) {
         return (
-            <div className="flex-1 rounded-xl border-killstats bg-[#0b0e14] p-5 shadow-sm backdrop-blur-md">
-                <h3 className="text-base font-bold mb-4 text-white uppercase tracking-wider">{title}</h3>
-                <p className="text-zinc-400 text-sm">{t('No data available.')}</p>
+            <div className={styles['ks-inner-panel']}>
+                <h3 className={styles['ks-pilot-panel-title']}>{title}</h3>
+                <p style={{ color: '#a1a1aa', fontSize: '.875rem' }}>{t('No data available.')}</p>
             </div>
         );
     }
 
     return (
-        <div className="flex-1 rounded-xl border-killstats bg-[#0b0e14] p-5 shadow-sm backdrop-blur-md">
-            <h3 className="text-base font-bold mb-4 text-white uppercase tracking-wider">{title}</h3>
-            <div className="space-y-2">
+        <div className={styles['ks-inner-panel']}>
+            <h3 className={styles['ks-pilot-panel-title']}>{title}</h3>
+            <div className={styles['ks-inner-div']}>
                 {pilots.map((pilot, idx) => (
-                    <div
-                        key={pilot.character_id}
-                        className="flex items-center gap-3 p-2.5 bg-zinc-700/60 m-1 rounded-lg border-killstats border-transparent hover:border-zinc-700/60 hover:bg-zinc-800/60 transition-all"
-                    >
-                        <div className="text-zinc-500 font-mono font-bold w-6 text-center text-sm">{idx + 1}</div>
+                    <div key={pilot.character_id} className={styles['ks-pilot-row']}>
+                        <div className={styles['ks-pilot-rank']}>{idx + 1}</div>
                         <a
+                            className="aa-cursor-pointer"
                             href={`https://zkillboard.com/character/${pilot.character_id}/`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="shrink-0 block cursor-pointer"
                         >
                             <img
                                 src={`https://images.evetech.net/characters/${pilot.character_id}/portrait?size=64`}
                                 alt={pilot.character_name}
-                                className="w-10 h-10 rounded-lg border-killstats object-cover bg-zinc-900 hover:border-zinc-500 transition-colors"
+                                className={styles['ks-pilot-avatar']}
                             />
                         </a>
-                        <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-white truncate">
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className="ks-external">
                                 <a
                                     href={`https://zkillboard.com/character/${pilot.character_id}/`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:underline hover:text-emerald-300 transition-colors block truncate"
+                                    className={styles['ks-pilot-name']}
                                 >
                                     {pilot.character_name}
                                 </a>
                             </div>
                             {pilot.main_name && (
-                                <div className="text-xs text-zinc-400 truncate">
+                                <div className="ks-external">
                                     {t('Main: {{name}}', { name: pilot.main_name })}
                                 </div>
                             )}
                         </div>
-                        <div className="text-right">
-                            <div className={`text-xs sm:text-sm font-bold ${isVictims ? 'text-rose-400' : 'text-emerald-400'}`}>
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '.75rem', fontWeight: 700, color: isVictims ? '#fb7185' : '#34d399' }}>
                                 {isVictims
                                     ? t('{{count}} Losses', { count: pilot.count })
                                     : t('{{count}} Kills', { count: pilot.count })}
                             </div>
-                            <div className="text-xs text-zinc-400 font-mono">
-                                {t('{{amount}} ISK', { amount: formatNumber(pilot.total_value) })}
+                            <div style={{ fontSize: '.75rem', color: '#a1a1aa', fontFamily: 'monospace' }}>
+                                {t('{{amount}}', { amount: formatNumber(pilot.total_value) })}
                             </div>
                         </div>
                     </div>
@@ -144,7 +143,7 @@ export function TopPilotsSection({
     });
 
     const content = (
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className={styles['ks-top-pilots-layout']}>
             <PilotList
                 pilots={attackersData?.pilots}
                 title={t('Top 10 Attackers')}
@@ -180,7 +179,6 @@ export function TopPilotsSection({
                 if (!show) handleClose();
             }}
             size={ModalSize.extraLarge}
-            contentClassName="bg-zinc-900 text-zinc-100 border-killstats rounded-xl shadow-2xl"
         >
             {content}
         </BaseModal>
@@ -189,4 +187,3 @@ export function TopPilotsSection({
 
 export { TopPilotsSection as TopPilotsModal };
 export default TopPilotsSection;
-

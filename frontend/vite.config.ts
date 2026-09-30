@@ -1,5 +1,4 @@
 // Third Party
-import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react-swc"
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -12,7 +11,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
   },
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -24,12 +23,6 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       onwarn(warning, warn) {
-        if (
-          warning.code === 'SOURCEMAP_BROKEN' &&
-          warning.plugin?.includes('@tailwindcss/vite')
-        ) {
-          return;
-        }
         warn(warning);
       },
       output: {

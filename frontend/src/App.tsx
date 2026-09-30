@@ -14,7 +14,7 @@ import "@/App.css";
 
 import AuthBase from "@/Pages/Base";
 import { KillboardPage } from "@/Pages/Killboard";
-import { OverviewPage } from "@/Pages/OverviewPage";
+import { OverviewPage } from "@/Pages/Overview";
 
 const queryClient = new QueryClient();
 export const AppName = "aa-killstats";
