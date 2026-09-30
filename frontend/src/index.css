@@ -6,6 +6,11 @@
 
 /* ═══ DESIGN TOKENS for AA ═══════════════════════════════════════════════════════ */
 :root {
+    --font-hud: 'Rajdhani', sans-serif;
+    --font-tech: 'Chakra Petch', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
     --aa-body: var(--aa-color-body); /* Background for AA Container */
     --aa-link-body: rgba(39, 39, 42, 1); /* Link Background Light */
     --aa-link-body-light: rgb(61, 61, 66, 1); /* Link Background */
