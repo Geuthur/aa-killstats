@@ -33,7 +33,6 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 - Graphical Overview
 - Corporation & Alliance Overview
 - Kills/Losses
-- Main Character and Alts combined ([explanation](/killstats/docs/explanation.md))
 - Hall of Fame, Hall of Shame
 - Killstats like Top Kill, Top Killer, Top Loss, Alltime Killer, etc.
 - Top 10 list for each Month
