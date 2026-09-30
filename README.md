@@ -43,6 +43,11 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 - Filtering Settings for each Corporation / Alliance
 - Administration Access for specific Corps or Alliances
 
+## Highlights<a name="highlights"></a>
+
+![Killboard](https://raw.githubusercontent.com/Geuthur/aa-killstats/master/docs/img/killstats.png)
+![Overview](https://raw.githubusercontent.com/Geuthur/aa-killstats/master/docs/img/overview.png)
+
 ## Installation<a name="installation"></a>
 
 > [!NOTE]
@@ -149,12 +154,6 @@ The Following Settings can be setting up in the `local.py`
 ### Step 6 - (Optional) Settings<a name="step6"></a>
 
 - KILLSTATS_BULK_BATCH_SIZE: `500` - Maximum database batch size per operation. Reduce (e.g., 250) if encountering 'max_allowed_packet' errors, increase for better performance if MySQL is configured with higher limits
-
-## Highlights<a name="highlights"></a>
-
-![Stats](/killstats/docs/img/killstats1.png)
-![Hall](/killstats/docs/img/killstats2.png)
-![Kills](/killstats/docs/img/killstats3.png)
 
 ## Translations<a name="translations"></a>
 

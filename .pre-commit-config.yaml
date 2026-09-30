@@ -34,7 +34,8 @@ exclude: |
     .node(.json) |
     locale/ |
     static/(.*)/libs/ |
-    static/(.*)/react/
+    static/(.*)/react/ |
+    docs/
   )
 
 # pre-commit setup
