@@ -26,7 +26,7 @@ logger = AppLogger(get_extension_logger(__name__), __title__)
 
 @login_required
 @permission_required("killstats.basic_access")
-def react_base(request):
+def react_base(request, *args, **kwargs):  # pylint: disable=unused-argument
     """React Frontend SPA Base View."""
     context = {
         "app_name": "killstats",

@@ -53,3 +53,18 @@ class TestViewKillstatsAccess(AuthTestCase):
         self.assertEqual(resp_corp_overview.status_code, HTTPStatus.OK)
         self.assertEqual(resp_alli_overview.status_code, HTTPStatus.OK)
         self.assertEqual(resp_root.status_code, HTTPStatus.OK)
+
+    def test_client_access_entity_routes(self):
+        """Test client GET on corporation and alliance named routes returns 200 OK."""
+        # Test Data
+        self.client.force_login(self.user)
+        corp_url = reverse("killstats:corporation", kwargs={"entity_id": 98000001})
+        alli_url = reverse("killstats:alliance", kwargs={"entity_id": 99000001})
+
+        # Test Action
+        resp_corp = self.client.get(corp_url)
+        resp_alli = self.client.get(alli_url)
+
+        # Expected Result
+        self.assertEqual(resp_corp.status_code, HTTPStatus.OK)
+        self.assertEqual(resp_alli.status_code, HTTPStatus.OK)
