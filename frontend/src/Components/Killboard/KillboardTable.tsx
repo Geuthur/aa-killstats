@@ -10,13 +10,14 @@ import {
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import styles from '@/Components/Killboard/KillboardTable.module.css';
+
 // AA Killstats
 import type { KillmailItemSchema } from '@/Api/schema';
 import { getKillboardTableColumns } from '@/Components/Killboard/KillboardTableColumns';
 import { FetchingLoader } from '@/Components/Loader';
 import { renderTooltip } from '@/Utils';
-
-import styles from '@/Components/Killboard/KillboardTable.module.css';
 
 interface KillboardTableProps {
     data: KillmailItemSchema[];

@@ -9,8 +9,8 @@ import { useTranslation } from "react-i18next";
 import { loadUserData } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import { AppName } from "@/App";
-import KillboardSection from "@/Components/Sections/KillboardSection";
 import { FetchingLoader } from "@/Components/Loader";
+import KillboardSection from "@/Components/Sections/KillboardSection";
 
 export function KillboardPage() {
     const { t } = useTranslation();

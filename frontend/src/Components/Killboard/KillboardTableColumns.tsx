@@ -1,12 +1,13 @@
 // Third Party
 import type { ColumnDef } from '@tanstack/react-table';
 
+// Styles
+import styles from '@/Components/Killboard/KillboardTableColumns.module.css';
+
 // AA Killstats
 import type { KillmailItemSchema } from '@/Api/schema';
 import { renderTooltip } from '@/Utils';
 import { formatNumber, getSecColor, formatRelativeTime, renderCharacterPortrait } from '@/Utils/eveOnline';
-
-import styles from '@/Components/Killboard/KillboardTableColumns.module.css';
 import { renderLink, renderShipImage } from '@/Utils/general';
 
 export function getKillboardTableColumns(

@@ -6,6 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+// Styles
+import styles from "@/Components/Sections/OverViewSection.module.css";
+
 // AA Killstats
 import {
     loadAlliancesOverview,
@@ -15,8 +18,6 @@ import { queryKeys } from "@/Api/query";
 import { ProjectName } from "@/App";
 import { FetchingLoader } from "@/Components/Loader";
 import { renderLink } from "@/Utils/general";
-
-import styles from "@/Components/Sections/OverViewSection.module.css";
 
 export interface OverviewPageProps {
     entityType: "corporation" | "alliance";

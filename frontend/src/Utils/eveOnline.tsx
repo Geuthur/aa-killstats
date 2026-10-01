@@ -1,14 +1,15 @@
 // Third Party
 import i18n from 'i18next';
-import { renderTooltip } from '@/Utils/bootsTrap';
 import { ExternalLink } from 'lucide-react';
+
+import { renderTooltip } from '@/Utils/bootsTrap';
 
 /**
  * Returns the URL for the image of a given ship type.
  * @param shipTypeId The ID of the ship type
  * @returns URL of the ship image
  */
-export function ShipImageUrl(shipTypeId: number, size: number = 512): string {
+export function shipImageUrl(shipTypeId: number, size: number = 512): string {
     return `https://images.evetech.net/types/${shipTypeId}/render?size=${size}`;
 }
 
@@ -18,7 +19,7 @@ export function ShipImageUrl(shipTypeId: number, size: number = 512): string {
  * @param size The size of the portrait in pixels (defaults to 512)
  * @returns URL of the character image
  */
-export function CharacterImageUrl(characterId: number, size: number = 512): string {
+export function characterImageUrl(characterId: number, size: number = 512): string {
     return `https://images.evetech.net/characters/${characterId}/portrait?size=${size}`;
 }
 
@@ -28,7 +29,7 @@ export function CharacterImageUrl(characterId: number, size: number = 512): stri
  * @param size The size of the logo in pixels (defaults to 128)
  * @returns URL of the corporation logo
  */
-export function CorporationImageUrl(corporationId: number, size: number = 128): string {
+export function corporationImageUrl(corporationId: number, size: number = 128): string {
     return `https://images.evetech.net/corporations/${corporationId}/logo?size=${size}`;
 }
 
@@ -38,7 +39,7 @@ export function CorporationImageUrl(corporationId: number, size: number = 128): 
  * @param size The size of the logo in pixels (defaults to 128)
  * @returns URL of the alliance logo
  */
-export function AllianceImageUrl(allianceId: number, size: number = 128): string {
+export function allianceImageUrl(allianceId: number, size: number = 128): string {
     return `https://images.evetech.net/alliances/${allianceId}/logo?size=${size}`;
 }
 
@@ -48,7 +49,7 @@ export function AllianceImageUrl(allianceId: number, size: number = 128): string
  * @param size The size of the icon in pixels (defaults to 32)
  * @returns URL of the item image
  */
-export function ItemImageUrl(typeId: number, size: number = 32): string {
+export function itemImageUrl(typeId: number, size: number = 32): string {
     return `https://images.evetech.net/types/${typeId}/icon?size=${size}`;
 }
 
@@ -148,7 +149,7 @@ export function zKillboardLink({
     className = "",
     externalLink = false
 }: {id: number, name: string, size?: number, className?: string, externalLink?: boolean}) {
-    let url = `https://zkillboard.com/kill/${id}/`;
+    const url = `https://zkillboard.com/kill/${id}/`;
     return renderTooltip(
         name,
         <a

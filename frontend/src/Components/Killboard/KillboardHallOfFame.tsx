@@ -5,13 +5,14 @@ import { useState } from 'react';
 import { Flame, ShieldAlert, Skull, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import styles from '@/Components/Killboard/KillboardHallOfFame.module.css';
+
 // AA Killstats
 import type { HallEntrySchema, HallResponse } from '@/Api/schema';
 import { FetchingLoader } from '@/Components/Loader';
 import { renderTooltip } from '@/Utils';
 import { formatNumber, zKillboardLink } from '@/Utils/eveOnline';
-
-import styles from '@/Components/Killboard/KillboardHallOfFame.module.css';
 
 export interface KillboardHallOfFameProps {
     data?: HallResponse;

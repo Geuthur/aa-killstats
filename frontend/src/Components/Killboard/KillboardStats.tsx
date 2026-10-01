@@ -2,12 +2,13 @@
 import { AlertTriangle, Crosshair, Skull, TrendingUp, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import styles from '@/Components/Killboard/KillboardStats.module.css';
+
 // AA Killstats
 import type { CombatSummaryResponse } from '@/Api/schema';
 import { FetchingLoader } from '@/Components/Loader';
 import { formatNumber } from '@/Utils/eveOnline';
-
-import styles from '@/Components/Killboard/KillboardStats.module.css';
 
 interface KillboardStatsProps {
     data?: CombatSummaryResponse;

@@ -3,22 +3,22 @@ import { describe, expect, it } from 'vitest';
 
 // AA Example
 import {
-    CharacterImageUrl,
+    characterImageUrl,
     formatEveTime,
     formatNumber,
     formatRelativeTime,
     getSecColor,
-    ShipImageUrl,
+    shipImageUrl,
 } from '@/Utils/eveOnline';
 
 describe('eveOnline utils', () => {
-    describe('ShipImageUrl', () => {
+    describe('shipImageUrl', () => {
         it('should return correct ship image url with default size', () => {
             // Test Data
             const typeId = 587;
 
             // Test Action
-            const url = ShipImageUrl(typeId);
+            const url = shipImageUrl(typeId);
 
             // Expected Result
             expect(url).toBe('https://images.evetech.net/types/587/render?size=512');
@@ -30,20 +30,20 @@ describe('eveOnline utils', () => {
             const size = 128;
 
             // Test Action
-            const url = ShipImageUrl(typeId, size);
+            const url = shipImageUrl(typeId, size);
 
             // Expected Result
             expect(url).toBe('https://images.evetech.net/types/587/render?size=128');
         });
     });
 
-    describe('CharacterImageUrl', () => {
+    describe('characterImageUrl', () => {
         it('should return correct portrait url with default size', () => {
             // Test Data
             const characterId = 98000001;
 
             // Test Action
-            const url = CharacterImageUrl(characterId);
+            const url = characterImageUrl(characterId);
 
             // Expected Result
             expect(url).toBe('https://images.evetech.net/characters/98000001/portrait?size=512');
@@ -55,7 +55,7 @@ describe('eveOnline utils', () => {
             const size = 256;
 
             // Test Action
-            const url = CharacterImageUrl(characterId, size);
+            const url = characterImageUrl(characterId, size);
 
             // Expected Result
             expect(url).toBe('https://images.evetech.net/characters/98000001/portrait?size=256');
@@ -63,7 +63,7 @@ describe('eveOnline utils', () => {
     });
 
     describe('getSecColor', () => {
-        it('should return emerald classes for highsec (>= 0.5)', () => {
+        it('should return hisec badge for highsec (>= 0.5)', () => {
             // Test Data
             const sec = 0.9;
 
@@ -71,11 +71,10 @@ describe('eveOnline utils', () => {
             const classes = getSecColor(sec);
 
             // Expected Result
-            expect(classes).toContain('text-emerald-400');
-            expect(classes).toContain('border-emerald-500/40');
+            expect(classes).toBe('aa-badge-hisec');
         });
 
-        it('should return amber classes for lowsec (> 0.0 and < 0.5)', () => {
+        it('should return lowsec badge for lowsec (> 0.0 and < 0.5)', () => {
             // Test Data
             const sec = 0.4;
 
@@ -83,11 +82,10 @@ describe('eveOnline utils', () => {
             const classes = getSecColor(sec);
 
             // Expected Result
-            expect(classes).toContain('text-amber-400');
-            expect(classes).toContain('border-amber-500/40');
+            expect(classes).toBe('aa-badge-lowsec');
         });
 
-        it('should return rose classes for nullsec/wormholes (<= 0.0)', () => {
+        it('should return nullsec badge for nullsec/wormholes (<= 0.0)', () => {
             // Test Data
             const sec = -0.2;
 
@@ -95,8 +93,7 @@ describe('eveOnline utils', () => {
             const classes = getSecColor(sec);
 
             // Expected Result
-            expect(classes).toContain('text-rose-400');
-            expect(classes).toContain('border-rose-500/40');
+            expect(classes).toBe('aa-badge-nullsec');
         });
     });
 

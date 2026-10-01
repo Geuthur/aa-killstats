@@ -2,6 +2,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import styles from '@/Components/Sections/TopPilotSection.module.css';
+
 // AA Killstats
 import { fetchTopAttackers, fetchTopVictims } from '@/Api/ApiCalls';
 import { queryKeys } from '@/Api/query';
@@ -9,8 +12,6 @@ import type { TopPilotSchema } from '@/Api/schema';
 import { FetchingLoader } from '@/Components/Loader';
 import BaseModal, { ModalSize, type ModalData, useModalQueryState } from '@/Components/Modals/BaseModal';
 import { formatNumber } from '@/Utils/eveOnline';
-
-import styles from '@/Components/Sections/TopPilotSection.module.css';
 
 export interface TopPilotsSectionProps {
     year: number | 'all';

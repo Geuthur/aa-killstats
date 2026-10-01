@@ -2,6 +2,7 @@
 import { Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
+// Styles
 import styles from '@/Components/Killboard/KillboardFilterBar.module.css';
 
 export interface KillboardFilterBarProps {

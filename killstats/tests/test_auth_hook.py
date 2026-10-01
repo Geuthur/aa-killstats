@@ -18,7 +18,7 @@ class TestAuthHooks(AuthTestCase):
         cls.html_menu = f"""
             <li class="d-flex flex-wrap m-2 p-2 pt-0 pb-0 mt-0 mb-0 me-0 pe-0">
                 <i class="nav-link fas fa-star fa-fw fa-fw align-self-center me-3 active"></i>
-                <a class="nav-link flex-fill align-self-center me-auto active" href="{reverse('killstats:index')}">
+                <a class="nav-link flex-fill align-self-center me-auto active" href="{reverse('killstats:react_base')}">
                     Killstats
                 </a>
             </li>
@@ -28,7 +28,7 @@ class TestAuthHooks(AuthTestCase):
         self.client.force_login(self.user)
 
         response = self.client.get(
-            reverse("killstats:index"), follow=True
+            reverse("killstats:react_base"), follow=True
         )  # Follow redirects
 
         # Überprüfen, ob der Benutzer korrekt weitergeleitet wurde
