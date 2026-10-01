@@ -1,0 +1,295 @@
+.ks-h3 {
+    font-size: var(--aa-font-size-lg);
+    font-weight: 700;
+    color: var(--aa-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.ks-trophy {
+    background-color: var(--aa-color-amber);
+    color: var(--aa-color-amber);
+}
+
+.ks-skull {
+    color: var(--aa-color-rose);
+    background-color: var(--aa-color-rose);
+}
+
+.border-killstats {
+    border: 2px solid #27272a;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══ TAB BAR ═══════════════════════════════════════════════════════════════ */
+.ks-tab-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    background-color: var(--aa-bg-dark);
+    border: var(--aa-border-solid);
+    border-radius: 8px;
+    box-shadow: var(--aa-shadow);
+}
+
+.ks-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: var(--aa-font-size);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--aa-text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.ks-tab-btn:not(.active):hover {
+    color: #e4e4e7;
+    background-color: rgba(39, 39, 42, .5);
+}
+
+.ks-tab-btn-all {
+    background-color: var(--aa-blue-active);
+    color: var(--aa-text-primary);
+}
+
+.ks-tab-btn-kills {
+    background-color: var(--aa-color-emerald);
+    color: var(--aa-text-primary);
+}
+
+.ks-tab-btn-losses {
+    background-color: var(--aa-color-red);
+    color: var(--aa-text-primary);
+}
+
+/* ═══ ISK VALUE BADGES ══════════════════════════════════════════════════════ */
+.ks-isk-positive,
+.ks-isk-negative {
+    font-size: var(--aa-font-size);
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--aa-shadow-dark);
+}
+
+@media (min-width: 640px) {
+
+    .ks-isk-positive,
+    .ks-isk-negative {
+        font-size: var(--aa-font-size-sm);
+    }
+}
+
+.ks-isk-positive {
+    background-color: var(--aa-color-emerald-dark);
+    color: var(--aa-text-emerald);
+    border: 1px solid var(--aa-border-emerald);
+}
+
+.ks-isk-negative {
+    background-color: var(--aa-color-rose-dark);
+    color: var(--aa-text-rose);
+    border: 1px solid var(--aa-border-rose);
+}
+
+/* ═══ EXTERNAL LINK BUTTON ══════════════════════════════════════════════════ */
+.ks-zkb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    margin-top: 8px;
+    background-color: var(--aa-bg-dark);
+    color: var(--aa-text-primary);
+    font-size: var(--aa-font-size);
+    font-weight: 700;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: .05em;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--aa-shadow-dark);
+    text-decoration: none;
+    transition: background-color 150ms ease, color 150ms ease;
+    border-radius: 6px;
+    border: var(--aa-border-solid-lg);
+}
+
+.ks-zkb-link:hover {
+    background-color: var(--aa-link-body);
+    border-color: var(--aa-border-light);
+    color: var(--aa-text-primary);
+    text-decoration: none;
+}
+
+/* ═══ ICON BADGE ════════════════════════════════════════════════════════════ */
+.ks-icon-badge {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(39, 39, 42, .8);
+    border: var(--aa-border-solid);
+    box-shadow: var(--aa-shadow);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ═══ SHIP IMAGES ═══════════════════════════════════════════════════════════ */
+.ks-ship-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: contain;
+    border: var(--aa-border-solid);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+    transition: border-color 150ms ease, transform 150ms ease;
+}
+
+@media (min-width: 640px) {
+    .ks-ship-thumb {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+.ks-ship-thumb:hover {
+    border-color: #52525b;
+    transform: scale(1.25);
+}
+
+/* ═══ LAYOUT HELPERS (ergänzt für TSX-Migration) ════════════════════════════ */
+
+/* Banner-Row: Panel mit Icon + Text + Button */
+.ks-banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: var(--aa-border-radius);
+    border: var(--aa-border-solid);
+    background-color: var(--aa-body);
+    padding: 16px;
+    box-shadow: var(--aa-shadow);
+}
+
+@media (min-width: 640px) {
+    .ks-banner {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.ks-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ks-banner-title {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--aa-text-primary);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 2px;
+}
+
+.ks-banner-subtitle {
+    font-size: .75rem;
+    color: var(--aa-text-secondary);
+    margin: 0;
+}
+
+/* Banner-Button */
+.ks-banner-btn {
+    background-color: var(--aa-bg-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    align-self: flex-start;
+    border-radius: 6px;
+    font-size: .75rem;
+    border: var(--aa-border-solid);
+    font-weight: 700;
+    letter-spacing: .05em;
+    color: var(--aa-text-secondary);
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.ks-banner-btn:hover {
+    border-color: #52525b;
+    color: #e4e4e7;
+    background-color: rgba(39, 39, 42, 0.5);
+}
+
+@media (min-width: 640px) {
+    .ks-banner-btn {
+        align-self: auto;
+    }
+}
+
+/* Killmail-Log Kopfzeile */
+.ks-log-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: var(--aa-border-radius);
+    border: var(--aa-border-solid);
+    background-color: var(--aa-body);
+    padding: 16px;
+    box-shadow: var(--aa-shadow);
+}
+
+@media (min-width: 640px) {
+    .ks-log-header {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.ks-log-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--aa-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.ks-count-badge {
+    font-size: .75rem;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: #27272a;
+    border: var(--aa-border-solid);
+    color: #d4d4d8;
+}
+
+/* ═══ EXTERNAL LINK ══════════════════════════════════════════════════ */
+
+.ks-external {
+    font-weight: 600;
+    color: var(--aa-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5));
+    width: fit-content;
+}

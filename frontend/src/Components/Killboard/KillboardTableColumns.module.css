@@ -1,0 +1,66 @@
+/* ═══ BADGES ════════════════════════════════════════════════════════════════ */
+.ks-badge-kill,
+.ks-badge-loss {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: var(--aa-font-size-xs);
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    box-shadow: var(--aa-shadow-dark);
+}
+
+.ks-badge-kill {
+    background-color: var(--aa-bg-emerald-light);
+    color: var(--aa-text-emerald);
+    border: 2px solid var(--aa-border);
+}
+
+.ks-badge-loss {
+    background-color: var(--aa-bg-rose-dark);
+    color: var(--aa-text-rose);
+    border: 2px solid var(--aa-border);
+}
+
+/* ═══ Rows ═══════════════════════════════════════════════════ */
+
+.ks-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.ks-row-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.ks-row-inline img {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+}
+
+/* ═══ Hyperlinks ═══════════════════════════════════════════════════ */
+
+.aa-link-final {
+    color: var(--aa-text-emerald);
+    text-decoration: none;
+}
+
+.aa-link-final:hover {
+    text-decoration: underline;
+}
+
+.aa-link-victim {
+    color: var(--aa-text-rose);
+    text-decoration: none;
+}
+.aa-link-victim:hover {
+    text-decoration: underline;
+}

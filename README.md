@@ -33,7 +33,6 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 - Graphical Overview
 - Corporation & Alliance Overview
 - Kills/Losses
-- Main Character and Alts combined ([explanation](/killstats/docs/explanation.md))
 - Hall of Fame, Hall of Shame
 - Killstats like Top Kill, Top Killer, Top Loss, Alltime Killer, etc.
 - Top 10 list for each Month
@@ -42,6 +41,11 @@ Killstats for Corporations & Alliances, Hall of Fame, Hall of Shame, etc.
 
 - Filtering Settings for each Corporation / Alliance
 - Administration Access for specific Corps or Alliances
+
+## Highlights<a name="highlights"></a>
+
+![Killboard](https://raw.githubusercontent.com/Geuthur/aa-killstats/master/docs/img/killstats.png)
+![Overview](https://raw.githubusercontent.com/Geuthur/aa-killstats/master/docs/img/overview.png)
 
 ## Installation<a name="installation"></a>
 
@@ -80,8 +84,12 @@ To set up the Scheduled Tasks add following code to your `local.py`
 ```python
 if "killstats" in INSTALLED_APPS:
     CELERYBEAT_SCHEDULE["Killstats :: Check for Killmails"] = {
-        "task": "killstats.tasks.run_zkb_r2z2",
+        "task": "killstats.tasks.run_tracker_zkb",
         "schedule": crontab(minute="*/1"),
+    }
+    CELERYBEAT_SCHEDULE["Killstats :: Check for Missing Killmail Data"] = {
+        "task": "killstats.tasks.run_tracker_missing_data",
+        "schedule": crontab(minute="*/15"),
     }
 ```
 
@@ -145,12 +153,6 @@ The Following Settings can be setting up in the `local.py`
 ### Step 6 - (Optional) Settings<a name="step6"></a>
 
 - KILLSTATS_BULK_BATCH_SIZE: `500` - Maximum database batch size per operation. Reduce (e.g., 250) if encountering 'max_allowed_packet' errors, increase for better performance if MySQL is configured with higher limits
-
-## Highlights<a name="highlights"></a>
-
-![Stats](/killstats/docs/img/killstats1.png)
-![Hall](/killstats/docs/img/killstats2.png)
-![Kills](/killstats/docs/img/killstats3.png)
 
 ## Translations<a name="translations"></a>
 
