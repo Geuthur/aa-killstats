@@ -4,16 +4,18 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 // AA Example
-import { renderTooltip, ToolTipContainer } from '@/Utils/bootsTrap';
+import { renderTooltip, toolTipContainer } from '@/Utils/bootsTrap';
+
+    
 
 describe('bootsTrap utils', () => {
-    describe('ToolTipContainer', () => {
+    describe('toolTipContainer', () => {
         it('should render toast notice text correctly', () => {
             // Test Data
             const message = 'Test notification message';
 
             // Test Action
-            render(<ToolTipContainer toastNotice={message} />);
+            render(toolTipContainer(message));
 
             // Expected Result
             expect(screen.getByText(message)).toBeDefined();
