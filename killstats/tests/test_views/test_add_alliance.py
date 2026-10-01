@@ -70,7 +70,8 @@ class KillstatsAllianceAuditTest(AuthTestCase):
         alliance_audit = AlliancesAudit.objects.get(alliance=alliance)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertEqual(
-            response.url, reverse("killstats:alliance", args=[char.alliance_id])
+            response.url,
+            reverse("killstats:alliance", kwargs={"entity_id": char.alliance_id}),
         )
         self.assertEqual(mock_messages.info.call_count, 1)
         self.assertEqual(alliance_audit.alliance.alliance_id, char.alliance_id)
@@ -93,7 +94,7 @@ class KillstatsAllianceAuditTest(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(response.url, reverse("killstats:react_base"))
         self.assertEqual(mock_messages.warning.call_count, 1)
         self.assertFalse(
             AlliancesAudit.objects.filter(
@@ -124,7 +125,7 @@ class KillstatsAllianceAuditTest(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(response.url, reverse("killstats:react_base"))
         self.assertEqual(mock_messages.error.call_count, 1)
         self.assertFalse(
             AlliancesAudit.objects.filter(
@@ -150,7 +151,7 @@ class KillstatsAllianceAuditTest(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(response.url, reverse("killstats:react_base"))
         self.assertEqual(mock_messages.error.call_count, 1)
         self.assertFalse(
             AlliancesAudit.objects.filter(alliance__alliance_id=99000001).exists()
@@ -175,7 +176,7 @@ class KillstatsAllianceAuditTest(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(response.url, reverse("killstats:react_base"))
         self.assertEqual(mock_messages.error.call_count, 1)
         self.assertFalse(
             AlliancesAudit.objects.filter(alliance__alliance_id=1_000_000).exists()

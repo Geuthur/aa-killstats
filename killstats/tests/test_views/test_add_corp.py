@@ -42,7 +42,8 @@ class KillstatsAuditTest(AuthTestCase):
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertEqual(
-            response.url, reverse("killstats:corporation", args=[98000001])
+            response.url,
+            reverse("killstats:corporation", kwargs={"entity_id": 98000001}),
         )
         self.assertEqual(mock_messages.info.call_count, 1)
         self.assertTrue(
@@ -64,7 +65,7 @@ class KillstatsAuditTest(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(response.url, reverse("killstats:index"))
+        self.assertEqual(response.url, reverse("killstats:react_base"))
         self.assertEqual(mock_messages.error.call_count, 1)
         self.assertFalse(
             CorporationsAudit.objects.filter(

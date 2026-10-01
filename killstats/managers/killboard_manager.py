@@ -126,6 +126,99 @@ class KillmailQueryMining(KillmailQueryCore):
 
 
 class KillmailQuerySet(KillmailQueryMining):
+    def for_victim_entity(self, entity_type: str, entity_id: int):
+        """Filter killmails where the given entity was the victim."""
+        field_map = {
+            "alliance": "victim_alliance_id",
+            "corporation": "victim_corporation_id",
+            "character": "victim_id",
+        }
+        lookup = field_map.get(entity_type)
+        return self.filter(**{lookup: entity_id}) if lookup else self.none()
+
+    # pylint: disable=too-many-positional-arguments,too-many-locals
+    def get_paged_ids(
+        self,
+        entity_type: str,
+        entity_id: int,
+        mode: str,
+        att_date_q: models.Q,
+        km_date_q: models.Q,
+        page: int = 1,
+        page_size: int = 50,
+    ) -> tuple[list[int], int]:
+        """Return (paged_killmail_ids, total_count) for pagination across kills/losses."""
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models.killboard import Attacker
+
+        page_num = max(1, page)
+        limit = min(max(1, page_size), 250)
+        offset = (page_num - 1) * limit
+
+        if mode == "kills":
+            kills_qs = (
+                Attacker.objects.for_entity(entity_type, entity_id)
+                .filter(att_date_q)
+                .values_list("killmail_id", "killmail__killmail_date")
+                .order_by("-killmail__killmail_date")
+            )
+            total = kills_qs.values("killmail_id").distinct().count()
+            paged_ids = list(
+                kills_qs.values_list("killmail_id", flat=True).distinct()[
+                    offset : offset + limit
+                ]
+            )
+        elif mode == "losses":
+            losses_qs = (
+                self.for_victim_entity(entity_type, entity_id)
+                .filter(km_date_q)
+                .order_by("-killmail_date")
+            )
+            total = losses_qs.count()
+            paged_ids = list(
+                losses_qs.values_list("killmail_id", flat=True)[offset : offset + limit]
+            )
+        else:
+            # mode == "all": combine kills and losses via index-friendly union
+            kills_qs = (
+                Attacker.objects.for_entity(entity_type, entity_id)
+                .filter(att_date_q)
+                .values_list("killmail_id", "killmail__killmail_date")
+            )
+            losses_qs = (
+                self.for_victim_entity(entity_type, entity_id)
+                .filter(km_date_q)
+                .values_list("killmail_id", "killmail_date")
+            )
+            combined_qs = kills_qs.union(losses_qs).order_by("-killmail__killmail_date")
+            total = combined_qs.count()
+            paged_ids = [row[0] for row in combined_qs[offset : offset + limit]]
+
+        return paged_ids, total
+
+    def for_paged_killboard(self, killmail_ids: list[int]):
+        """Load and annotate killmails with victim details, pilot counts, and final blow."""
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models.killboard import Attacker
+
+        return (
+            self.filter(killmail_id__in=killmail_ids)
+            .select_related("victim", "victim_ship")
+            .prefetch_related(
+                models.Prefetch(
+                    "attacker_killmail",
+                    queryset=Attacker.objects.filter(final_blow=True).select_related(
+                        "character"
+                    ),
+                    to_attr="final_blow_attacker",
+                )
+            )
+            .annotate(pilot_count=models.Count("attacker_killmail", distinct=True))
+            .order_by("-killmail_date")
+        )
+
     def visible_to(self, user):
         # superusers get all visible
         if user.is_superuser:
@@ -142,6 +235,33 @@ class KillmailQuerySet(KillmailQueryMining):
 class KillmailManager(models.Manager["KillmailContext"]):
     def get_queryset(self):
         return KillmailQuerySet(self.model, using=self._db)
+
+    def for_victim_entity(self, entity_type: str, entity_id: int):
+        return self.get_queryset().for_victim_entity(entity_type, entity_id)
+
+    # pylint: disable=too-many-positional-arguments
+    def get_paged_ids(
+        self,
+        entity_type: str,
+        entity_id: int,
+        mode: str,
+        att_date_q: models.Q,
+        km_date_q: models.Q,
+        page: int = 1,
+        page_size: int = 50,
+    ) -> tuple[list[int], int]:
+        return self.get_queryset().get_paged_ids(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            mode=mode,
+            att_date_q=att_date_q,
+            km_date_q=km_date_q,
+            page=page,
+            page_size=page_size,
+        )
+
+    def for_paged_killboard(self, killmail_ids: list[int]):
+        return self.get_queryset().for_paged_killboard(killmail_ids)
 
     def visible_to(self, user):
         return self.get_queryset().visible_to(user)
@@ -318,3 +438,23 @@ class KillmailManager(models.Manager["KillmailContext"]):
                 created = True
             obj = self.create_from_killmail(killmail)
         return obj, created
+
+
+class AttackerQuerySet(models.QuerySet):
+    def for_entity(self, entity_type: str, entity_id: int):
+        """Filter attackers belonging to an entity (alliance, corporation, or character)."""
+        field_map = {
+            "alliance": "alliance_id",
+            "corporation": "corporation_id",
+            "character": "character_id",
+        }
+        lookup = field_map.get(entity_type)
+        return self.filter(**{lookup: entity_id}) if lookup else self.none()
+
+
+class AttackerManager(models.Manager):
+    def get_queryset(self):
+        return AttackerQuerySet(self.model, using=self._db)
+
+    def for_entity(self, entity_type: str, entity_id: int):
+        return self.get_queryset().for_entity(entity_type, entity_id)

@@ -4,7 +4,7 @@
 from dataclasses import dataclass, field
 
 # Django
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 
 # Alliance Auth
 from allianceauth.authentication.models import UserProfile
@@ -110,58 +110,6 @@ class AccountManager:
                 )
 
         return accounts
-
-
-def _date_filters_killmail(year: int, month: int) -> list[Q]:
-    """Return date Q-filters that apply to Killmail fields directly."""
-    filters: list[Q] = []
-    if year > 0:
-        filters.append(Q(killmail_date__year=year))
-    if month > 0:
-        filters.append(Q(killmail_date__month=month))
-    return filters
-
-
-def _date_filters_attacker(year: int, month: int) -> list[Q]:
-    """Return date Q-filters that traverse the Attacker → Killmail FK."""
-    filters: list[Q] = []
-    if year > 0:
-        filters.append(Q(killmail__killmail_date__year=year))
-    if month > 0:
-        filters.append(Q(killmail__killmail_date__month=month))
-    return filters
-
-
-def _entity_attacker_q(entity_type: str, entity_id: int) -> Q:
-    """Return a Q-object that matches Attacker rows belonging to an entity.
-
-    Attacker has FK relations to EveEntity for character, corporation and alliance –
-    we use the ``id`` field directly (the EveEntity primary key == EVE entity ID).
-    """
-    if entity_type == "alliance":
-        return Q(alliance_id=entity_id)
-    if entity_type == "corporation":
-        return Q(corporation_id=entity_id)
-    if entity_type == "character":
-        return Q(character_id=entity_id)
-    return Q()
-
-
-def _entity_victim_q(entity_type: str, entity_id: int) -> Q:
-    """Return a Q-object that matches Killmail rows where the entity was the victim.
-
-    Killmail stores corporation_id / alliance_id as plain integer columns,
-    while victim (character) is a FK to EveEntity – we resolve via `victim_id`
-    (the EveEntity PK is the same as the EVE character/corp/alliance ID).
-    """
-    if entity_type == "alliance":
-        return Q(victim_alliance_id=entity_id)
-    if entity_type == "corporation":
-        return Q(victim_corporation_id=entity_id)
-    if entity_type == "character":
-        # victim FK → EveEntity.id  which equals the EVE character ID
-        return Q(victim_id=entity_id)
-    return Q()
 
 
 def _build_main_name_map(entity_type: str, entity_id: int) -> dict[int, str]:

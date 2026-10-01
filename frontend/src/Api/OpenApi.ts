@@ -4,58 +4,7 @@
  */
 
 export interface paths {
-    "/killstats/api/killmail/month/{month}/year/{year}/{entity_type}/{entity_id}/{mode}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Corporation Killmails */
-        get: operations["killstats_api_killboard_get_corporation_killmails"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/killstats/api/halls/month/{month}/year/{year}/{entity_type}/{entity_id}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Corporation Halls */
-        get: operations["killstats_api_killboard_get_corporation_halls"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/killstats/api/stats/v2/summary/year/{year}/month/{month}/{entity_type}/{entity_id}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Fast summary: total kills, ISK & active PvPers */
-        get: operations["killstats_api_killboard_get_combat_summary_api"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/killstats/api/stats/v2/attackers/year/{year}/month/{month}/{entity_type}/{entity_id}/": {
+    "/killstats/api/stats/v2/attackers/{entity_type}/{entity_id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -72,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/killstats/api/stats/v2/victims/year/{year}/month/{month}/{entity_type}/{entity_id}/": {
+    "/killstats/api/stats/v2/victims/{entity_type}/{entity_id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -89,32 +38,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/killstats/api/stats/top/10/month/{month}/year/{year}/{entity_type}/{entity_id}/": {
+    "/killstats/api/killmails/{entity_type}/{entity_id}/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Top 10 Api */
-        get: operations["killstats_api_stats_get_top_10_api"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/killstats/api/stats/all/month/{month}/year/{year}/{entity_type}/{entity_id}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get All Stats */
-        get: operations["killstats_api_stats_get_all_stats"];
+        /** Retrieve killmails for an entity */
+        get: operations["killstats_api_killboard_get_killmails_endpoint"];
         put?: never;
         post?: never;
         delete?: never;
@@ -157,15 +89,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/killstats/api/stats/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/": {
+    "/killstats/api/hall/v2/{entity_type}/{entity_id}/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get combat stats for entity */
-        get: operations["killstats_api_sync_get_stats_endpoint"];
+        /** Retrieve the hall of fame for an entity */
+        get: operations["killstats_api_stats_get_hall_endpoint"];
         put?: never;
         post?: never;
         delete?: never;
@@ -174,32 +106,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/killstats/api/hall/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/": {
+    "/killstats/api/stats/v2/summary/{entity_type}/{entity_id}/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get hall of fame and shame for entity */
-        get: operations["killstats_api_sync_get_hall_endpoint"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/killstats/api/killmails/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get killmails list for entity */
-        get: operations["killstats_api_sync_get_killmails_endpoint"];
+        /** Fast summary: total kills, ISK & active PvPers */
+        get: operations["killstats_api_stats_get_combat_summary_api"];
         put?: never;
         post?: never;
         delete?: never;
@@ -246,26 +161,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** KillboardHall */
-        KillboardHall: {
-            /** Shame */
-            shame?: unknown[] | null;
-            /** Fame */
-            fame?: unknown[] | null;
-        };
-        /**
-         * CombatSummaryResponse
-         * @description Lightweight summary: counters + ISK totals only. Fast to compute.
-         */
-        CombatSummaryResponse: {
-            /** Total Kills */
-            total_kills: number;
-            /** Active Pvpers */
-            active_pvpers: number;
-            /** Destroyed Isk */
-            destroyed_isk: number;
-            /** Lost Isk */
-            lost_isk: number;
+        /** TopPilotsFilter */
+        TopPilotsFilter: {
+            /**
+             * Year
+             * @description Filter by year (e.g. 2026)
+             */
+            year?: number | null;
+            /**
+             * Month
+             * @description Filter by month (1-12)
+             */
+            month?: number | null;
+            /**
+             * Limit
+             * @description Number of top pilots to return
+             * @default 10
+             */
+            limit: number;
         };
         /** TopPilotSchema */
         TopPilotSchema: {
@@ -288,79 +201,37 @@ export interface components {
             /** Pilots */
             pilots: components["schemas"]["TopPilotSchema"][];
         };
-        /** CorporationAdmin */
-        CorporationAdmin: {
-            /** Corporation */
-            corporation?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /** AllianceAdmin */
-        AllianceAdmin: {
-            /** Alliance */
-            alliance?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /** CombatStatsResponse */
-        CombatStatsResponse: {
-            /** Total Kills */
-            total_kills: number;
-            /** Active Pvpers */
-            active_pvpers: number;
-            /** Destroyed Isk */
-            destroyed_isk: number;
-            /** Lost Isk */
-            lost_isk: number;
-            /** Top Attackers */
-            top_attackers: components["schemas"]["TopPilotSchema"][];
-            /** Top Victims */
-            top_victims: components["schemas"]["TopPilotSchema"][];
-        };
-        /** HallEntrySchema */
-        HallEntrySchema: {
-            /** Killmail Id */
-            killmail_id: number;
-            /** Char Id */
-            char_id: number;
-            /** Char Name */
-            char_name: string;
+        /** KillmailFilter */
+        KillmailFilter: {
             /**
-             * Ship Id
-             * @default 0
+             * Year
+             * @description Filter by year (e.g. 2026)
              */
-            ship_id: number;
+            year?: number | null;
             /**
-             * Ship Name
-             * @default Unknown
+             * Month
+             * @description Filter by month (1-12)
              */
-            ship_name: string;
+            month?: number | null;
             /**
-             * Victim Ship Id
-             * @default 0
+             * Mode
+             * @description Mode filter
+             * @default all
+             * @enum {string}
              */
-            victim_ship_id: number;
+            mode: "all" | "kills" | "losses";
             /**
-             * Victim Ship Name
-             * @default Unknown
+             * Page
+             * @description Page number
+             * @default 1
              */
-            victim_ship_name: string;
-            /** Total Value */
-            total_value: number;
+            page: number;
             /**
-             * Damage Done
-             * @default 0
+             * Page Size
+             * @description Items per page
+             * @default 50
              */
-            damage_done: number;
-            /** Zkb Link */
-            zkb_link: string;
-        };
-        /** HallResponseSchema */
-        HallResponseSchema: {
-            /** Hall Of Fame */
-            hall_of_fame: components["schemas"]["HallEntrySchema"][];
-            /** Hall Of Shame */
-            hall_of_shame: components["schemas"]["HallEntrySchema"][];
+            page_size: number;
         };
         /** KillmailItemSchema */
         KillmailItemSchema: {
@@ -419,10 +290,121 @@ export interface components {
             killmails: components["schemas"]["KillmailItemSchema"][];
             /** Total */
             total: number;
-            /** Page */
-            page?: number;
-            /** Page Size */
-            page_size?: number;
+            /**
+             * Page
+             * @default 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @default 50
+             */
+            page_size: number;
+        };
+        /** CorporationAdmin */
+        CorporationAdmin: {
+            /** Corporation */
+            corporation?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** AllianceAdmin */
+        AllianceAdmin: {
+            /** Alliance */
+            alliance?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** HallFilter */
+        HallFilter: {
+            /**
+             * Year
+             * @description Filter by year (e.g. 2026)
+             */
+            year?: number | null;
+            /**
+             * Month
+             * @description Filter by month (1-12)
+             */
+            month?: number | null;
+            /**
+             * Limit
+             * @description Number of hall entries to return
+             * @default 5
+             */
+            limit: number;
+        };
+        /** HallEntrySchema */
+        HallEntrySchema: {
+            /** Killmail Id */
+            killmail_id: number;
+            /** Char Id */
+            char_id: number;
+            /** Char Name */
+            char_name: string;
+            /**
+             * Ship Id
+             * @default 0
+             */
+            ship_id: number;
+            /**
+             * Ship Name
+             * @default Unknown
+             */
+            ship_name: string;
+            /**
+             * Victim Ship Id
+             * @default 0
+             */
+            victim_ship_id: number;
+            /**
+             * Victim Ship Name
+             * @default Unknown
+             */
+            victim_ship_name: string;
+            /** Total Value */
+            total_value: number;
+            /**
+             * Damage Done
+             * @default 0
+             */
+            damage_done: number;
+            /** Zkb Link */
+            zkb_link: string;
+        };
+        /** HallResponseSchema */
+        HallResponseSchema: {
+            /** Hall Of Fame */
+            hall_of_fame: components["schemas"]["HallEntrySchema"][];
+            /** Hall Of Shame */
+            hall_of_shame: components["schemas"]["HallEntrySchema"][];
+        };
+        /** DateRangeFilter */
+        DateRangeFilter: {
+            /**
+             * Year
+             * @description Filter by year (e.g. 2026)
+             */
+            year?: number | null;
+            /**
+             * Month
+             * @description Filter by month (1-12)
+             */
+            month?: number | null;
+        };
+        /**
+         * CombatSummaryResponse
+         * @description Lightweight summary: counters + ISK totals only. Fast to compute.
+         */
+        CombatSummaryResponse: {
+            /** Total Kills */
+            total_kills: number;
+            /** Active Pvpers */
+            active_pvpers: number;
+            /** Destroyed Isk */
+            destroyed_isk: number;
+            /** Lost Isk */
+            lost_isk: number;
         };
         /**
          * MenuLink
@@ -519,121 +501,19 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    killstats_api_killboard_get_corporation_killmails: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                month: string;
-                year: string;
-                entity_type: string;
-                entity_id: number;
-                mode: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-        };
-    };
-    killstats_api_killboard_get_corporation_halls: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                month: string;
-                year: string;
-                entity_type: string;
-                entity_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["KillboardHall"][];
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-        };
-    };
-    killstats_api_killboard_get_combat_summary_api: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                year: number;
-                month: number;
-                entity_type: string;
-                entity_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CombatSummaryResponse"];
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
-    };
     killstats_api_killboard_get_top_attackers_api: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter by year (e.g. 2026) */
+                year?: number | null;
+                /** @description Filter by month (1-12) */
+                month?: number | null;
+                /** @description Number of top pilots to return */
+                limit?: number;
+            };
             header?: never;
             path: {
-                year: number;
-                month: number;
-                entity_type: string;
+                entity_type: "alliance" | "corporation" | "character";
                 entity_id: number;
             };
             cookie?: never;
@@ -664,12 +544,17 @@ export interface operations {
     };
     killstats_api_killboard_get_top_victims_api: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter by year (e.g. 2026) */
+                year?: number | null;
+                /** @description Filter by month (1-12) */
+                month?: number | null;
+                /** @description Number of top pilots to return */
+                limit?: number;
+            };
             header?: never;
             path: {
-                year: number;
-                month: number;
-                entity_type: string;
+                entity_type: "alliance" | "corporation" | "character";
                 entity_id: number;
             };
             cookie?: never;
@@ -698,14 +583,23 @@ export interface operations {
             };
         };
     };
-    killstats_api_stats_get_top_10_api: {
+    killstats_api_killboard_get_killmails_endpoint: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter by year (e.g. 2026) */
+                year?: number | null;
+                /** @description Filter by month (1-12) */
+                month?: number | null;
+                /** @description Mode filter */
+                mode?: "all" | "kills" | "losses";
+                /** @description Page number */
+                page?: number;
+                /** @description Items per page */
+                page_size?: number;
+            };
             header?: never;
             path: {
-                month: string;
-                year: string;
-                entity_type: string;
+                entity_type: "alliance" | "corporation" | "character";
                 entity_id: number;
             };
             cookie?: never;
@@ -718,38 +612,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    }[];
+                    "application/json": components["schemas"]["KillmailListResponse"];
                 };
             };
             /** @description Forbidden */
             403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-        };
-    };
-    killstats_api_stats_get_all_stats: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                month: string;
-                year: string;
-                entity_type: string;
-                entity_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -759,8 +626,8 @@ export interface operations {
                     };
                 };
             };
-            /** @description Forbidden */
-            403: {
+            /** @description Internal Server Error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -828,56 +695,18 @@ export interface operations {
             };
         };
     };
-    killstats_api_sync_get_stats_endpoint: {
+    killstats_api_stats_get_hall_endpoint: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter by year (e.g. 2026) */
+                year?: number | null;
+                /** @description Filter by month (1-12) */
+                month?: number | null;
+                /** @description Number of hall entries to return */
+                limit?: number;
+            };
             header?: never;
             path: {
-                year: number;
-                month: number;
-                entity_type: "alliance" | "corporation" | "character";
-                entity_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CombatStatsResponse"];
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-        };
-    };
-    killstats_api_sync_get_hall_endpoint: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                year: number;
-                month: number;
                 entity_type: "alliance" | "corporation" | "character";
                 entity_id: number;
             };
@@ -900,7 +729,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Internal Server Error */
@@ -914,17 +745,16 @@ export interface operations {
             };
         };
     };
-    killstats_api_sync_get_killmails_endpoint: {
+    killstats_api_stats_get_combat_summary_api: {
         parameters: {
             query?: {
-                mode?: "all" | "kills" | "losses";
-                page?: number;
-                page_size?: number;
+                /** @description Filter by year (e.g. 2026) */
+                year?: number | null;
+                /** @description Filter by month (1-12) */
+                month?: number | null;
             };
             header?: never;
             path: {
-                year: number;
-                month: number;
                 entity_type: "alliance" | "corporation" | "character";
                 entity_id: number;
             };
@@ -938,7 +768,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["KillmailListResponse"];
+                    "application/json": components["schemas"]["CombatSummaryResponse"];
                 };
             };
             /** @description Forbidden */
@@ -947,16 +777,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

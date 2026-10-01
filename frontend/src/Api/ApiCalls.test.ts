@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { apiClient } from '@/Api/Api';
 import {
-    fetchCombatStats,
     fetchCombatSummary,
     fetchHallStats,
     fetchKillmails,
@@ -153,38 +152,6 @@ describe('General API client functions', () => {
         });
     });
 
-    describe('fetchCombatStats', () => {
-        it('calls endpoint and returns data', async () => {
-            const mockData = { total_kills: 5, active_pvpers: 2, destroyed_isk: 1000, lost_isk: 500, top_attackers: [], top_victims: [] };
-            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
-                data: mockData,
-                error: undefined,
-                response: new Response(),
-            } as never);
-
-            const result = await fetchCombatStats(2026, 9, 'corporation', 123);
-            expect(result).toEqual(mockData);
-            expect(apiClient.GET).toHaveBeenCalledWith(
-                '/killstats/api/stats/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/',
-                expect.objectContaining({
-                    params: {
-                        path: { year: 2026, month: 9, entity_type: 'corporation', entity_id: 123 },
-                    },
-                })
-            );
-        });
-
-        it('throws error when GET fails', async () => {
-            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
-                data: undefined,
-                error: { status: 500 },
-                response: new Response(),
-            } as never);
-
-            await expect(fetchCombatStats(2026, 9, 'corporation', 123)).rejects.toThrow('Failed to fetch combat stats');
-        });
-    });
-
     describe('fetchCombatSummary', () => {
         it('calls endpoint and returns summary data', async () => {
             const mockData = { total_kills: 10, active_pvpers: 4, destroyed_isk: 2000, lost_isk: 100 };
@@ -197,10 +164,11 @@ describe('General API client functions', () => {
             const result = await fetchCombatSummary('all', 'all', 'alliance', 456);
             expect(result).toEqual(mockData);
             expect(apiClient.GET).toHaveBeenCalledWith(
-                '/killstats/api/stats/v2/summary/year/{year}/month/{month}/{entity_type}/{entity_id}/',
+                '/killstats/api/stats/v2/summary/{entity_type}/{entity_id}/',
                 expect.objectContaining({
                     params: {
-                        path: { year: 0, month: 0, entity_type: 'alliance', entity_id: 456 },
+                        path: { entity_type: 'alliance', entity_id: 456 },
+                        query: {},
                     },
                 })
             );
@@ -229,7 +197,7 @@ describe('General API client functions', () => {
             const result = await fetchTopAttackers(2026, 9, 'corporation', 123);
             expect(result).toEqual(mockData);
             expect(apiClient.GET).toHaveBeenCalledWith(
-                '/killstats/api/stats/v2/attackers/year/{year}/month/{month}/{entity_type}/{entity_id}/',
+                '/killstats/api/stats/v2/attackers/{entity_type}/{entity_id}/',
                 expect.any(Object)
             );
         });
@@ -245,7 +213,7 @@ describe('General API client functions', () => {
             const result = await fetchTopVictims(2026, 9, 'corporation', 123);
             expect(result).toEqual(mockData);
             expect(apiClient.GET).toHaveBeenCalledWith(
-                '/killstats/api/stats/v2/victims/year/{year}/month/{month}/{entity_type}/{entity_id}/',
+                '/killstats/api/stats/v2/victims/{entity_type}/{entity_id}/',
                 expect.any(Object)
             );
         });
@@ -263,7 +231,7 @@ describe('General API client functions', () => {
             const result = await fetchHallStats(2026, 9, 'corporation', 123);
             expect(result).toEqual(mockData);
             expect(apiClient.GET).toHaveBeenCalledWith(
-                '/killstats/api/hall/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/',
+                '/killstats/api/hall/v2/{entity_type}/{entity_id}/',
                 expect.any(Object)
             );
         });
@@ -291,11 +259,32 @@ describe('General API client functions', () => {
             const result = await fetchKillmails(2026, 9, 'corporation', 123, 'losses', 2, 50);
             expect(result).toEqual(mockData);
             expect(apiClient.GET).toHaveBeenCalledWith(
-                '/killstats/api/killmails/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/',
+                '/killstats/api/killmails/{entity_type}/{entity_id}/',
                 expect.objectContaining({
                     params: {
-                        path: { year: 2026, month: 9, entity_type: 'corporation', entity_id: 123 },
-                        query: { mode: 'losses', page: 2, page_size: 50 },
+                        path: { entity_type: 'corporation', entity_id: 123 },
+                        query: { year: 2026, month: 9, mode: 'losses', page: 2, page_size: 50 },
+                    },
+                })
+            );
+        });
+
+        it('calls killmails endpoint with all-time without year and month in query', async () => {
+            const mockData = { killmails: [], total: 0, page: 1, page_size: 25 };
+            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
+                data: mockData,
+                error: undefined,
+                response: new Response(),
+            } as never);
+
+            const result = await fetchKillmails('all', 'all', 'alliance', 456);
+            expect(result).toEqual(mockData);
+            expect(apiClient.GET).toHaveBeenCalledWith(
+                '/killstats/api/killmails/{entity_type}/{entity_id}/',
+                expect.objectContaining({
+                    params: {
+                        path: { entity_type: 'alliance', entity_id: 456 },
+                        query: { mode: 'all', page: 1, page_size: 25 },
                     },
                 })
             );

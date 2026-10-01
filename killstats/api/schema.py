@@ -1,5 +1,13 @@
+# Standard Library
+from datetime import datetime
+from typing import Literal
+
 # Third Party
-from ninja import Schema
+from dateutil.relativedelta import relativedelta
+from ninja import Field, FilterSchema, Schema
+
+# Django
+from django.db.models import Q
 
 
 class UserData(Schema):
@@ -145,3 +153,54 @@ class MenuSchema(Schema):
     left_links: list[MenuLink] = []
     right_links: list[MenuLink] = []
     modals: MenuModalSchema | None = None
+
+
+class DateRangeFilter(FilterSchema):
+    year: int | None = Field(
+        None, ge=2000, le=2100, description="Filter by year (e.g. 2026)"
+    )
+    month: int | None = Field(None, ge=1, le=12, description="Filter by month (1-12)")
+
+    def get_date_range(self) -> tuple[datetime | None, datetime | None]:
+        """Return (start_datetime, end_datetime) for index-backed range queries."""
+        if self.year and self.year > 0 and self.month and self.month > 0:
+            start = datetime(self.year, self.month, 1)
+            end = start + relativedelta(months=1)
+            return start, end
+        if self.year and self.year > 0:
+            start = datetime(self.year, 1, 1)
+            end = datetime(self.year + 1, 1, 1)
+            return start, end
+        return None, None
+
+    @property
+    def km_date_q(self) -> Q:
+        """Q expression for filtering Killmail rows by date range."""
+        start, end = self.get_date_range()
+        return (
+            Q(killmail_date__gte=start, killmail_date__lt=end) if start and end else Q()
+        )
+
+    @property
+    def att_date_q(self) -> Q:
+        """Q expression for filtering Attacker rows by related killmail date range."""
+        start, end = self.get_date_range()
+        return (
+            Q(killmail__killmail_date__gte=start, killmail__killmail_date__lt=end)
+            if start and end
+            else Q()
+        )
+
+
+class TopPilotsFilter(DateRangeFilter):
+    limit: int = Field(10, ge=1, le=100, description="Number of top pilots to return")
+
+
+class HallFilter(DateRangeFilter):
+    limit: int = Field(5, ge=1, le=50, description="Number of hall entries to return")
+
+
+class KillmailFilter(DateRangeFilter):
+    mode: Literal["all", "kills", "losses"] = Field("all", description="Mode filter")
+    page: int = Field(1, ge=1, description="Page number")
+    page_size: int = Field(50, ge=1, le=250, description="Items per page")

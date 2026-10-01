@@ -14,7 +14,7 @@ from eve_sde.models.types import ItemType
 
 # AA Killstats
 from killstats import __title__
-from killstats.managers.killboard_manager import KillmailManager
+from killstats.managers.killboard_manager import AttackerManager, KillmailManager
 from killstats.models.general import EveEntity
 from killstats.providers import AppLogger
 
@@ -28,7 +28,10 @@ class Killmail(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["-killmail_date"], name="km_date_desc_idx"),
+            models.Index(
+                fields=["killmail_date"],
+                name="km_date_idx",
+            ),
             models.Index(
                 fields=["victim_corporation_id", "-killmail_date"],
                 name="km_corp_loss_idx",
@@ -105,6 +108,8 @@ class Attacker(models.Model):
     if TYPE_CHECKING:
         attacker_character: models.QuerySet["Attacker"]
         victim_killmail: models.QuerySet["Killmail"]
+
+    objects: AttackerManager = AttackerManager()
 
     killmail = models.ForeignKey(
         Killmail, on_delete=models.CASCADE, related_name="attacker_killmail"

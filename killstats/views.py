@@ -63,7 +63,7 @@ def add_corp(request, token):
         f"{audit.corporation.corporation_name} successfully added/updated to Killstats"
     )
     messages.info(request, msg)
-    return redirect("killstats:react_base")
+    return redirect("killstats:corporation", entity_id=char.corporation_id)
 
 
 @login_required
@@ -107,4 +107,4 @@ def add_alliance(request, token):
         return redirect("killstats:react_base")
 
     messages.info(request, msg)
-    return redirect("killstats:react_base")
+    return redirect("killstats:alliance", entity_id=char.alliance_id)

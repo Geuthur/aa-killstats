@@ -15,6 +15,9 @@ urlpatterns = [
     # -- Killstats Audit
     path("add_corp/", views.add_corp, name="add_corp"),
     path("add_alliance/", views.add_alliance, name="add_alliance"),
+    # -- Named SPA Routes for direct redirects
+    path("corporation/<int:entity_id>/", views.react_base, name="corporation"),
+    path("alliance/<int:entity_id>/", views.react_base, name="alliance"),
     # -- React Frontend (V2)
     re_path(
         r"^(?!api/|add_corp|add_alliance).*$",

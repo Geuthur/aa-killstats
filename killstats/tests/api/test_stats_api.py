@@ -33,50 +33,6 @@ class TestKillboardStatsApi(AuthTestCase):
         cache.clear()
         super().tearDown()
 
-    def test_get_stats_endpoint_should_return_combat_stats(self):
-        # Test Data
-        corp_id = 98000010
-        corp_entity = EveEntityCorporationFactory(id=corp_id)
-        test_date = datetime(2026, 9, 15, 12, 0, 0, tzinfo=timezone.utc)
-        km = KillmailFactory(
-            killmail_date=test_date,
-            victim_corporation_id=corp_id,
-            victim_total_value=12000000,
-        )
-        AttackerFactory(
-            killmail=km,
-            corporation=corp_entity,
-        )
-
-        # Test Action
-        response = self.client.get(
-            f"/stats/v2/year/2026/month/9/corporation/{corp_id}/",
-            user=self.user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        data = response.json()
-        self.assertEqual(data["total_kills"], 1)
-        self.assertGreaterEqual(data["active_pvpers"], 1)
-        self.assertEqual(data["destroyed_isk"], 12000000)
-        self.assertEqual(data["lost_isk"], 12000000)
-        self.assertIn("top_attackers", data)
-        self.assertIn("top_victims", data)
-
-    def test_get_stats_endpoint_should_return_403_when_no_permission(self):
-        # Test Data
-        unauthed_user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get(
-            "/stats/v2/year/2026/month/9/corporation/98000010/",
-            user=unauthed_user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
     def test_get_hall_endpoint_should_return_hall_of_fame_and_shame(self):
         # Test Data
         corp_id = 98000011
@@ -95,7 +51,7 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            f"/hall/v2/year/2026/month/9/corporation/{corp_id}/",
+            f"/hall/v2/corporation/{corp_id}/?year=2026&month=9",
             user=self.user,
         )
 
@@ -111,7 +67,7 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            "/hall/v2/year/2026/month/9/corporation/98000011/",
+            "/hall/v2/corporation/98000011/?year=2026&month=9",
             user=unauthed_user,
         )
 
@@ -135,7 +91,7 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            f"/killmails/v2/year/2026/month/9/corporation/{corp_id}/?mode=all",
+            f"/killmails/corporation/{corp_id}/?year=2026&month=9&mode=all",
             user=self.user,
         )
 
@@ -163,7 +119,7 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            f"/killmails/v2/year/2026/month/9/corporation/{corp_id}/?mode=all&page=2&page_size=2",
+            f"/killmails/corporation/{corp_id}/?year=2026&month=9&mode=all&page=2&page_size=2",
             user=self.user,
         )
 
@@ -192,13 +148,13 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Test Action - Kills mode
         response_kills = self.client.get(
-            f"/killmails/v2/year/2026/month/9/corporation/{corp_id}/?mode=kills",
+            f"/killmails/corporation/{corp_id}/?year=2026&month=9&mode=kills",
             user=self.user,
         )
 
         # Test Action - Losses mode
         response_losses = self.client.get(
-            f"/killmails/v2/year/2026/month/9/corporation/{corp_id}/?mode=losses",
+            f"/killmails/corporation/{corp_id}/?year=2026&month=9&mode=losses",
             user=self.user,
         )
 
@@ -212,7 +168,7 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            "/killmails/v2/year/2026/month/9/corporation/98000013/",
+            "/killmails/corporation/98000013/?year=2026&month=9",
             user=unauthed_user,
         )
 

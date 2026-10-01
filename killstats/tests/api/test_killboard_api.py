@@ -50,7 +50,7 @@ class TestKillboardApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            f"/stats/v2/summary/year/2026/month/9/corporation/{corp_id}/",
+            f"/stats/v2/summary/corporation/{corp_id}/?year=2026&month=9",
             user=self.user,
         )
 
@@ -68,7 +68,7 @@ class TestKillboardApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            "/stats/v2/summary/year/2026/month/9/corporation/98000001/",
+            "/stats/v2/summary/corporation/98000001/?year=2026&month=9",
             user=unauthed_user,
         )
 
@@ -91,7 +91,7 @@ class TestKillboardApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            f"/stats/v2/attackers/year/2026/month/9/corporation/{corp_id}/",
+            f"/stats/v2/attackers/corporation/{corp_id}/?year=2026&month=9",
             user=self.user,
         )
 
@@ -109,7 +109,7 @@ class TestKillboardApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            "/stats/v2/attackers/year/2026/month/9/corporation/98000002/",
+            "/stats/v2/attackers/corporation/98000002/?year=2026&month=9",
             user=unauthed_user,
         )
 
@@ -128,7 +128,7 @@ class TestKillboardApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            f"/stats/v2/victims/year/2026/month/9/corporation/{corp_id}/",
+            f"/stats/v2/victims/corporation/{corp_id}/?year=2026&month=9",
             user=self.user,
         )
 
@@ -146,7 +146,7 @@ class TestKillboardApi(AuthTestCase):
 
         # Test Action
         response = self.client.get(
-            "/stats/v2/victims/year/2026/month/9/corporation/98000003/",
+            "/stats/v2/victims/corporation/98000003/?year=2026&month=9",
             user=unauthed_user,
         )
 

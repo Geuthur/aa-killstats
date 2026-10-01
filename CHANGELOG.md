@@ -52,141 +52,43 @@ if "killstats" in INSTALLED_APPS:
 
 ### Added
 
-- Interactive tooltips via `renderTooltip` and `ToolTipContainer` across the React frontend:
+#### Performance & Database Optimization
 
-  - Hall of Fame & Shame: Pilot names, ship names, ship render portraits, and zKillboard killmail buttons.
-  - Killboard Table: Ship render portraits, victim ship names, timestamps, and zKB links.
-  - Killboard Pagination: Navigation buttons (First, Previous, Next, Last) with tooltip hints.
-  - Top Pilots Section: Pilot avatars and names with character profile tooltips.
+- **Index-Optimized Date Range Queries**: Migrated from SQL date extraction functions (`__year`/`__month`) to index-backed range queries (`gte`/`lt` on `killmail_date`), enabling full B-tree composite index scans across millions of killmails.
+- **Composite Database Indexes**: Added composite indexes on `Killmail` (`km_date_idx`, `km_corp_loss_idx`, `km_ally_loss_idx`, `km_corp_val_idx`, `km_ally_val_idx`, `km_val_desc_idx`, `km_system_idx`) and `Attacker` (`att_km_final_blow_idx`) to drastically reduce query latency.
+- **Server-Side Pagination & Two-Phase Loading**: Implemented high-performance database-level `LIMIT`/`OFFSET` pagination; detailed records (victims, ships, participants, final blows) are only fetched for the current page slice.
+- **N+1 Query Elimination**: Resolved N+1 query bottlenecks via native Django `SolarSystem.objects.in_bulk(...)` bulk lookups.
 
-- Direct killmail navigation links on ship portraits and ship names in Hall of Fame, Hall of Shame, and the main killboard table.
+#### Backend API (Django Ninja V2)
 
-- URL query state persistence for year and month filters using `nuqs` (`useQueryState`), enabling bookmarkable and shareable filter states.
+- **RESTful Query Parameter Filtering**: Converted API routes from static URL path dates to flexible Django Ninja `FilterSchema` query parameters (`DateRangeFilter`, `TopPilotsFilter`, `HallFilter`, `KillmailFilter`).
+- **Manager & QuerySet Encapsulation**: Cleanly encapsulated entity lookups (`Attacker.objects.for_entity(...)`, `Killmail.objects.for_victim_entity(...)`) and pagination logic (`Killmail.objects.get_paged_ids(...)`) directly within model managers.
+- **Modular Endpoints**: Decomposed monolithic endpoints into lightweight, parallel endpoints (`/stats/v2/summary/`, `/stats/v2/attackers/`, `/stats/v2/victims/`, `/hall/v2/`, `/killmails/`).
 
-- Modal system integration using `BaseModal` and `useModalQueryState` (`frontend/src/Components/Modals`) for URL-persisted modal state (`?modal=top-pilots`), adapting `TopPilotsSection` (`TopPilotsModal`) to use `BaseModal` directly, lazy-fetching top pilots data only when opened.
+#### Frontend (Modern React Framework)
 
-- Vitest testing environment configured with `jsdom` (`frontend/vite.config.ts`) and comprehensive unit tests for `bootsTrap`, `eveOnline`, and `iconHelper` utilities.
+- **Vite & TypeScript SPA**: Brand-new Single Page Application frontend built with React 19, TypeScript, and Vite.
+- **TanStack Query & State Management**: Parallel data fetching with automated caching, background updates, and URL query state persistence via `nuqs`.
+- **Interactive UI Components**: Purpose-built components for killboard stats, TanStack Table with server-side pagination, Hall of Fame & Shame, Top Pilots modal, and tooltips with direct zKillboard links.
+- **Full Localization & Test Suite**: Multi-language i18n support (EN/DE) with `react-i18next` and unit testing via Vitest and React Testing Library.
 
-- Database indexes for `Killmail`, `Attacker`, and `EveEntity` models in migration `0005_attacker_att_km_final_blow_idx_and_more.py` to accelerate API queries:
+#### CSS Framework & Theme Integration
 
-  - `Killmail`: `km_date_desc_idx` (`-killmail_date`), `km_corp_loss_idx` (`victim_corporation_id`, `-killmail_date`), `km_ally_loss_idx` (`victim_alliance_id`, `-killmail_date`), `km_corp_val_idx` (`victim_corporation_id`, `-victim_total_value`), `km_ally_val_idx` (`victim_alliance_id`, `-victim_total_value`), `km_val_desc_idx` (`-victim_total_value`), `km_system_idx` (`victim_solar_system_id`).
-  - `Attacker`: `att_km_final_blow_idx` (`killmail_id`, `final_blow`) for fast prefetching and final blow lookups.
-  - `EveEntity`: `eveentity_cat_name_idx` (`category`, `name`) for accelerated entity filtering and lookups.
-
-- Server-side pagination for Killmail Log table (`stats/v2/killmails` and `KillboardTable`):
-
-  - Added `page` and `page_size` query parameters to API endpoint with database-level offset slicing.
-  - Enabled TanStack React Table `manualPagination: true` with first, previous, next, last page controls and page size selector (10, 25, 50, 100, 250).
-  - Eliminated the previous 10,000 killmails display limitation entirely, allowing users to browse through unlimited historical killmails.
-
-- React Single-Page Application (SPA) frontend built with Vite, TypeScript, React-Bootstrap, Tailwind CSS, TanStack React Query, Lucide icons, and `react-i18next`.
-
-- V2 Killboard React components:
-
-  - `KillboardSection`, `KillboardStats`, `KillboardTable`, `KillboardFilterBar`, `KillboardHallOfFame`, and `TopPilotsSection`.
-  - Parallel data-loading architecture splitting requests into fast combat summary (`stats/v2/summary`), top attackers (`stats/v2/attackers`), top victims (`stats/v2/victims`), Hall of Fame & Shame (`hall/v2`), and filtered killmails list (`killmails/v2`).
-
-- Overview pages (`OverviewPage`) in React for tracked corporations and alliances with real-time search, logos, and navigation links.
-
-- Centralized React API client architecture (`frontend/src/Api/ApiCalls.ts`) using `openapi-fetch` and centralized TanStack React Query keys (`frontend/src/Api/query.ts`).
-
-- Multi-language i18n support in the React frontend with comprehensive German (`de`) and English (`en`) translations.
-
-- Informational notice banner in Killmail Log when selecting "All" or all-time period indicating that a maximum of the latest 10,000 killmails are loaded.
-
-- Styled frontend containers, cards, tables, header, search bar, and scrollbars matching the `vowra-website` dark aesthetic (`bg-[#141620]`, `bg-zinc-900/60`, `border-zinc-700/80`, `backdrop-blur-md`, `bg-[#0b0e14]`).
-
-- Unit test suite for React frontend with Vitest and React Testing Library (`ApiCalls.test.ts`, `query.test.ts`).
-
-- New agent workspace guidelines: `react-api-guidelines.md` for mandatory centralized API calls and query key management.
-
-- Unit test suites for V2 Django Ninja API endpoints in `killstats/tests/api/test_killboard_api.py` and `killstats/tests/api/test_stats_api.py`.
-
-- Unit test suite for Celery tasks in `killstats/tests/test_tasks.py`.
-
-- Unit test suite for core helpers (`JSONDateTimeEncoder`, `JSONDateTimeDecoder`, `get_redis_client`) in `killstats/tests/helpers/test_core.py`.
-
-- Unit test suite for `KillmailManager` and querysets in `killstats/tests/test_managers/test_killboard_manager.py`.
-
-- Unit test suite for `CorporationsAuditManager` and `AlliancesAuditManager` in `killstats/tests/test_managers/test_killboardaudit_manager.py`.
-
-- Refactored `EveEntityManager` unit tests in `killstats/tests/test_managers/test_general_manager.py` to use `pook` for all ESI HTTP calls.
-
-- Unit test suite for `General` and `EveEntity` models in `killstats/tests/test_models/test_general.py`.
-
-- Unit test suite for `EveEntityManager` in `killstats/tests/test_managers/test_general_manager.py`.
-
-- Expanded unit test suites for `CorporationsAudit` and `AlliancesAudit` models in `killstats/tests/test_models/test_killaudit.py`.
-
-- Expanded unit test suite for `KillmailBody` helper in `killstats/tests/helpers/test_killmailbody.py`.
-
-- Unit test suite for Django Ninja API endpoints (`KillboardAdmin`) in `killstats/tests/api/test_admin_api.py`.
-
-- Unit test suite for Celery signals (`worker_ready`, `worker_shutting_down`, `worker_shutdown`) in `killstats/tests/test_signals.py`.
-
-- Test suite for management commands in `test_commands.py` (`killstats_delete_npc_killmails`, `killstats_update_solar_systems`, `killstats_migrate_eveentity`, `killstats_sync_killmails`).
-
-- Model and serialization methods (`to_model`, `as_model`, `to_json`, `to_dict`, `as_json`, `as_dict`) across test factories via `BasePydanticFactory` and `BaseDjangoModelFactory`, typed with `BaseMetaFactory[T]` for full IDE autocompletion, plus `.as_dict()`, `.to_dict()`, `.as_json()`, `.to_json()` and convenience attribute properties (`id`, `killmail_time`, `solar_system_id`, `victim`, `attackers`) on `KillmailBody` and `zKBWebKillmail`.
-
-- Pydantic v2 `zKBWebKillmail` schema and `TypeAdapter` validation for zKillboard API responses in `helpers.tasks`.
-
-- Agent development, testing, API, and git commit guidelines in `.agents/rules/`.
-
-- Updated test datasets for zKillboard HTTP API responses (`zkb-http.json`, `validate.json`, etc.).
-
-- Integrated automatic solar system resolution into missing killmail tasks (`run_tracker_missing_data`, `check_and_import_corporation_killmails_task`, `check_and_import_alliance_killmails_task`), processing missing killmails in batches of 100 while preserving a minimum 600 token reserve in the django-esi 'killmail' bucket.
-
-- Management command `killstats_update_solar_systems` to scan killmails for missing `victim_solar_system_id`, re-fetch killmail data from ESI/zKillboard, and populate both `victim_solar_system_id` and `victim_region_id` with rate limit protection preserving token reserve in django-esi 'killmail' bucket (supports `-m`/`--missing-only`, `-r`/`--min-reserve`, `-d`/`--dry-run`, `-l`/`--limit`, and `-s`/`--sleep`).
-
-- Management command `killstats_delete_npc_killmails` to detect and delete killmails from NPC corporations that do not belong to any audited corporation or alliance, with interactive 'y' confirmation prompt, `-y`/`--yes`, `--dry-run`, and `--all-orphans` options.
-
-- Validation in `add_corp` and `add_alliance` to prevent adding NPC corporations, characters belonging to NPC corporations, characters without a valid player alliance, or alliances belonging to/executed by an NPC corporation.
-
-- Missing killmail tracking and background Celery tasks (`check_missing_killmails`, `run_tracker_missing_data`, etc.).
-
-- `last_missing_check` DateTime field to `CorporationsAudit` and `AlliancesAudit` models for sequential Round-Robin FIFO tracking.
-
-- `_last_missing_check` display in Django Admin for corporation and alliance audits.
-
-- CODEOWNERS file to define code ownership.
-
-### Fixed
-
-- Resolved N+1 query performance bottleneck in `get_entity_killmails_v2` (`killstats/api/stats.py`) by replacing individual per-row `SolarSystem.objects.get()` calls within the serialization loop with a single bulk query (`SolarSystem.objects.filter(id__in=system_ids)`).
-- Fixed 404 error on page refresh (F5) across React SPA routes (`/killstats/overview/corporations/`, `/killstats/overview/alliances/`, etc.) by adding a catch-all URL pattern (`react_base`) in `killstats/urls.py` and implementing `react_base` in `killstats/views.py`.
-- Handled `IntegrityError` (duplicate key on `hash` or `killmail_id`) in `check_and_import_corporation_killmails_task` and `check_and_import_alliance_killmails_task` caused by concurrent task execution, and enhanced `check_missing_killmails` to filter out existing hashes in addition to IDs.
-- Fixed `test_add_alliance` view test by removing broken `EveAllianceInfo.objects.get_or_create` mock and ensuring isolated character setup.
-- Fixed Create NPC Corporation/Alliance Tracking
-- AttributeError in Permission Model since AAv5.2
+- **Isolated Styling for Alliance Auth**: Conflict-free utility design system (`ks-*` classes) designed to seamlessly integrate with all standard Alliance Auth themes.
+- **Vowra Dark Theme Aesthetic**: Sleek EVE-inspired dark interface featuring glassmorphism (`backdrop-blur`), subtle glowing gradients, and styled rank badges (Gold/Silver/Bronze).
 
 ### Changed
 
-- Promoted React-based Killboard V2 to the default view across the application:
-  - `corporation_view` and `alliance_view` in `killstats/views.py` now render `react_killboard.html`.
-  - `corporation_admin` and `alliance_admin` now render `react_killboard.html` (routing to React `OverviewPage`).
-  - `v2/corporation/...` and `v2/alliance/...` retained as backward-compatible URL aliases.
-- Refactored `killstats/api/killboard.py` and `killstats/api/stats.py` to pure V2 OpenAPI endpoints with optimized querysets.
-- Migrated `AccountManager` into `killstats/api/helpers.py`.
-- Increased backend test coverage to 83% across 179 backend test cases.
-- Refactored `KillmailBody` to Pydantic v2 `BaseModel`.
-- Enhance Makefile and configuration management
-- Added pre-commit hooks management in pre-commit.mk with commands for installation, uninstallation, updates, and checks.
-- Improved Redis command management in redis.mk with better echo messages.
-- Updated tests.mk to enhance test running and coverage reporting.
-- Modified .pre-commit-config.yaml to use regex for JSON file exclusion.
-- Updated CHANGELOG.md to include a section for new changes.
-- Enhanced CODE_OF_CONDUCT.md with a structured table of contents.
-- Improved CONTRIBUTING.md with a structured table of contents.
-- Refactored Makefile to include dynamic configuration loading from .ini files. @thanks to (@ppfeufer)
-- Added database management tasks in database.mk for backup, restore, list, and delete operations.
-- Introduced npm.mk for managing npm dependencies and scripts.
+- Made the React-based Killboard V2 the default view across the application.
+- Increased backend test coverage above 83% with `AuthTestCase` and network isolation (`pook`).
+- Modernized `KillmailBody` to Pydantic v2 `BaseModel`.
 
 ### Removed
 
-- Legacy server-side Django template killboard view (`killstats/killboard.html`, `admin/corporation_admin.html`, `admin/alliance_admin.html`) and associated template calculations (`ExtractYear` querysets).
-- Obsolete legacy Ninja endpoints: `/killmail/month/...`, `/halls/month/...`, `/stats/top/10/...`, `/stats/all/...`.
-- Redundant legacy files: `killstats/api/account_manager.py`, `killstats/api/service.py`, `killstats/api/sync.py`, and outdated test suites (`test_account_manager.py`, `test_api_helper.py`, `test_helpers.py`).
-- `killstats_migrate_old_killmails` Command
+- Deprecated server-side Django template views (`killboard.html`, `corporation_admin.html`, `alliance_admin.html`).
+- Obsolete V1 Ninja endpoints (`/killmail/month/...`, `/halls/month/...`, `/stats/top/10/...`, `/stats/all/...`).
+- Legacy helper functions and unused modules (`_date_filters_*`, `_entity_*_q`, `account_manager.py`, `service.py`, `sync.py`).
+- Management command `killstats_migrate_old_killmails`.
 
 ## [3.0.1] - 28.05.2026
 

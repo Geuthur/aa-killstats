@@ -1,6 +1,6 @@
 import { apiClient } from "@/Api/Api";
 import type { components } from "@/Api/OpenApi";
-import type { CombatStatsResponse, CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse  } from "@/Api/schema";
+import type { CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse  } from "@/Api/schema";
 import { ProjectName } from "@/App";
 
 
@@ -77,51 +77,25 @@ export async function loadAlliancesOverview(): Promise<OverviewEntity[]> {
 // Killboard Combat Stats & Summaries (OpenAPI)
 // ---------------------------------------------------------------------------
 
-export async function fetchCombatStats(
-  year: number | "all",
-  month: number | "all",
-  entityType: string,
-  entityId: number
-): Promise<CombatStatsResponse> {
-  const y = year === "all" ? 0 : year;
-  const m = month === "all" ? 0 : month;
-  const { data, error } = await apiClient.GET(
-    "/killstats/api/stats/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/",
-    {
-      params: {
-        path: {
-          year: y,
-          month: m,
-          entity_type: entityType as "alliance" | "corporation" | "character",
-          entity_id: entityId,
-        },
-      },
-    }
-  );
-  if (error || !data) {
-    throw new Error("Failed to fetch combat stats");
-  }
-  return data as unknown as CombatStatsResponse;
-}
-
 export async function fetchCombatSummary(
   year: number | "all",
   month: number | "all",
   entityType: string,
   entityId: number
 ): Promise<CombatSummaryResponse> {
-  const y = year === "all" ? 0 : year;
-  const m = month === "all" ? 0 : month;
+  const query: Record<string, number> = {};
+  if (year !== "all") query.year = year;
+  if (month !== "all") query.month = month;
+
   const { data, error } = await apiClient.GET(
-    "/killstats/api/stats/v2/summary/year/{year}/month/{month}/{entity_type}/{entity_id}/",
+    "/killstats/api/stats/v2/summary/{entity_type}/{entity_id}/",
     {
       params: {
         path: {
-          year: y,
-          month: m,
-          entity_type: entityType,
+          entity_type: entityType as "alliance" | "corporation" | "character",
           entity_id: entityId,
         },
+        query,
       },
     }
   );
@@ -137,18 +111,19 @@ export async function fetchTopAttackers(
   entityType: string,
   entityId: number
 ): Promise<TopPilotsResponse> {
-  const y = year === "all" ? 0 : year;
-  const m = month === "all" ? 0 : month;
+  const query: Record<string, number> = {};
+  if (year !== "all") query.year = year;
+  if (month !== "all") query.month = month;
+
   const { data, error } = await apiClient.GET(
-    "/killstats/api/stats/v2/attackers/year/{year}/month/{month}/{entity_type}/{entity_id}/",
+    "/killstats/api/stats/v2/attackers/{entity_type}/{entity_id}/",
     {
       params: {
         path: {
-          year: y,
-          month: m,
-          entity_type: entityType,
+          entity_type: entityType as "alliance" | "corporation" | "character",
           entity_id: entityId,
         },
+        query,
       },
     }
   );
@@ -164,18 +139,19 @@ export async function fetchTopVictims(
   entityType: string,
   entityId: number
 ): Promise<TopPilotsResponse> {
-  const y = year === "all" ? 0 : year;
-  const m = month === "all" ? 0 : month;
+  const query: Record<string, number> = {};
+  if (year !== "all") query.year = year;
+  if (month !== "all") query.month = month;
+
   const { data, error } = await apiClient.GET(
-    "/killstats/api/stats/v2/victims/year/{year}/month/{month}/{entity_type}/{entity_id}/",
+    "/killstats/api/stats/v2/victims/{entity_type}/{entity_id}/",
     {
       params: {
         path: {
-          year: y,
-          month: m,
-          entity_type: entityType,
+          entity_type: entityType as "alliance" | "corporation" | "character",
           entity_id: entityId,
         },
+        query,
       },
     }
   );
@@ -191,18 +167,19 @@ export async function fetchHallStats(
   entityType: string,
   entityId: number
 ): Promise<HallResponse> {
-  const y = year === "all" ? 0 : year;
-  const m = month === "all" ? 0 : month;
+  const query: Record<string, number> = {};
+  if (year !== "all") query.year = year;
+  if (month !== "all") query.month = month;
+
   const { data, error } = await apiClient.GET(
-    "/killstats/api/hall/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/",
+    "/killstats/api/hall/v2/{entity_type}/{entity_id}/",
     {
       params: {
         path: {
-          year: y,
-          month: m,
           entity_type: entityType as "alliance" | "corporation" | "character",
           entity_id: entityId,
         },
+        query,
       },
     }
   );
@@ -221,23 +198,27 @@ export async function fetchKillmails(
   page: number = 1,
   pageSize: number = 25
 ): Promise<KillmailListResponse> {
-  const y = year === "all" ? 0 : year;
-  const m = month === "all" ? 0 : month;
+  const queryParams: Record<string, unknown> = {
+    mode,
+    page,
+    page_size: pageSize,
+  };
+  if (year !== "all") {
+    queryParams.year = year;
+  }
+  if (month !== "all") {
+    queryParams.month = month;
+  }
+
   const { data, error } = await apiClient.GET(
-    "/killstats/api/killmails/v2/year/{year}/month/{month}/{entity_type}/{entity_id}/",
+    "/killstats/api/killmails/{entity_type}/{entity_id}/",
     {
       params: {
         path: {
-          year: y,
-          month: m,
           entity_type: entityType as "alliance" | "corporation" | "character",
           entity_id: entityId,
         },
-        query: {
-          mode,
-          page,
-          page_size: pageSize,
-        },
+        query: queryParams,
       },
     }
   );
