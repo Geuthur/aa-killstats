@@ -28,6 +28,8 @@ Section Order:
 
 <!-- Your changes go here -->
 
+## [4.0.1] - 01.10.2026
+
 ## [4.0.0] - 01.10.2026
 
 > [!IMPORTANT]
@@ -633,4 +635,5 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [3.0.0]: https://github.com/Geuthur/aa-killstats/compare/v2.0.6...v3.0.0 "3.0.0"
 [3.0.1]: https://github.com/Geuthur/aa-killstats/compare/v3.0.0...v3.0.1 "3.0.1"
 [4.0.0]: https://github.com/Geuthur/aa-killstats/compare/v3.0.1...v4.0.0 "v4.0.0"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v4.0.0...HEAD "In Development"
+[4.0.1]: https://github.com/Geuthur/aa-killstats/compare/v4.0.0...v4.0.1 "v4.0.1"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v4.0.1...HEAD "In Development"
