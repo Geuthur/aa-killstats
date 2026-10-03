@@ -127,8 +127,7 @@ python manage.py esde_load_sde
 Migrate the app and collect static.
 
 ```shell
-python manage.py migrate skillfarm
-python manage.py skillfarm_load_prices
+python manage.py migrate killstats
 python manage.py collectstatic --noinput
 ```
 
