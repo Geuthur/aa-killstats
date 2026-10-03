@@ -115,20 +115,25 @@
 }
 
 .ks-table-row-kill {
-    border-left: 4px solid transparent;
-    transition: background-color 150ms ease, border-color 150ms ease;
+    transition: background-color 150ms ease;
 }
 
 .ks-table-row-kill:hover {
     background-color: rgba(39, 39, 42, .5);
-    border-left-color: rgba(16, 185, 129, .5);
+}
+
+.ks-table-row-kill:hover > td:first-child {
+    box-shadow: inset 4px 0 0 rgba(16, 185, 129, .5);
 }
 
 .ks-table-row-loss {
     background-color: rgba(76, 5, 25, .2);
-    border-left: 4px solid #f43f5e;
     border-bottom: 1px solid rgba(136, 19, 55, .5);
     transition: background-color 150ms ease;
+}
+
+.ks-table-row-loss > td:first-child {
+    box-shadow: inset 4px 0 0 #f43f5e;
 }
 
 .ks-table-row-loss:hover {
