@@ -12,6 +12,7 @@ from django.test import RequestFactory, TestCase
 from allianceauth.authentication.models import User
 
 # AA Killstats
+from killstats.tests import pook_httpx2
 from killstats.tests.testdata.killstats import UserMainFactory
 
 
