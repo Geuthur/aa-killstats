@@ -14,7 +14,7 @@ ParsedConfigFiles := $(ConfigFile) $(wildcard $(ConfigFileOverride))
 # Extract all config values from $(ConfigFile) and export them as Makefile variables
 ifneq ($(wildcard $(ConfigFile)),)
 TMPFILE := $(shell mkdir -p $(dir $(ConfigFile)) && mktemp $(dir $(ConfigFile))/make_vars.XXXXXX)
-$(shell awk -F= '/^\[/{gsub(/^^\[|\]$$/, "", $$0); section=$$0; next} /^[^#;].*=/ { key=$$1; val=$$0; sub(/^[^=]*=/, "", val); gsub(/^[ \t]+|[ \t]+$$/, "", val); gsub(/^[ \t]+|[ \t]+$$/, "", key); if(section=="") name=toupper(key); else name=toupper(section"__"key); gsub(/[^A-Z0-9_]/, "_", name); gsub(/[$$]/, "$$$$", val); printf "%s := %s\n", name, val }' $(ParsedConfigFiles) > $(TMPFILE))
+$(shell awk -F= '/^\[/{gsub(/^^\[|\]$$/, "", $$0); section=$$0; next} /^[^#;].*=/ { key=$$1; val=$$0; sub(/^[^=]*=/, "", val); gsub(/^[ \t]+|[ \t]+$$/, "", val); gsub(/^[ \t]+|[ \t]+$$/, "", key); if(section=="") name=toupper(key); else name=toupper(section"__"key); gsub(/[^A-Z0-9_]/, "_", name); printf "%s = %s\n", name, val }' $(ParsedConfigFiles) > $(TMPFILE))
 include $(TMPFILE)
 $(shell rm -f $(TMPFILE))
 
@@ -97,13 +97,15 @@ graph-models: check-python-venv check-myauth-path
 prepare-release: pot graph-models
 	@echo "Preparing a release…"
 	@read -p "New Version Number: " new_version; \
+	previous_version=$$(grep -E '^\[[0-9]+(\.[0-9]+){0,2}\]:' CHANGELOG.md | sed -E 's/^\[([0-9]+(\.[0-9]+){0,2})\]:.*/\1/' | sort -V | awk -v current="$$new_version" '$$0 != current { previous=$$0 } END { print previous }'); \
+	echo "Previous release version detected: $$previous_version"; \
 	if ! grep -qE "^## \[$$new_version\]" CHANGELOG.md; then \
-		previous_version=$$(grep -m 1 -E '^## \[[0-9]+(\.[0-9]+){0,2}\] - ' CHANGELOG.md | sed -E 's/^## \[([0-9]+(\.[0-9]+){0,2})\].*$$/\1/');  \
-		echo "Previous release version detected: $$previous_version"; \
-		echo "$(TEXT_COLOR_RED)$(TEXT_BOLD)Version $$new_version not found in CHANGELOG.md!$(TEXT_RESET)"; \
+		echo "$(TEXT_COLOR_RED)$(TEXT_BOLD)Version $$new_version section not found in CHANGELOG.md!$(TEXT_RESET)"; \
 		echo "Adding a new section for version $$new_version."; \
-		echo "Please check and update the $(TEXT_BOLD)CHANGELOG.md$(TEXT_RESET) file accordingly."; \
 		sed -i "/<!-- Your changes go here -->/a\\\n## [$$new_version] - $$(date '+%Y-%m-%d')" CHANGELOG.md; \
+	fi; \
+	if ! grep -qE "^\[$$new_version\]:" CHANGELOG.md; then \
+		echo "Adding the reference for version $$new_version."; \
 		echo "[$$new_version]: $(GIT__GIT_REPOSITORY)/compare/v$$previous_version...v$$new_version \"v$$new_version\"" >> CHANGELOG.md; \
 	fi; \
 	sed -i "/__version__ = /c\__version__ = \"$$new_version\"" $(GENERAL__PACKAGE)/__init__.py; \

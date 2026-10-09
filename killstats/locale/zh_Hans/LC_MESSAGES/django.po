@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: AA Killstats \n"
-"Report-Msgid-Bugs-To: https://github.com/Geuthur/aa-killstats/issues\n"
-"POT-Creation-Date: 2026-05-28 16:59+0200\n"
+"Project-Id-Version: AA Killstats\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-killstats/\n"
+"POT-Creation-Date: 2026-09-28 16:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,21 +19,29 @@ msgstr ""
 "Date: 2025-09-26 14:31+0200\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "Killmail ID"
-msgstr ""
-
+#: killstats/models/general.py:64
 msgid "ID"
 msgstr ""
 
+#: killstats/models/general.py:67
 msgid "Category"
 msgstr ""
 
+#: killstats/models/general.py:69
 msgid "Name"
 msgstr ""
 
+#: killstats/models/killboard.py:51 killstats/models/killboard.py:59
+#: killstats/models/killboard.py:71 killstats/models/killboard.py:120
 msgid "Unknown"
 msgstr ""
 
+#: killstats/models/killstatsaudit.py:38 killstats/models/killstatsaudit.py:74
+msgid "last missing check"
+msgstr ""
+
+#: killstats/templates/killstats/admin/alliance_admin.html:7
+#: killstats/templates/killstats/admin/corporation_admin.html:8
 msgid "Killstats Corporation Overview"
 msgstr ""
 
@@ -85,12 +93,12 @@ msgstr ""
 msgid "Month"
 msgstr ""
 
+#: killstats/templates/killstats/killboard.html:8
+#: killstats/templates/killstats/react_killboard.html:5
 msgid "Killstats"
 msgstr ""
 
-msgid "Add Killmail"
-msgstr ""
-
+#: killstats/templates/killstats/partials/menu/administration.html:6
 msgid "Add Corporation"
 msgstr ""
 
@@ -118,20 +126,24 @@ msgstr ""
 msgid "No data found..."
 msgstr ""
 
+#: killstats/views.py:100
+msgid "Cannot add NPC Corporation to Killstats"
+msgstr ""
+
+#: killstats/views.py:130
+msgid "Cannot add Alliance for a character belonging to an NPC Corporation"
+msgstr ""
+
+#: killstats/views.py:136
+msgid "Character does not belong to a valid player Alliance"
+msgstr ""
+
+#: killstats/views.py:147
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr ""
 
+#: killstats/views.py:151
 #, python-brace-format
-msgid "Failed to fetch Alliance data for {alliance_name}"
-msgstr ""
-
-#, python-brace-format
-msgid ""
-"Killmail {killmail_id} already exists. Please check the killmail ID and try "
-"again."
-msgstr ""
-
-#, python-brace-format
-msgid "Killmail {killmail_id} has been added to Killstats."
+msgid "Alliance {alliance_name} could not be found in Alliance Auth"
 msgstr ""

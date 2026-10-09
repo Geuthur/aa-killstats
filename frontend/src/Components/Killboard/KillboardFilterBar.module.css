@@ -1,0 +1,57 @@
+.ks-panel-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ks-title {
+    font-size: var(--aa-font-size-lg);
+    font-weight: var(--aa-font-weight-bold);
+    margin: 0;
+    color: var(--aa-text-primary);
+    letter-spacing: .025em;
+}
+
+.ks-filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.ks-filter-label {
+    margin: 0;
+    font-size: var(--aa-font-size);
+    font-weight: var(--aa-font-weight-medium);
+    color: var(--aa-text-secondary);
+}
+
+/* ═══ FILTER SELECTS ════════════════════════════════════════════════════════ */
+.ks-filter-select {
+    background-color: #27272a;
+    border: 1px solid #3f3f46;
+    color: #e4e4e7;
+    font-size: .75rem;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+    min-width: 120px;
+    transition: border-color 150ms ease;
+}
+
+@media (min-width: 640px) {
+    .ks-filter-select {
+        font-size: .875rem;
+    }
+}
+
+.ks-filter-select:hover {
+    border-color: #52525b;
+}
+
+.ks-filter-select:focus {
+    border-color: var(--aa-blue-focus);
+}

@@ -25,12 +25,17 @@ ci:
 # https://pre-commit.com/#pre-commit-configyaml---top-level
 exclude: |
   (?x)(
-    .github/|
-    LICENSE|
-    openapi_.*\.json|
-    .min(.css|.css.map|.js|.js.map)|
-    locale/|
-    static/(.*)/libs/
+    .github/ |
+    frontend/ |
+    LICENSE |
+    openapi_.*\.json |
+    .min(.css|.css.map|.js|.js.map) |
+    .app(.json) |
+    .node(.json) |
+    locale/ |
+    static/(.*)/libs/ |
+    static/(.*)/react/ |
+    docs/
   )
 
 # pre-commit setup
@@ -117,17 +122,17 @@ repos:
         description: Ensure that files end with a newline.
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.10.0
+    rev: v10.12.0
     hooks:
       - id: eslint
         name: ESLint
         args: [--fix, --color, --max-warnings, "0"]
         description: Check for problems in JavaScript files.
         additional_dependencies:
-          - eslint@10.10.0
+          - eslint@10.11.0
 
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
-    rev: v17.14.1
+    rev: v17.16.0
     hooks:
       - id: stylelint
         name: Stylelint
@@ -174,7 +179,7 @@ repos:
         description: Check for compliance with the definitions in the EditorConfig file.
 
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.32.0
+    rev: 1.33.0
     hooks:
       - id: django-upgrade
         name: Django upgrade
@@ -192,7 +197,7 @@ repos:
           - --py310-plus  # Minimum required Python version for AA. Update as needed.
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+    rev: 7.4.1
     hooks:
       - id: flake8
         name: Flake8
@@ -206,7 +211,7 @@ repos:
         description: Check for extraneous `# noqa` comments.
 
   - repo: https://github.com/PyCQA/isort
-    rev: 9.0.1
+    rev: 9.0.2
     hooks:
       - id: isort
         name: Isort
@@ -220,7 +225,7 @@ repos:
         description: Check for black disable comments.
 
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.5.1
+    rev: 26.10.0
     hooks:
       - id: black
         name: Black
@@ -259,7 +264,7 @@ repos:
         description: Format the tox.ini file.
 
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.29.3
+    rev: v2.30.1
     hooks:
       - id: pyproject-fmt
         name: pyproject.toml formatter
@@ -267,17 +272,17 @@ repos:
         args:
           - --indent=4
         additional_dependencies:
-          - tox==4.61.2  # https://github.com/tox-dev/tox/releases/latest
+          - tox==4.64.4  # https://github.com/tox-dev/tox/releases/latest
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.25
+    rev: '0.26'
     hooks:
       - id: validate-pyproject
         name: Validate pyproject.toml
         description: Validate the pyproject.toml file.
 
   - repo: https://github.com/pylint-dev/pylint
-    rev: v4.0.8
+    rev: v4.1.2
     hooks:
       - id: pylint
         name: Pylint
@@ -286,7 +291,7 @@ repos:
           - --py-version=3.10  # Minimum required Python version for AA. Update as needed.
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.38.0
+    rev: 0.38.2
     hooks:
       - id: check-github-actions
         name: Check GitHub Actions

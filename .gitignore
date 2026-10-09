@@ -4,6 +4,7 @@
 .venv/
 node_modules/
 __pycache__
+htmlcov/
 
 # Standard System Files
 *.log
@@ -16,8 +17,8 @@ __pycache__
 # GitHub Stuff
 .coverage
 .pypirc
-/build/
-/dist/
+*build/
+*dist/
 /coverage.xml
 
 # Alliance Auth
