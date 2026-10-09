@@ -5,11 +5,13 @@
 #
 msgid ""
 msgstr ""
-"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-killstats/\n"
-"POT-Creation-Date: 2026-09-28 16:01+0200\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-"
+"killstats/\n"
+"POT-Creation-Date: 2026-10-03 20:30+0200\n"
 "PO-Revision-Date: 2026-01-11 20:50+0000\n"
 "Last-Translator: Geuthur <geuthur@users.noreply.github.com>\n"
-"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-killstats/de/>\n"
+"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-"
+"killstats/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,37 +19,41 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.15.1\n"
 
-#: killstats/models/general.py:64
-msgid "ID"
+msgid "Corporation"
 msgstr ""
 
-#: killstats/models/general.py:67
+msgid "Alliance"
+msgstr ""
+
+msgid "Corporation Overview"
+msgstr "Corporation Übersicht"
+
+msgid "Alliance Overview"
+msgstr "Allianz Übersicht"
+
+msgid "Add Corporation"
+msgstr "Corporation hinzufügen"
+
+msgid "Add Alliance"
+msgstr "Allianz hinzufügen"
+
+msgid "Permission Denied."
+msgstr ""
+
+msgid "ID"
+msgstr "ID"
+
 msgid "Category"
 msgstr ""
 
-#: killstats/models/general.py:69
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
-#: killstats/models/killboard.py:51 killstats/models/killboard.py:59
-#: killstats/models/killboard.py:71 killstats/models/killboard.py:120
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: killstats/models/killstatsaudit.py:38 killstats/models/killstatsaudit.py:74
 msgid "last missing check"
 msgstr ""
-
-#: killstats/templates/killstats/admin/alliance_admin.html:7
-#: killstats/templates/killstats/admin/corporation_admin.html:8
-msgid "Killstats Corporation Overview"
-msgstr "Killstats Corporation Übersicht"
-
-msgid "Show"
-msgstr "Zeige"
-
-msgid "No Permission"
-msgstr "Keine Berechtigung"
 
 msgid "January"
 msgstr "Januar"
@@ -91,60 +97,49 @@ msgstr "Tag"
 msgid "Month"
 msgstr "Monat"
 
-#: killstats/templates/killstats/killboard.html:8
-#: killstats/templates/killstats/react_killboard.html:5
-msgid "Killstats"
-msgstr "Killstats"
-
-#: killstats/templates/killstats/partials/menu/administration.html:6
-msgid "Add Corporation"
-msgstr "Corporation hinzufügen"
-
-msgid "Add Alliance"
-msgstr "Allianz hinzufügen"
-
-msgid "Corporation Overview"
-msgstr "Corporation Übersicht"
-
-msgid "Alliance Overview"
-msgstr "Allianz Übersicht"
-
-msgid "Close"
-msgstr "Schließen"
-
-msgid "Character Icon"
-msgstr "Charakter-Symbol"
-
-msgid "Character Name"
-msgstr "Charakter Name"
-
-msgid "Kill Count"
-msgstr "Kill-Zählung"
-
-msgid "No data found..."
-msgstr "Keine Daten gefunden..."
-
-#: killstats/views.py:100
 msgid "Cannot add NPC Corporation to Killstats"
 msgstr ""
 
-#: killstats/views.py:130
 msgid "Cannot add Alliance for a character belonging to an NPC Corporation"
 msgstr ""
 
-#: killstats/views.py:136
 msgid "Character does not belong to a valid player Alliance"
 msgstr ""
 
-#: killstats/views.py:147
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr "{alliance_name} erfolgreich zu Killstats hinzugefügt/aktualisiert"
 
-#: killstats/views.py:151
 #, python-brace-format
 msgid "Alliance {alliance_name} could not be found in Alliance Auth"
 msgstr ""
+
+#~ msgid "Killstats Corporation Overview"
+#~ msgstr "Killstats Corporation Übersicht"
+
+#~ msgid "Show"
+#~ msgstr "Zeige"
+
+#~ msgid "No Permission"
+#~ msgstr "Keine Berechtigung"
+
+#~ msgid "Killstats"
+#~ msgstr "Killstats"
+
+#~ msgid "Close"
+#~ msgstr "Schließen"
+
+#~ msgid "Character Icon"
+#~ msgstr "Charakter-Symbol"
+
+#~ msgid "Character Name"
+#~ msgstr "Charakter Name"
+
+#~ msgid "Kill Count"
+#~ msgstr "Kill-Zählung"
+
+#~ msgid "No data found..."
+#~ msgstr "Keine Daten gefunden..."
 
 #~ msgid "Killmail ID"
 #~ msgstr "Killmail ID"
@@ -157,8 +152,12 @@ msgstr ""
 #~ msgstr "Fehler beim Abrufen der Allianz-Daten für {alliance_name}"
 
 #, python-brace-format
-#~ msgid "Killmail {killmail_id} already exists. Please check the killmail ID and try again."
-#~ msgstr "Killmail {killmail_id} existiert bereits. Bitte überprüfen Sie die Killmail-ID und versuchen Sie es erneut."
+#~ msgid ""
+#~ "Killmail {killmail_id} already exists. Please check the killmail ID and "
+#~ "try again."
+#~ msgstr ""
+#~ "Killmail {killmail_id} existiert bereits. Bitte überprüfen Sie die "
+#~ "Killmail-ID und versuchen Sie es erneut."
 
 #, python-brace-format
 #~ msgid "Killmail {killmail_id} has been added to Killstats."

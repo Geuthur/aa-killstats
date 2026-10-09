@@ -7,8 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AA Killstats\n"
-"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-killstats/\n"
-"POT-Creation-Date: 2026-09-28 16:01+0200\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-"
+"killstats/\n"
+"POT-Creation-Date: 2026-10-03 20:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,38 +18,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Date: 2025-09-26 14:31+0200\n"
-"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n "
+">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
-#: killstats/models/general.py:64
+msgid "Corporation"
+msgstr ""
+
+msgid "Alliance"
+msgstr ""
+
+msgid "Corporation Overview"
+msgstr ""
+
+msgid "Alliance Overview"
+msgstr ""
+
+msgid "Add Corporation"
+msgstr ""
+
+msgid "Add Alliance"
+msgstr ""
+
+msgid "Permission Denied."
+msgstr ""
+
 msgid "ID"
 msgstr ""
 
-#: killstats/models/general.py:67
 msgid "Category"
 msgstr ""
 
-#: killstats/models/general.py:69
 msgid "Name"
 msgstr ""
 
-#: killstats/models/killboard.py:51 killstats/models/killboard.py:59
-#: killstats/models/killboard.py:71 killstats/models/killboard.py:120
 msgid "Unknown"
 msgstr ""
 
-#: killstats/models/killstatsaudit.py:38 killstats/models/killstatsaudit.py:74
 msgid "last missing check"
-msgstr ""
-
-#: killstats/templates/killstats/admin/alliance_admin.html:7
-#: killstats/templates/killstats/admin/corporation_admin.html:8
-msgid "Killstats Corporation Overview"
-msgstr ""
-
-msgid "Show"
-msgstr ""
-
-msgid "No Permission"
 msgstr ""
 
 msgid "January"
@@ -93,57 +99,19 @@ msgstr ""
 msgid "Month"
 msgstr ""
 
-#: killstats/templates/killstats/killboard.html:8
-#: killstats/templates/killstats/react_killboard.html:5
-msgid "Killstats"
-msgstr ""
-
-#: killstats/templates/killstats/partials/menu/administration.html:6
-msgid "Add Corporation"
-msgstr ""
-
-msgid "Add Alliance"
-msgstr ""
-
-msgid "Corporation Overview"
-msgstr ""
-
-msgid "Alliance Overview"
-msgstr ""
-
-msgid "Close"
-msgstr ""
-
-msgid "Character Icon"
-msgstr ""
-
-msgid "Character Name"
-msgstr ""
-
-msgid "Kill Count"
-msgstr ""
-
-msgid "No data found..."
-msgstr ""
-
-#: killstats/views.py:100
 msgid "Cannot add NPC Corporation to Killstats"
 msgstr ""
 
-#: killstats/views.py:130
 msgid "Cannot add Alliance for a character belonging to an NPC Corporation"
 msgstr ""
 
-#: killstats/views.py:136
 msgid "Character does not belong to a valid player Alliance"
 msgstr ""
 
-#: killstats/views.py:147
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr ""
 
-#: killstats/views.py:151
 #, python-brace-format
 msgid "Alliance {alliance_name} could not be found in Alliance Auth"
 msgstr ""
