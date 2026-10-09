@@ -28,27 +28,71 @@ Section Order:
 
 <!-- Your changes go here -->
 
+## [4.0.1] - 01.10.2026
+
+## [4.0.0] - 01.10.2026
+
+> [!IMPORTANT]
+>
+> This Release has changed the Task Structure.
+> Therefore, add the following new task to ensure that the killmails continue to be updated
+
+```python
+if "killstats" in INSTALLED_APPS:
+    CELERYBEAT_SCHEDULE["Killstats :: Check for Killmails"] = {
+        "task": "killstats.tasks.run_tracker_zkb",
+        "schedule": crontab(minute="*/1"),
+    }
+    CELERYBEAT_SCHEDULE["Killstats :: Check for Missing Killmail Data"] = {
+        "task": "killstats.tasks.run_tracker_missing_data",
+        "schedule": crontab(minute="*/15"),
+    }
+```
+
+> [!CAUTION]
+>
+> Please note that this release involves structural dependency changes.
+> Therefore, the command `killstats_migrate_old_killmails` is no longer available
+
 ### Added
 
-- CODEOWNERS file to define code ownership.
+#### Performance & Database Optimization
+
+- **Index-Optimized Date Range Queries**: Migrated from SQL date extraction functions (`__year`/`__month`) to index-backed range queries (`gte`/`lt` on `killmail_date`), enabling full B-tree composite index scans across millions of killmails.
+- **Composite Database Indexes**: Added composite indexes on `Killmail` (`km_date_idx`, `km_corp_loss_idx`, `km_ally_loss_idx`, `km_corp_val_idx`, `km_ally_val_idx`, `km_val_desc_idx`, `km_system_idx`) and `Attacker` (`att_km_final_blow_idx`) to drastically reduce query latency.
+- **Server-Side Pagination & Two-Phase Loading**: Implemented high-performance database-level `LIMIT`/`OFFSET` pagination; detailed records (victims, ships, participants, final blows) are only fetched for the current page slice.
+- **N+1 Query Elimination**: Resolved N+1 query bottlenecks via native Django `SolarSystem.objects.in_bulk(...)` bulk lookups.
+
+#### Backend API (Django Ninja V2)
+
+- **RESTful Query Parameter Filtering**: Converted API routes from static URL path dates to flexible Django Ninja `FilterSchema` query parameters (`DateRangeFilter`, `TopPilotsFilter`, `HallFilter`, `KillmailFilter`).
+- **Manager & QuerySet Encapsulation**: Cleanly encapsulated entity lookups (`Attacker.objects.for_entity(...)`, `Killmail.objects.for_victim_entity(...)`) and pagination logic (`Killmail.objects.get_paged_ids(...)`) directly within model managers.
+- **Modular Endpoints**: Decomposed monolithic endpoints into lightweight, parallel endpoints (`/stats/v2/summary/`, `/stats/v2/attackers/`, `/stats/v2/victims/`, `/hall/v2/`, `/killmails/`).
+
+#### Frontend (Modern React Framework)
+
+- **Vite & TypeScript SPA**: Brand-new Single Page Application frontend built with React 19, TypeScript, and Vite.
+- **TanStack Query & State Management**: Parallel data fetching with automated caching, background updates, and URL query state persistence via `nuqs`.
+- **Interactive UI Components**: Purpose-built components for killboard stats, TanStack Table with server-side pagination, Hall of Fame & Shame, Top Pilots modal, and tooltips with direct zKillboard links.
+- **Full Localization & Test Suite**: Multi-language i18n support (EN/DE) with `react-i18next` and unit testing via Vitest and React Testing Library.
+
+#### CSS Framework & Theme Integration
+
+- **Isolated Styling for Alliance Auth**: Conflict-free utility design system (`ks-*` classes) designed to seamlessly integrate with all standard Alliance Auth themes.
+- **Vowra Dark Theme Aesthetic**: Sleek EVE-inspired dark interface featuring glassmorphism (`backdrop-blur`), subtle glowing gradients, and styled rank badges (Gold/Silver/Bronze).
 
 ### Changed
 
-- Enhance Makefile and configuration management
-- Added pre-commit hooks management in pre-commit.mk with commands for installation, uninstallation, updates, and checks.
-- Improved Redis command management in redis.mk with better echo messages.
-- Updated tests.mk to enhance test running and coverage reporting.
-- Modified .pre-commit-config.yaml to use regex for JSON file exclusion.
-- Updated CHANGELOG.md to include a section for new changes.
-- Enhanced CODE_OF_CONDUCT.md with a structured table of contents.
-- Improved CONTRIBUTING.md with a structured table of contents.
-- Refactored Makefile to include dynamic configuration loading from .ini files. @thanks to (@ppfeufer)
-- Added database management tasks in database.mk for backup, restore, list, and delete operations.
-- Introduced npm.mk for managing npm dependencies and scripts.
+- Made the React-based Killboard V2 the default view across the application.
+- Increased backend test coverage above 83% with `AuthTestCase` and network isolation (`pook`).
+- Modernized `KillmailBody` to Pydantic v2 `BaseModel`.
 
-### Fixed
+### Removed
 
-- AttributeError in Permission Model since AAv5.2
+- Deprecated server-side Django template views (`killboard.html`, `corporation_admin.html`, `alliance_admin.html`).
+- Obsolete V1 Ninja endpoints (`/killmail/month/...`, `/halls/month/...`, `/stats/top/10/...`, `/stats/all/...`).
+- Legacy helper functions and unused modules (`_date_filters_*`, `_entity_*_q`, `account_manager.py`, `service.py`, `sync.py`).
+- Management command `killstats_migrate_old_killmails`.
 
 ## [3.0.1] - 28.05.2026
 
@@ -590,4 +634,6 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [2.0.6]: https://github.com/Geuthur/aa-killstats/compare/v2.0.5...v2.0.6 "2.0.6"
 [3.0.0]: https://github.com/Geuthur/aa-killstats/compare/v2.0.6...v3.0.0 "3.0.0"
 [3.0.1]: https://github.com/Geuthur/aa-killstats/compare/v3.0.0...v3.0.1 "3.0.1"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v3.0.1...HEAD "In Development"
+[4.0.0]: https://github.com/Geuthur/aa-killstats/compare/v3.0.1...v4.0.0 "v4.0.0"
+[4.0.1]: https://github.com/Geuthur/aa-killstats/compare/v4.0.0...v4.0.1 "v4.0.1"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v4.0.1...HEAD "In Development"

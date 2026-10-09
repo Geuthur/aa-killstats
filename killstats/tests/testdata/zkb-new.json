@@ -1,0 +1,69 @@
+{
+    "killmail_id": 138705184,
+    "hash": "db25224ea6fe24f7d07dfdd0f719dfe651309d10",
+    "esi": {
+        "attackers": [
+            {
+                "damage_done": 42727,
+                "faction_id": 500019,
+                "final_blow": true,
+                "security_status": 0,
+                "ship_type_id": 24160
+            }
+        ],
+        "killmail_id": 138705184,
+        "killmail_time": "2026-09-26T09:19:45Z",
+        "solar_system_id": 30003731,
+        "victim": {
+            "alliance_id": 99010240,
+            "character_id": 2124684148,
+            "corporation_id": 98819796,
+            "damage_taken": 42727,
+            "items": [
+                {
+                    "flag": 28,
+                    "item_type_id": 33440,
+                    "quantity_dropped": 1,
+                    "singleton": 0
+                },
+                {
+                    "flag": 87,
+                    "item_type_id": 31870,
+                    "quantity_dropped": 4,
+                    "singleton": 0
+                }
+            ],
+            "position": {
+                "x": 221872114178.48203,
+                "y": 13970956419.471004,
+                "z": 112683898844.44258
+            },
+            "ship_type_id": 643
+        }
+    },
+    "zkb": {
+        "locationID": 40236301,
+        "hash": "db25224ea6fe24f7d07dfdd0f719dfe651309d10",
+        "fittedValue": 257449378.67,
+        "droppedValue": 17906107.66,
+        "destroyedValue": 253897169.77,
+        "totalValue": 271803277.43,
+        "totalDroppableValue": 21992912.9,
+        "points": 1,
+        "npc": true,
+        "solo": false,
+        "awox": false,
+        "labels": [
+            "tz:au",
+            "cat:6",
+            "#:1",
+            "npc",
+            "loc:nullsec",
+            "isk:under1b"
+        ],
+        "attackerCount": 1,
+        "href": "https://esi.evetech.net/killmails/138705184/db25224ea6fe24f7d07dfdd0f719dfe651309d10/"
+    },
+    "uploaded_at": 1790414406,
+    "sequence_id": 99718572
+}

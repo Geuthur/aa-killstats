@@ -1,0 +1,112 @@
+
+/* ═══ PILOT Card ════════════════════════════════════════════════════════════ */
+
+.ks-inner-panel {
+    border-radius: var(--aa-border-radius);
+    border: var(--aa-border-solid);
+    background-color: var(--aa-color-body-dark);
+    padding: 20px;
+    box-shadow: var(--aa-shadow);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    flex: 1;
+}
+
+.ks-inner-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+}
+
+.ks-inner-div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ks-inner-default-div {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ks-pilot-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    margin: 4px;
+    border-radius: 8px;
+    background-color: rgba(63, 63, 70, .6);
+    border: var(--aa-border-solid);
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.ks-pilot-row:hover {
+    background-color: rgba(39, 39, 42, .6);
+    border-color: rgba(63, 63, 70, .6);
+}
+
+.ks-pilot-rank {
+    color: var(--aa-text-muted);
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-weight: 700;
+    width: 24px;
+    text-align: center;
+    font-size: .875rem;
+}
+
+.ks-pilot-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: var(--aa-border-solid);
+    object-fit: cover;
+    background-color: #18181b;
+    transition: border-color 150ms ease;
+}
+
+.ks-pilot-avatar:hover {
+    border-color: #52525b;
+}
+
+.ks-pilot-name {
+    display: block;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--aa-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    transition: color 150ms ease;
+}
+
+.ks-pilot-name:hover {
+    text-decoration: underline;
+    color: var(--aa-text-emerald);
+}
+
+/* Pilot-Panel Kopf */
+.ks-pilot-panel-title {
+    font-size: .875rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--aa-text-primary);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+/* Top-Pilots Layout */
+.ks-top-pilots-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .ks-top-pilots-layout {
+        flex-direction: row;
+    }
+}

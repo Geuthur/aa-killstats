@@ -1,0 +1,16 @@
+.killboard-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: var(--aa-text-primary);
+    padding: 16px;
+    max-width: 128rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.killmail-log-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}

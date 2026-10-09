@@ -1,0 +1,51 @@
+{
+    "attackers": [
+        {
+            "alliance_id": 0,
+            "character_id": 0,
+            "corporation_id": 0,
+            "damage_done": 0,
+            "faction_id": 0,
+            "final_blow": true,
+            "security_status": 0,
+            "ship_type_id": 0,
+            "weapon_type_id": 0
+        }
+    ],
+    "killmail_id": 0,
+    "killmail_time": "2019-08-24T14:15:22Z",
+    "moon_id": 0,
+    "solar_system_id": 0,
+    "victim": {
+        "alliance_id": 0,
+        "character_id": 0,
+        "corporation_id": 0,
+        "damage_taken": 0,
+        "faction_id": 0,
+        "items": [
+            {
+                "flag": 0,
+                "item_type_id": 0,
+                "items": [
+                    {
+                        "flag": 0,
+                        "item_type_id": 0,
+                        "quantity_destroyed": 0,
+                        "quantity_dropped": 0,
+                        "singleton": 0
+                    }
+                ],
+                "quantity_destroyed": 0,
+                "quantity_dropped": 0,
+                "singleton": 0
+            }
+        ],
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "ship_type_id": 0
+    },
+    "war_id": 0
+}

@@ -1,0 +1,1533 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Killstats API",
+    "version": "0.2.0",
+    "description": ""
+  },
+  "paths": {
+    "/killstats/api/stats/v2/attackers/{entity_type}/{entity_id}/": {
+      "get": {
+        "operationId": "killstats_api_killboard_get_top_attackers_api",
+        "summary": "Top-10 attackers for an entity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_type",
+            "schema": {
+              "enum": [
+                "alliance",
+                "corporation",
+                "character"
+              ],
+              "title": "Entity Type",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "schema": {
+              "title": "Entity Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2100,
+                  "minimum": 2000,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by year (e.g. 2026)",
+              "title": "Year"
+            },
+            "required": false,
+            "description": "Filter by year (e.g. 2026)"
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 12,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by month (1-12)",
+              "title": "Month"
+            },
+            "required": false,
+            "description": "Filter by month (1-12)"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 10,
+              "description": "Number of top pilots to return",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Number of top pilots to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopPilotsResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Killboard v2"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/stats/v2/victims/{entity_type}/{entity_id}/": {
+      "get": {
+        "operationId": "killstats_api_killboard_get_top_victims_api",
+        "summary": "Top-10 victims for an entity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_type",
+            "schema": {
+              "enum": [
+                "alliance",
+                "corporation",
+                "character"
+              ],
+              "title": "Entity Type",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "schema": {
+              "title": "Entity Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2100,
+                  "minimum": 2000,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by year (e.g. 2026)",
+              "title": "Year"
+            },
+            "required": false,
+            "description": "Filter by year (e.g. 2026)"
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 12,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by month (1-12)",
+              "title": "Month"
+            },
+            "required": false,
+            "description": "Filter by month (1-12)"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 10,
+              "description": "Number of top pilots to return",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Number of top pilots to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopPilotsResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Killboard v2"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/killmails/{entity_type}/{entity_id}/": {
+      "get": {
+        "operationId": "killstats_api_killboard_get_killmails_endpoint",
+        "summary": "Retrieve killmails for an entity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_type",
+            "schema": {
+              "enum": [
+                "alliance",
+                "corporation",
+                "character"
+              ],
+              "title": "Entity Type",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "schema": {
+              "title": "Entity Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2100,
+                  "minimum": 2000,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by year (e.g. 2026)",
+              "title": "Year"
+            },
+            "required": false,
+            "description": "Filter by year (e.g. 2026)"
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 12,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by month (1-12)",
+              "title": "Month"
+            },
+            "required": false,
+            "description": "Filter by month (1-12)"
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "schema": {
+              "default": "all",
+              "description": "Mode filter",
+              "enum": [
+                "all",
+                "kills",
+                "losses"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "required": false,
+            "description": "Mode filter"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "default": 1,
+              "description": "Page number",
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": {
+              "default": 50,
+              "description": "Items per page",
+              "maximum": 250,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KillmailListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Killboard v2"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/killboard/corporation/admin/": {
+      "get": {
+        "operationId": "killstats_api_admin_get_corporation_admin",
+        "summary": "Get Corporation Admin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CorporationAdmin"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "KillboardAdmin"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/killboard/alliance/admin/": {
+      "get": {
+        "operationId": "killstats_api_admin_get_alliance_admin",
+        "summary": "Get Alliance Admin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AllianceAdmin"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "KillboardAdmin"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/hall/v2/{entity_type}/{entity_id}/": {
+      "get": {
+        "operationId": "killstats_api_stats_get_hall_endpoint",
+        "summary": "Retrieve the hall of fame for an entity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_type",
+            "schema": {
+              "enum": [
+                "alliance",
+                "corporation",
+                "character"
+              ],
+              "title": "Entity Type",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "schema": {
+              "title": "Entity Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2100,
+                  "minimum": 2000,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by year (e.g. 2026)",
+              "title": "Year"
+            },
+            "required": false,
+            "description": "Filter by year (e.g. 2026)"
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 12,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by month (1-12)",
+              "title": "Month"
+            },
+            "required": false,
+            "description": "Filter by month (1-12)"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 5,
+              "description": "Number of hall entries to return",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Number of hall entries to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HallResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Killboard Stats v2"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/stats/v2/summary/{entity_type}/{entity_id}/": {
+      "get": {
+        "operationId": "killstats_api_stats_get_combat_summary_api",
+        "summary": "Fast summary: total kills, ISK & active PvPers",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_type",
+            "schema": {
+              "enum": [
+                "alliance",
+                "corporation",
+                "character"
+              ],
+              "title": "Entity Type",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "schema": {
+              "title": "Entity Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2100,
+                  "minimum": 2000,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by year (e.g. 2026)",
+              "title": "Year"
+            },
+            "required": false,
+            "description": "Filter by year (e.g. 2026)"
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 12,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by month (1-12)",
+              "title": "Month"
+            },
+            "required": false,
+            "description": "Filter by month (1-12)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CombatSummaryResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Killboard Stats v2"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/menu/": {
+      "get": {
+        "operationId": "killstats_api_general_get_menu",
+        "summary": "Get Killstats navigation menu",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/killstats/api/user/": {
+      "get": {
+        "operationId": "killstats_api_general_get_user",
+        "summary": "Get current user data",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TopPilotsFilter": {
+        "properties": {
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 2000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by year (e.g. 2026)",
+            "title": "Year"
+          },
+          "month": {
+            "anyOf": [
+              {
+                "maximum": 12,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by month (1-12)",
+            "title": "Month"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Number of top pilots to return",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "TopPilotsFilter",
+        "type": "object"
+      },
+      "TopPilotSchema": {
+        "properties": {
+          "character_id": {
+            "title": "Character Id",
+            "type": "integer"
+          },
+          "character_name": {
+            "title": "Character Name",
+            "type": "string"
+          },
+          "main_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Main Name"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "total_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Total Value"
+          }
+        },
+        "required": [
+          "character_id",
+          "character_name",
+          "count",
+          "total_value"
+        ],
+        "title": "TopPilotSchema",
+        "type": "object"
+      },
+      "TopPilotsResponse": {
+        "description": "Top-N pilot list (attackers OR victims). Returned by dedicated endpoints.",
+        "properties": {
+          "pilots": {
+            "items": {
+              "$ref": "#/components/schemas/TopPilotSchema"
+            },
+            "title": "Pilots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pilots"
+        ],
+        "title": "TopPilotsResponse",
+        "type": "object"
+      },
+      "KillmailFilter": {
+        "properties": {
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 2000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by year (e.g. 2026)",
+            "title": "Year"
+          },
+          "month": {
+            "anyOf": [
+              {
+                "maximum": 12,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by month (1-12)",
+            "title": "Month"
+          },
+          "mode": {
+            "default": "all",
+            "description": "Mode filter",
+            "enum": [
+              "all",
+              "kills",
+              "losses"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "default": 50,
+            "description": "Items per page",
+            "maximum": 250,
+            "minimum": 1,
+            "title": "Page Size",
+            "type": "integer"
+          }
+        },
+        "title": "KillmailFilter",
+        "type": "object"
+      },
+      "KillmailItemSchema": {
+        "properties": {
+          "killmail_id": {
+            "title": "Killmail Id",
+            "type": "integer"
+          },
+          "killmail_date": {
+            "title": "Killmail Date",
+            "type": "string"
+          },
+          "victim_id": {
+            "title": "Victim Id",
+            "type": "integer"
+          },
+          "victim_name": {
+            "title": "Victim Name",
+            "type": "string"
+          },
+          "victim_ship_id": {
+            "title": "Victim Ship Id",
+            "type": "integer"
+          },
+          "victim_ship_name": {
+            "title": "Victim Ship Name",
+            "type": "string"
+          },
+          "total_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Total Value"
+          },
+          "solar_system_id": {
+            "default": 0,
+            "title": "Solar System Id",
+            "type": "integer"
+          },
+          "solar_system_name": {
+            "default": "Unknown",
+            "title": "Solar System Name",
+            "type": "string"
+          },
+          "security_status": {
+            "default": 0.0,
+            "title": "Security Status",
+            "type": "number"
+          },
+          "pilot_count": {
+            "title": "Pilot Count",
+            "type": "integer"
+          },
+          "final_blow_id": {
+            "default": 0,
+            "title": "Final Blow Id",
+            "type": "integer"
+          },
+          "final_blow_name": {
+            "default": "Unknown",
+            "title": "Final Blow Name",
+            "type": "string"
+          },
+          "is_loss": {
+            "default": false,
+            "title": "Is Loss",
+            "type": "boolean"
+          },
+          "zkb_link": {
+            "title": "Zkb Link",
+            "type": "string"
+          }
+        },
+        "required": [
+          "killmail_id",
+          "killmail_date",
+          "victim_id",
+          "victim_name",
+          "victim_ship_id",
+          "victim_ship_name",
+          "total_value",
+          "pilot_count",
+          "zkb_link"
+        ],
+        "title": "KillmailItemSchema",
+        "type": "object"
+      },
+      "KillmailListResponse": {
+        "properties": {
+          "killmails": {
+            "items": {
+              "$ref": "#/components/schemas/KillmailItemSchema"
+            },
+            "title": "Killmails",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "default": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "default": 50,
+            "title": "Page Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "killmails",
+          "total"
+        ],
+        "title": "KillmailListResponse",
+        "type": "object"
+      },
+      "CorporationAdmin": {
+        "properties": {
+          "corporation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation"
+          }
+        },
+        "title": "CorporationAdmin",
+        "type": "object"
+      },
+      "AllianceAdmin": {
+        "properties": {
+          "alliance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance"
+          }
+        },
+        "title": "AllianceAdmin",
+        "type": "object"
+      },
+      "HallFilter": {
+        "properties": {
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 2000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by year (e.g. 2026)",
+            "title": "Year"
+          },
+          "month": {
+            "anyOf": [
+              {
+                "maximum": 12,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by month (1-12)",
+            "title": "Month"
+          },
+          "limit": {
+            "default": 5,
+            "description": "Number of hall entries to return",
+            "maximum": 50,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "HallFilter",
+        "type": "object"
+      },
+      "HallEntrySchema": {
+        "properties": {
+          "killmail_id": {
+            "title": "Killmail Id",
+            "type": "integer"
+          },
+          "char_id": {
+            "title": "Char Id",
+            "type": "integer"
+          },
+          "char_name": {
+            "title": "Char Name",
+            "type": "string"
+          },
+          "ship_id": {
+            "default": 0,
+            "title": "Ship Id",
+            "type": "integer"
+          },
+          "ship_name": {
+            "default": "Unknown",
+            "title": "Ship Name",
+            "type": "string"
+          },
+          "victim_ship_id": {
+            "default": 0,
+            "title": "Victim Ship Id",
+            "type": "integer"
+          },
+          "victim_ship_name": {
+            "default": "Unknown",
+            "title": "Victim Ship Name",
+            "type": "string"
+          },
+          "total_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Total Value"
+          },
+          "damage_done": {
+            "default": 0,
+            "title": "Damage Done",
+            "type": "integer"
+          },
+          "zkb_link": {
+            "title": "Zkb Link",
+            "type": "string"
+          }
+        },
+        "required": [
+          "killmail_id",
+          "char_id",
+          "char_name",
+          "total_value",
+          "zkb_link"
+        ],
+        "title": "HallEntrySchema",
+        "type": "object"
+      },
+      "HallResponseSchema": {
+        "properties": {
+          "hall_of_fame": {
+            "items": {
+              "$ref": "#/components/schemas/HallEntrySchema"
+            },
+            "title": "Hall Of Fame",
+            "type": "array"
+          },
+          "hall_of_shame": {
+            "items": {
+              "$ref": "#/components/schemas/HallEntrySchema"
+            },
+            "title": "Hall Of Shame",
+            "type": "array"
+          }
+        },
+        "required": [
+          "hall_of_fame",
+          "hall_of_shame"
+        ],
+        "title": "HallResponseSchema",
+        "type": "object"
+      },
+      "DateRangeFilter": {
+        "properties": {
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 2000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by year (e.g. 2026)",
+            "title": "Year"
+          },
+          "month": {
+            "anyOf": [
+              {
+                "maximum": 12,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by month (1-12)",
+            "title": "Month"
+          }
+        },
+        "title": "DateRangeFilter",
+        "type": "object"
+      },
+      "CombatSummaryResponse": {
+        "description": "Lightweight summary: counters + ISK totals only. Fast to compute.",
+        "properties": {
+          "total_kills": {
+            "title": "Total Kills",
+            "type": "integer"
+          },
+          "active_pvpers": {
+            "title": "Active Pvpers",
+            "type": "integer"
+          },
+          "destroyed_isk": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Destroyed Isk"
+          },
+          "lost_isk": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Lost Isk"
+          }
+        },
+        "required": [
+          "total_kills",
+          "active_pvpers",
+          "destroyed_isk",
+          "lost_isk"
+        ],
+        "title": "CombatSummaryResponse",
+        "type": "object"
+      },
+      "MenuLink": {
+        "description": "Represents a link in the menu.",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "is_external": {
+            "default": false,
+            "title": "Is External",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "MenuLink",
+        "type": "object"
+      },
+      "MenuModalSchema": {
+        "description": "Schema for menu modals.",
+        "properties": {
+          "modal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModalSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MenuModalSchema",
+        "type": "object"
+      },
+      "MenuSchema": {
+        "description": "Schema for the overall menu, including links and modals.",
+        "properties": {
+          "left_links": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MenuLink"
+            },
+            "title": "Left Links",
+            "type": "array"
+          },
+          "right_links": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MenuLink"
+            },
+            "title": "Right Links",
+            "type": "array"
+          },
+          "modals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MenuModalSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MenuSchema",
+        "type": "object"
+      },
+      "ModalSchema": {
+        "description": "Schema for modal dialog data.",
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "modal_id": {
+            "title": "Modal Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "buttonText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buttontext"
+          }
+        },
+        "required": [
+          "title",
+          "text",
+          "icon",
+          "modal_id",
+          "url"
+        ],
+        "title": "ModalSchema",
+        "type": "object"
+      },
+      "UserData": {
+        "description": "Schema for user data, including character ID and character name.",
+        "properties": {
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          },
+          "character_id": {
+            "title": "Character Id",
+            "type": "integer"
+          },
+          "character_name": {
+            "title": "Character Name",
+            "type": "string"
+          },
+          "corporation_id": {
+            "title": "Corporation Id",
+            "type": "integer"
+          },
+          "corporation_name": {
+            "title": "Corporation Name",
+            "type": "string"
+          },
+          "alliance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Id"
+          },
+          "alliance_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Name"
+          },
+          "portrait": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portrait"
+          },
+          "is_admin": {
+            "default": false,
+            "title": "Is Admin",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_id",
+          "character_id",
+          "character_name",
+          "corporation_id",
+          "corporation_name"
+        ],
+        "title": "UserData",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "SessionAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionid"
+      }
+    }
+  },
+  "servers": []
+}
