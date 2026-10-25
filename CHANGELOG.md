@@ -26,6 +26,10 @@ Section Order:
 ### Removed
 -->
 
+### Changed
+
+- Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
+
 <!-- Your changes go here -->
 
 ## [4.0.1] - 01.10.2026
