@@ -26,6 +26,11 @@ Section Order:
 ### Removed
 -->
 
+### Fixed
+
+- [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
+- [FIX] Added the translation keys for the renamed pagination labels and other missing keys to the i18n files.
+
 ### Changed
 
 - Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
@@ -102,7 +107,6 @@ if "killstats" in INSTALLED_APPS:
 
 ### Fixed
 
-- [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
 - Import Error for Exception
 
 ## [3.0.0] - 2026-05-09

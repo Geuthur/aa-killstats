@@ -108,5 +108,12 @@
   "Confirm": "Bestätigen",
   "Close": "Schließen",
   "Corporation": "Corporation",
-  "Alliance": "Alliance"
+  "Alliance": "Alliance",
+  "Ship:": "Ship:",
+  "First Page": "First Page",
+  "Previous Page": "Previous Page",
+  "Next Page": "Next Page",
+  "Last Page": "Last Page",
+  "View Killstats": "View Killstats",
+  "{{amount}}": "{{amount}}"
 }
