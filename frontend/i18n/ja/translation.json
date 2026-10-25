@@ -116,5 +116,12 @@
   "Loading overview...": "Loading overview...",
   "Failed to load overview data.": "Failed to load overview data.",
   "No entries found.": "No entries found.",
-  "View Killboard": "View Killboard"
+  "View Killboard": "View Killboard",
+  "Ship:": "Ship:",
+  "First Page": "First Page",
+  "Previous Page": "Previous Page",
+  "Next Page": "Next Page",
+  "Last Page": "Last Page",
+  "View Killstats": "View Killstats",
+  "{{amount}}": "{{amount}}"
 }
