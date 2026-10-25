@@ -117,26 +117,26 @@ export default function KillboardTable({
             <div className={styles['ks-table-footer']}>
                 <div className={styles['ks-pagination']}>
                     {renderTooltip(
-                        t('First page'),
+                        t('First Page'),
                         <span>
                             <button
                                 className={styles['ks-pagination-btn']}
                                 onClick={() => onPageChange(1)}
                                 disabled={page <= 1 || isLoading}
-                                aria-label={t('First page')}
+                                aria-label={t('First Page')}
                             >
                                 <ChevronsLeft size="16" />
                             </button>
                         </span>,
                     )}
                     {renderTooltip(
-                        t('Previous page'),
+                        t('Previous Page'),
                         <span>
                             <button
                                 className={styles['ks-pagination-btn']}
                                 onClick={() => onPageChange(page - 1)}
                                 disabled={page <= 1 || isLoading}
-                                aria-label={t('Previous page')}
+                                aria-label={t('Previous Page')}
                             >
                                 <ChevronLeft size="16" />
                             </button>
@@ -149,26 +149,26 @@ export default function KillboardTable({
                         })}
                     </span>
                     {renderTooltip(
-                        t('Next page'),
+                        t('Next Page'),
                         <span>
                             <button
                                 className={styles['ks-pagination-btn']}
                                 onClick={() => onPageChange(page + 1)}
                                 disabled={page >= pageCount || isLoading}
-                                aria-label={t('Next page')}
+                                aria-label={t('Next Page')}
                             >
                                 <ChevronRight size="16" />
                             </button>
                         </span>,
                     )}
                     {renderTooltip(
-                        t('Last page'),
+                        t('Last Page'),
                         <span>
                             <button
                                 className={styles['ks-pagination-btn']}
                                 onClick={() => onPageChange(pageCount)}
                                 disabled={page >= pageCount || isLoading}
-                                aria-label={t('Last page')}
+                                aria-label={t('Last Page')}
                             >
                                 <ChevronsRight size="16" />
                             </button>

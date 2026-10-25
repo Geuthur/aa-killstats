@@ -102,6 +102,7 @@ if "killstats" in INSTALLED_APPS:
 
 ### Fixed
 
+- [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
 - Import Error for Exception
 
 ## [3.0.0] - 2026-05-09
