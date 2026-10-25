@@ -399,8 +399,7 @@ class KillmailManager(models.Manager["KillmailContext"]):
                 try:
                     unique_attackers = list(set(attackers_list))
                     killmail_body.create_names_bulk(eve_ids=unique_attackers)
-                # pylint: disable=broad-exception-caught
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-exception-caught
                     logger.debug("Error on Create Names: %s", e, exc_info=True)
 
             km = Killmail.objects.create(
