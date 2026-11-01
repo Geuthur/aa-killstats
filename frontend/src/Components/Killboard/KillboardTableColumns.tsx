@@ -1,4 +1,5 @@
 // Third Party
+import { columnVisibilityFeature, rowPaginationFeature, tableFeatures } from '@tanstack/react-table';
 import type { ColumnDef } from '@tanstack/react-table';
 
 // Styles
@@ -10,9 +11,14 @@ import { renderTooltip } from '@/Utils';
 import { formatNumber, getSecColor, formatRelativeTime, renderCharacterPortrait } from '@/Utils/eveOnline';
 import { renderLink, renderShipImage } from '@/Utils/general';
 
+// TanStack Table v9 only exposes the APIs of registered features. The killboard
+// paginates on the server, so only manual pagination and column visibility (row.getVisibleCells) are needed.
+export const killboardTableFeatures = tableFeatures({ columnVisibilityFeature, rowPaginationFeature });
+export type KillboardTableFeatures = typeof killboardTableFeatures;
+
 export function getKillboardTableColumns(
     t: (key: string) => string,
-): ColumnDef<KillmailItemSchema>[] {
+): ColumnDef<KillboardTableFeatures, KillmailItemSchema>[] {
     return [
         {
             id: 'type',
@@ -164,6 +170,6 @@ export function getKillboardTableColumns(
     ];
 }
 
-export const columns: ColumnDef<KillmailItemSchema>[] = getKillboardTableColumns(
+export const columns: ColumnDef<KillboardTableFeatures, KillmailItemSchema>[] = getKillboardTableColumns(
     (key) => key,
 );

@@ -2,11 +2,7 @@
 import { useMemo } from 'react';
 
 // Third Party
-import {
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from '@tanstack/react-table';
+import { flexRender, useTable } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +11,7 @@ import styles from '@/Components/Killboard/KillboardTable.module.css';
 
 // AA Killstats
 import type { KillmailItemSchema } from '@/Api/schema';
-import { getKillboardTableColumns } from '@/Components/Killboard/KillboardTableColumns';
+import { getKillboardTableColumns, killboardTableFeatures } from '@/Components/Killboard/KillboardTableColumns';
 import { FetchingLoader } from '@/Components/Loader';
 import { renderTooltip } from '@/Utils';
 
@@ -43,7 +39,8 @@ export default function KillboardTable({
     const columns = useMemo(() => getKillboardTableColumns(t), [t]);
     const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
-    const table = useReactTable({
+    const table = useTable({
+        features: killboardTableFeatures,
         data: tableData,
         columns,
         pageCount,
@@ -54,7 +51,6 @@ export default function KillboardTable({
             },
         },
         manualPagination: true,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     if (isLoading && !data.length) {
