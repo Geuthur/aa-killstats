@@ -188,7 +188,7 @@ repos:
           - --target-version=4.2  # Minimum supported Django version for AA. Update as needed.
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
+    rev: v3.22.0
     hooks:
       - id: pyupgrade
         name: PyUpgrade
