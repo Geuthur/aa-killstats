@@ -122,7 +122,7 @@ repos:
         description: Ensure that files end with a newline.
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.13.0
+    rev: v10.14.0
     hooks:
       - id: eslint
         name: ESLint
@@ -132,7 +132,7 @@ repos:
           - eslint@10.13.0
 
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
-    rev: v17.16.0
+    rev: v18.0.0-next.0
     hooks:
       - id: stylelint
         name: Stylelint
@@ -211,7 +211,7 @@ repos:
         description: Check for extraneous `# noqa` comments.
 
   - repo: https://github.com/PyCQA/isort
-    rev: 9.0.2
+    rev: 10.0.0b2
     hooks:
       - id: isort
         name: Isort
@@ -275,7 +275,7 @@ repos:
           - tox==4.67.4  # https://github.com/tox-dev/tox/releases/latest
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: '0.26'
+    rev: 'v0.27'
     hooks:
       - id: validate-pyproject
         name: Validate pyproject.toml
