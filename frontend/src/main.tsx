@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 
 // Styles
 import '@/index.css';
+import '@/Styles/table.css';
 
 import App, { AppName } from '@/App';
 

@@ -1,3 +1,6 @@
+// React
+import { MemoryRouter } from 'react-router-dom';
+
 // Third Party
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -46,16 +49,22 @@ const renderTable = (overrides: Partial<React.ComponentProps<typeof KillboardTab
         onPageChange: vi.fn(),
         onPageSizeChange: vi.fn(),
         isLoading: false,
+        isFetching: false,
         ...overrides,
     };
-    render(<KillboardTable {...props} />);
-    return props;
+    const { container } = render(
+        <MemoryRouter>
+            <KillboardTable {...props} />
+        </MemoryRouter>,
+    );
+    return { ...props, container };
 };
 
 describe('KillboardTable', () => {
     it('renders all columns and one row per killmail', () => {
-        renderTable();
+        const { container } = renderTable();
 
+        expect(container.querySelector('.aa-table-shell')).not.toBeNull();
         for (const header of ['Type', 'Ship', 'Time', 'Victim', 'Final Blow', 'Location', 'Pilots', 'ISK', 'zKB']) {
             expect(screen.getByRole('columnheader', { name: header })).toBeDefined();
         }
@@ -75,7 +84,7 @@ describe('KillboardTable', () => {
         const user = userEvent.setup();
         const props = renderTable();
 
-        expect(screen.getByText('Page 2 of 5')).toBeDefined();
+        expect(screen.getAllByText('Page 2 of 5').length).toBeGreaterThan(0);
 
         await user.click(screen.getByRole('button', { name: 'Next Page' }));
         expect(props.onPageChange).toHaveBeenCalledWith(3);
@@ -91,9 +100,53 @@ describe('KillboardTable', () => {
     });
 
     it('disables paging at the boundaries', () => {
-        renderTable({ page: 1, total: 10 });
+        renderTable({ page: 1, total: 60 });
 
         expect((screen.getByRole('button', { name: 'First Page' }) as HTMLButtonElement).disabled).toBe(true);
+        expect((screen.getByRole('button', { name: 'Next Page' }) as HTMLButtonElement).disabled).toBe(false);
+    });
+
+    it('hides the paging buttons on a single page', () => {
+        renderTable({ page: 1, total: 10 });
+
+        expect(screen.queryByRole('button', { name: 'Next Page' })).toBeNull();
+    });
+
+    it('shows the total and offers the page size of 250 without show all', () => {
+        renderTable({ total: 1234 });
+
+        expect(screen.getByText(/Total: 1,?234 killmails/)).toBeDefined();
+        expect(screen.getByRole('option', { name: '250' })).toBeDefined();
+        expect(screen.queryByRole('option', { name: 'Show All' })).toBeNull();
+    });
+
+    it('marks loss rows, not kill rows', () => {
+        const { container } = renderTable();
+
+        const rows = container.querySelectorAll('.aa-table-body tr');
+        expect(rows[0].className).not.toContain('ks-table-row-loss');
+        expect(rows[1].className).toContain('ks-table-row-loss');
+    });
+
+    it('shows the loader on the first load', () => {
+        renderTable({ data: [], total: 0, page: 1, isLoading: true });
+
+        expect(screen.getByText('Loading killmails...')).toBeDefined();
+        expect(screen.queryByText('No killmails found.')).toBeNull();
+    });
+
+    it('shows the refresh indicator while fetching', () => {
+        const { container } = renderTable({ isFetching: true });
+
+        expect(container.querySelector('.fa-sync')).not.toBeNull();
+    });
+
+    it('dims the rows and locks the controls while reloading', () => {
+        const { container } = renderTable({ isLoading: true });
+
+        expect(screen.getByText('Victim 10')).toBeDefined();
+        expect(container.querySelector('.aa-table-loading')).not.toBeNull();
         expect((screen.getByRole('button', { name: 'Next Page' }) as HTMLButtonElement).disabled).toBe(true);
+        expect((screen.getByRole('combobox') as HTMLSelectElement).disabled).toBe(true);
     });
 });
