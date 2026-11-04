@@ -114,8 +114,6 @@
   "Refreshing Data": "Aktualizácia údajov",
   "Data Loaded: {{date}}": "Údaje načítané: {{date}}",
   "Export Table to CSV": "Exportovať tabuľku do CSV",
-  "Overview": "Prehľad",
-  "No records found": "Nenašli sa žiadne záznamy",
   "Add Corporation": "Pridať korporáciu",
   "Add Alliance": "Pridať alianciu"
 }
