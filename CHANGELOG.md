@@ -30,6 +30,7 @@ Section Order:
 
 - [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
 - [FIX] Added the translation keys for the renamed pagination labels and other missing keys to the i18n files.
+- Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 
 ### Changed
 
