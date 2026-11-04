@@ -34,6 +34,7 @@ Section Order:
 ### Changed
 
 - The killmail table now uses the shared `BaseTable` with server-side pagination, the `aa-table` styles and the shared footer. Kill and loss row colors, the total count and the page size of 250 stay.
+- The killmail table keeps the current rows dimmed and locked while the next page or filter loads, instead of showing the loader each time.
 - Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
 
 <!-- Your changes go here -->

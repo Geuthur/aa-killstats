@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 // Third Party
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Trophy, Users } from 'lucide-react';
 import { createParser, useQueryState } from 'nuqs';
 import { useTranslation } from 'react-i18next';
@@ -70,9 +70,15 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
         queryFn: () => fetchHallStats(year, month, entityType, entityId),
     });
 
-    const { data: killmailsData, isLoading: isLoadingKillmails, isFetching: isFetchingKillmails } = useQuery({
+    const {
+        data: killmailsData,
+        isLoading: isLoadingKillmails,
+        isFetching: isFetchingKillmails,
+        isPlaceholderData: isKeepingOldKillmails,
+    } = useQuery({
         queryKey: queryKeys.Killmails(year, month, entityType, entityId, killmailMode, page, pageSize),
         queryFn: () => fetchKillmails(year, month, entityType, entityId, killmailMode, page, pageSize),
+        placeholderData: keepPreviousData,
         refetchInterval: 60_000,
         refetchIntervalInBackground: false,
         retry: 1,
@@ -160,7 +166,7 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
                     pageSize={pageSize}
                     onPageChange={setPage}
                     onPageSizeChange={(newSize) => { setPageSize(newSize); setPage(1); }}
-                    isLoading={isLoadingKillmails}
+                    isLoading={isLoadingKillmails || isKeepingOldKillmails}
                     isFetching={isFetchingKillmails}
                 />
             </div>
