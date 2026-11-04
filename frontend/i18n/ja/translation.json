@@ -143,5 +143,5 @@
   "Refreshing Data": "データを更新中",
   "Data Loaded: {{date}}": "データ読み込み: {{date}}",
   "Export Table to CSV": "テーブルをCSVにエクスポート",
-  "Total: {{total}} killmails": "Total: {{total}} killmails"
+  "Total: {{total}} killmails": "合計: {{total}} 件のキルメール"
 }

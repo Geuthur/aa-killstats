@@ -143,5 +143,5 @@
   "Refreshing Data": "正在刷新数据",
   "Data Loaded: {{date}}": "数据已加载:{{date}}",
   "Export Table to CSV": "将表格导出为 CSV",
-  "Total: {{total}} killmails": "Total: {{total}} killmails"
+  "Total: {{total}} killmails": "总计:{{total}} 条击杀邮件"
 }

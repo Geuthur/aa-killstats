@@ -153,8 +153,5 @@
   "Refreshing Data": "Odświeżanie danych",
   "Data Loaded: {{date}}": "Dane załadowane: {{date}}",
   "Export Table to CSV": "Eksportuj tabelę do CSV",
-  "{{count}} Rows_other": "{{count}} Rows",
-  "Total: {{total}} killmails": "Total: {{total}} killmails",
-  "{{count}} Losses_other": "{{count}} Losses",
-  "{{count}} Kills_other": "{{count}} Kills"
+  "Total: {{total}} killmails": "Łącznie: {{total}} killmaili"
 }

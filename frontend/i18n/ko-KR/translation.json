@@ -143,5 +143,5 @@
   "Refreshing Data": "데이터 새로 고침 중",
   "Data Loaded: {{date}}": "데이터 로드됨: {{date}}",
   "Export Table to CSV": "표를 CSV로 내보내기",
-  "Total: {{total}} killmails": "Total: {{total}} killmails"
+  "Total: {{total}} killmails": "합계: 킬메일 {{total}}개"
 }
