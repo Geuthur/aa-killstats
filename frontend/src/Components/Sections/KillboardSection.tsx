@@ -70,7 +70,7 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
         queryFn: () => fetchHallStats(year, month, entityType, entityId),
     });
 
-    const { data: killmailsData, isLoading: isLoadingKillmails } = useQuery({
+    const { data: killmailsData, isLoading: isLoadingKillmails, isFetching: isFetchingKillmails } = useQuery({
         queryKey: queryKeys.Killmails(year, month, entityType, entityId, killmailMode, page, pageSize),
         queryFn: () => fetchKillmails(year, month, entityType, entityId, killmailMode, page, pageSize),
         refetchInterval: 60_000,
@@ -161,6 +161,7 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
                     onPageChange={setPage}
                     onPageSizeChange={(newSize) => { setPageSize(newSize); setPage(1); }}
                     isLoading={isLoadingKillmails}
+                    isFetching={isFetchingKillmails}
                 />
             </div>
 
