@@ -39,6 +39,10 @@ Section Order:
 - The killmail table keeps the current rows dimmed and locked while the next page or filter loads, instead of showing the loader each time.
 - Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
 
+### Removed
+
+- Removed 31 translation keys the frontend no longer uses, including some with German source text.
+
 <!-- Your changes go here -->
 
 ## [4.0.1] - 01.10.2026
