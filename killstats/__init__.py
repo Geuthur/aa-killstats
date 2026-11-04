@@ -12,7 +12,7 @@ __github_url__ = f"https://github.com/Geuthur/{__package_name__}"
 
 USER_AGENT_TEXT = f"{__app_name_useragent__} v{__version__} @ {__github_url__}"
 
-__killmail_operations__ = [
+__operations__ = [
     "GetKillmailsKillmailIdKillmailHash",
     "PostUniverseNames",
 ]
