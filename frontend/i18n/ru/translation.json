@@ -153,8 +153,5 @@
   "Refreshing Data": "Обновление данных",
   "Data Loaded: {{date}}": "Данные загружены: {{date}}",
   "Export Table to CSV": "Экспорт таблицы в CSV",
-  "{{count}} Rows_other": "{{count}} Rows",
-  "Total: {{total}} killmails": "Total: {{total}} killmails",
-  "{{count}} Losses_other": "{{count}} Losses",
-  "{{count}} Kills_other": "{{count}} Kills"
+  "Total: {{total}} killmails": "Всего: {{total}} киллмейлов"
 }

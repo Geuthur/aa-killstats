@@ -148,5 +148,5 @@
   "Refreshing Data": "Gegevens vernieuwen",
   "Data Loaded: {{date}}": "Gegevens geladen: {{date}}",
   "Export Table to CSV": "Tabel exporteren naar CSV",
-  "Total: {{total}} killmails": "Total: {{total}} killmails"
+  "Total: {{total}} killmails": "Totaal: {{total}} killmails"
 }

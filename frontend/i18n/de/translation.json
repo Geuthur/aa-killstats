@@ -149,5 +149,5 @@
   "Refreshing Data": "Daten werden aktualisiert",
   "Data Loaded: {{date}}": "Daten geladen: {{date}}",
   "Export Table to CSV": "Tabelle als CSV exportieren",
-  "Total: {{total}} killmails": "Total: {{total}} killmails"
+  "Total: {{total}} killmails": "Insgesamt: {{total}} Killmails"
 }
