@@ -53,7 +53,7 @@ export default function KillboardTable({
                 total,
                 onPageChange,
                 onPageSizeChange,
-                totalText: t('Total: {{count}} killmails', { count: total.toLocaleString() }),
+                totalText: t('Total: {{total}} killmails', { total: total.toLocaleString() }),
             }}
             getRowClassName={(row) =>
                 row.original.is_loss ? styles['ks-table-row-loss'] : styles['ks-table-row-kill']
