@@ -39,6 +39,7 @@ Section Order:
 - The killmail table keeps the current rows dimmed and locked while the next page or filter loads, instead of showing the loader each time.
 - Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
 - Renamed the package constant `__killmail_operations__` to `__operations__` in `killstats/__init__.py`, so it matches the other apps. The operations stay the same.
+- Aligned `killstats/tests/__init__.py` with the shared test case class of the other apps. `AuthTestCase` no longer sets the unused `self.request`, and the type hints and extra docstring were dropped. No test changes were needed.
 
 ### Removed
 
