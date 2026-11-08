@@ -2,6 +2,7 @@
 import { useState } from 'react';
 
 // Third Party
+import { FetchingLoader, formatCompactNumber, renderTooltip, zKillboardLink } from 'aa-geuthur-react';
 import { Flame, ShieldAlert, Skull, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,9 +11,6 @@ import styles from '@/Components/Killboard/KillboardHallOfFame.module.css';
 
 // AA Killstats
 import type { HallEntrySchema, HallResponse } from '@/Api/schema';
-import { FetchingLoader } from '@/Components/Loader';
-import { renderTooltip } from '@/Utils';
-import { formatNumber, zKillboardLink } from '@/Utils/eveOnline';
 
 export interface KillboardHallOfFameProps {
     data?: HallResponse;
@@ -184,7 +182,7 @@ export default function KillboardHallOfFame({
                                     </span>
 
                                     <span className={isShame ? 'ks-isk-negative' : 'ks-isk-positive'}>
-                                        {formatNumber(entry.total_value)}
+                                        {formatCompactNumber(entry.total_value, "ISK")}
                                     </span>
                                 </div>
 
@@ -223,7 +221,7 @@ export default function KillboardHallOfFame({
                                         {/* Bottom Content Pilot Damage Done */}
                                         {!isShame && entry.damage_done ? (
                                             <div className={styles['ks-bottom-damage']}>
-                                                {t('Damage: {{amount}}', { amount: formatNumber(entry.damage_done, '') })}
+                                                {t('Damage: {{amount}}', { amount: formatCompactNumber(entry.damage_done) })}
                                             </div>
                                         ) : null}
 

@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 // Third Party
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useModalQueryState } from 'aa-geuthur-react';
 import { Trophy, Users } from 'lucide-react';
 import { createParser, useQueryState } from 'nuqs';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +22,6 @@ import KillboardFilterBar from '@/Components/Killboard/KillboardFilterBar';
 import KillboardHallOfFame from '@/Components/Killboard/KillboardHallOfFame';
 import KillboardStats from '@/Components/Killboard/KillboardStats';
 import KillboardTable from '@/Components/Killboard/KillboardTable';
-import { useModalQueryState } from '@/Components/Modals';
 import TopPilotsSection from '@/Components/Sections/TopPilotsSection';
 
 export interface KillboardSectionProps {

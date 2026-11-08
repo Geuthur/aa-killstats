@@ -10,19 +10,6 @@ import { describe, expect, it, vi } from 'vitest';
 import type { KillmailItemSchema } from '@/Api/schema';
 import KillboardTable from '@/Components/Killboard/KillboardTable';
 
-vi.mock('react-i18next', async (importOriginal) => ({
-    ...(await importOriginal<typeof import('react-i18next')>()),
-    useTranslation: () => ({
-        t: (key: string, options?: Record<string, unknown>) =>
-            options
-                ? Object.entries(options).reduce(
-                    (text, [name, value]) => text.replace(`{{${name}}}`, String(value)),
-                    key,
-                )
-                : key,
-    }),
-}));
-
 const makeKill = (id: number, isLoss: boolean): KillmailItemSchema => ({
     killmail_id: id,
     killmail_date: '2026-01-02T03:04:05Z',
@@ -145,7 +132,7 @@ describe('KillboardTable', () => {
         const { container } = renderTable({ isLoading: true });
 
         expect(screen.getByText('Victim 10')).toBeDefined();
-        expect(container.querySelector('.aa-table-loading')).not.toBeNull();
+        expect(container.querySelector('.opacity-50')).not.toBeNull();
         expect((screen.getByRole('button', { name: 'Next Page' }) as HTMLButtonElement).disabled).toBe(true);
         expect((screen.getByRole('combobox') as HTMLSelectElement).disabled).toBe(true);
     });

@@ -1,24 +1,7 @@
 import { apiClient } from "@/Api/Api";
-import type { components } from "@/Api/OpenApi";
 import type { CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse  } from "@/Api/schema";
-import { ProjectName } from "@/App";
+import { ProjectName } from "@/constants";
 
-
-export async function loadUserData(): Promise<{ user: components["schemas"]["UserData"] }> {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/user/`);
-  if (error || !data) {
-    throw new Error("Failed to load user data");
-  }
-  return { user: data };
-}
-
-export async function loadMenu(): Promise<components["schemas"]["MenuSchema"]> {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/menu/`);
-  if (error || !data) {
-    throw new Error("Failed to load menu");
-  }
-  return data;
-}
 
 export interface OverviewEntity {
   id: number;

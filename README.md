@@ -159,6 +159,8 @@ The Following Settings can be setting up in the `local.py`
 
 Help us translate this app into your language or improve existing translations. Join our team!"
 
+The shared frontend components (tables, modals, menu, loaders) come from the npm package [aa-geuthur-react](https://github.com/Geuthur/aa-geuthur-react) and are translated once in its own Weblate component.
+
 ## Contributing <a name="contributing"></a>
 
 You want to improve the project?

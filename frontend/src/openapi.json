@@ -1313,7 +1313,7 @@
         "type": "object"
       },
       "MenuLink": {
-        "description": "Represents a link in the menu.",
+        "description": "A navigation link. `link` is relative to the app root unless `is_external` is set.",
         "properties": {
           "name": {
             "title": "Name",
@@ -1330,9 +1330,25 @@
             ],
             "title": "Link"
           },
+          "badge": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge"
+          },
           "is_external": {
             "default": false,
             "title": "Is External",
+            "type": "boolean"
+          },
+          "has_errors": {
+            "default": false,
+            "title": "Has Errors",
             "type": "boolean"
           }
         },
@@ -1342,25 +1358,8 @@
         "title": "MenuLink",
         "type": "object"
       },
-      "MenuModalSchema": {
-        "description": "Schema for menu modals.",
-        "properties": {
-          "modal": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ModalSchema"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "title": "MenuModalSchema",
-        "type": "object"
-      },
       "MenuSchema": {
-        "description": "Schema for the overall menu, including links and modals.",
+        "description": "Schema for the overall menu, as the `MenuSchema` type of aa-geuthur-react expects it.",
         "properties": {
           "left_links": {
             "default": [],
@@ -1377,79 +1376,13 @@
             },
             "title": "Right Links",
             "type": "array"
-          },
-          "modals": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/MenuModalSchema"
-              },
-              {
-                "type": "null"
-              }
-            ]
           }
         },
         "title": "MenuSchema",
         "type": "object"
       },
-      "ModalSchema": {
-        "description": "Schema for modal dialog data.",
-        "properties": {
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "text": {
-            "title": "Text",
-            "type": "string"
-          },
-          "icon": {
-            "title": "Icon",
-            "type": "string"
-          },
-          "modal_id": {
-            "title": "Modal Id",
-            "type": "string"
-          },
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "color": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Color"
-          },
-          "buttonText": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Buttontext"
-          }
-        },
-        "required": [
-          "title",
-          "text",
-          "icon",
-          "modal_id",
-          "url"
-        ],
-        "title": "ModalSchema",
-        "type": "object"
-      },
       "UserData": {
-        "description": "Schema for user data, including character ID and character name.",
+        "description": "The current user and its main character, as the `UserData` type of aa-geuthur-react expects it.\n\n`is_admin` is the `killstats.admin_access` permission.",
         "properties": {
           "user_id": {
             "title": "User Id",

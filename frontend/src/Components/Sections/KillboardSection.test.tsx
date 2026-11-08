@@ -64,13 +64,13 @@ describe('KillboardSection', () => {
 
         await user.click(screen.getByRole('button', { name: 'Next Page' }));
 
-        await waitFor(() => expect(container.querySelector('.aa-table-loading')).not.toBeNull());
+        await waitFor(() => expect(container.querySelector('.opacity-50')).not.toBeNull());
         expect(screen.getByText('Old Page Victim')).toBeDefined();
 
         resolveNextPage(makePage('New Page Victim'));
 
         await screen.findByText('New Page Victim');
         expect(screen.queryByText('Old Page Victim')).toBeNull();
-        expect(container.querySelector('.aa-table-loading')).toBeNull();
+        expect(container.querySelector('.opacity-50')).toBeNull();
     });
 });

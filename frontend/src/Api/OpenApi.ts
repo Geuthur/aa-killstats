@@ -408,29 +408,29 @@ export interface components {
         };
         /**
          * MenuLink
-         * @description Represents a link in the menu.
+         * @description A navigation link. `link` is relative to the app root unless `is_external` is set.
          */
         MenuLink: {
             /** Name */
             name: string;
             /** Link */
             link?: string | null;
+            /** Badge */
+            badge?: number | null;
             /**
              * Is External
              * @default false
              */
             is_external: boolean;
-        };
-        /**
-         * MenuModalSchema
-         * @description Schema for menu modals.
-         */
-        MenuModalSchema: {
-            modal?: components["schemas"]["ModalSchema"] | null;
+            /**
+             * Has Errors
+             * @default false
+             */
+            has_errors: boolean;
         };
         /**
          * MenuSchema
-         * @description Schema for the overall menu, including links and modals.
+         * @description Schema for the overall menu, as the `MenuSchema` type of aa-geuthur-react expects it.
          */
         MenuSchema: {
             /**
@@ -443,31 +443,12 @@ export interface components {
              * @default []
              */
             right_links: components["schemas"]["MenuLink"][];
-            modals?: components["schemas"]["MenuModalSchema"] | null;
-        };
-        /**
-         * ModalSchema
-         * @description Schema for modal dialog data.
-         */
-        ModalSchema: {
-            /** Title */
-            title: string;
-            /** Text */
-            text: string;
-            /** Icon */
-            icon: string;
-            /** Modal Id */
-            modal_id: string;
-            /** Url */
-            url: string;
-            /** Color */
-            color?: string | null;
-            /** Buttontext */
-            buttonText?: string | null;
         };
         /**
          * UserData
-         * @description Schema for user data, including character ID and character name.
+         * @description The current user and its main character, as the `UserData` type of aa-geuthur-react expects it.
+         *
+         *     `is_admin` is the `killstats.admin_access` permission.
          */
         UserData: {
             /** User Id */

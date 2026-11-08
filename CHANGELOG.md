@@ -35,6 +35,12 @@ Section Order:
 
 ### Changed
 
+- The frontend uses the shared React base from the npm package [`aa-geuthur-react`](https://github.com/Geuthur/aa-geuthur-react) 1.2.0 instead of its own copies of the BaseTable stack, `BaseModal`, loaders, menu, utils, table styles and ESLint rule. The killmail table keeps the server-side pagination, the `keepPreviousData` dimming and the row colors. The table footer follows the layout of the package (page size, status and paging next to each other, stacked on phones).
+- The entry files follow the template of the other apps: `App.tsx` and `main.tsx` became `Routing.tsx` and `Main.tsx` with `constants.ts` for `AppName` and `ProjectName`. `Routing.tsx` wraps the app in `AaReactProvider`, `Main.tsx` loads the namespace `aa-geuthur-react` next to `translation`, and `index.css` imports `aa-geuthur-react/styles.css` first, so the styles land in the CSS file the template loads. The pages use `AuthBase` of the package with `fluidOnSmallScreens`, so the container is 640 px to 1280 px wide and shrinks with the screen on phones.
+- `apiClient` is `createApiClient<paths>()`, the query keys extend the `queryKeys` of the package, and the killboard page reads the user with `useUserData()`. The tests load `setupTests.ts` and no longer mock `useTranslation` or import `jest-dom` themselves.
+- `make react-copy-translations` also copies `i18n/<lng>/aa-geuthur-react.json` of the package into `static/killstats/i18n/<lng>/`.
+- The API schemas `MenuLink`, `MenuSchema` and `UserData` follow the types of `aa-geuthur-react`: `MenuLink` has the optional `badge` and `has_errors`. The `menu/` and `user/` responses stay the same.
+- Large ISK and kill numbers use `formatCompactNumber` of the package instead of the own `formatNumber`. The display stays the same.
 - The killmail table now uses the shared `BaseTable` with server-side pagination, the `aa-table` styles and the shared footer. Kill and loss row colors, the total count and the page size of 250 stay.
 - The killmail table keeps the current rows dimmed and locked while the next page or filter loads, instead of showing the loader each time.
 - Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
@@ -43,6 +49,8 @@ Section Order:
 
 ### Removed
 
+- Removed the unused dependencies `tailwindcss` and `@tailwindcss/vite`. The plugin was never enabled, so the Tailwind classes in the components had no effect. They were removed or replaced by Bootstrap utilities.
+- Removed the copies of the shared components, utils, table styles and the ESLint rule from `frontend/`, and the unused `MenuCategory`, `MenuModalSchema` and `ModalSchema` API schemas together with the unused `modals` field of the menu.
 - Removed 31 translation keys the frontend no longer uses, including some with German source text.
 
 <!-- Your changes go here -->

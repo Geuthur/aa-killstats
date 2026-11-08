@@ -1,5 +1,6 @@
 // Third Party
 import { useQuery } from '@tanstack/react-query';
+import { BaseModal, FetchingLoader, ModalSize, formatCompactNumber, useModalQueryState } from 'aa-geuthur-react';
 import { useTranslation } from 'react-i18next';
 
 // Styles
@@ -9,9 +10,6 @@ import styles from '@/Components/Sections/TopPilotSection.module.css';
 import { fetchTopAttackers, fetchTopVictims } from '@/Api/ApiCalls';
 import { queryKeys } from '@/Api/query';
 import type { TopPilotSchema } from '@/Api/schema';
-import { FetchingLoader } from '@/Components/Loader';
-import BaseModal, { ModalSize, type ModalData, useModalQueryState } from '@/Components/Modals/BaseModal';
-import { formatNumber } from '@/Utils/eveOnline';
 
 export interface TopPilotsSectionProps {
     year: number | 'all';
@@ -103,7 +101,7 @@ function PilotList({
                                     : t('{{count}} Kills', { count: pilot.count })}
                             </div>
                             <div style={{ fontSize: '.75rem', color: '#a1a1aa', fontFamily: 'monospace' }}>
-                                {t('{{amount}}', { amount: formatNumber(pilot.total_value) })}
+                                {t('{{amount}}', { amount: formatCompactNumber(pilot.total_value, "ISK") })}
                             </div>
                         </div>
                     </div>
@@ -164,21 +162,11 @@ export function TopPilotsSection({
         return content;
     }
 
-    const modalData: ModalData = {
-        title: t('Top 10 Pilots'),
-        modal_id: modalId,
-        text: '',
-        icon: 'Trophy',
-        url: '',
-    };
-
     return (
         <BaseModal
-            data={modalData}
-            showModal={isModalOpen}
-            setShowModal={(show) => {
-                if (!show) handleClose();
-            }}
+            show={isModalOpen}
+            onHide={handleClose}
+            title={t('Top 10 Pilots')}
             size={ModalSize.extraLarge}
         >
             {content}
