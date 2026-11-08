@@ -35,6 +35,8 @@ Section Order:
 
 ### Changed
 
+- The GitHub workflows follow the template of the other apps: `autotester.yml` no longer tests Python 3.10 (end of life) and uses `actions-setup-redis@v1.60.0`; `pypi.yml`, `release.yml` and `dependabot.yml` are identical to the template.
+- The minimum Python version is now 3.11 (`requires-python`, classifiers and the tox matrix).
 - The frontend uses the shared React base from the npm package [`aa-geuthur-react`](https://github.com/Geuthur/aa-geuthur-react) 1.2.0 instead of its own copies of the BaseTable stack, `BaseModal`, loaders, menu, utils, table styles and ESLint rule. The killmail table keeps the server-side pagination, the `keepPreviousData` dimming and the row colors. The table footer follows the layout of the package (page size, status and paging next to each other, stacked on phones).
 - The entry files follow the template of the other apps: `App.tsx` and `main.tsx` became `Routing.tsx` and `Main.tsx` with `constants.ts` for `AppName` and `ProjectName`. `Routing.tsx` wraps the app in `AaReactProvider`, `Main.tsx` loads the namespace `aa-geuthur-react` next to `translation`, and `index.css` imports `aa-geuthur-react/styles.css` first, so the styles land in the CSS file the template loads. The pages use `AuthBase` of the package with `fluidOnSmallScreens`, so the container is 640 px to 1280 px wide and shrinks with the screen on phones.
 - `apiClient` is `createApiClient<paths>()`, the query keys extend the `queryKeys` of the package, and the killboard page reads the user with `useUserData()`. The tests load `setupTests.ts` and no longer mock `useTranslation` or import `jest-dom` themselves.
