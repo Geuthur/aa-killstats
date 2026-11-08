@@ -2,7 +2,6 @@ import type { components } from "@/Api/OpenApi";
 
 //
 export type MenuSchema = components['schemas']['MenuSchema']
-export type ModalSchema = components['schemas']['ModalSchema']
 export type TopPilotSchema = components['schemas']['TopPilotSchema']
 export type HallEntrySchema = components['schemas']['HallEntrySchema']
 export type HallResponse = components['schemas']['HallResponseSchema']

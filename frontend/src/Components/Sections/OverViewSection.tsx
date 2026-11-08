@@ -3,6 +3,7 @@ import { useState } from "react";
 
 // Third Party
 import { useQuery } from "@tanstack/react-query";
+import { FetchingLoader, renderLink } from "aa-geuthur-react";
 import { Search, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -15,9 +16,7 @@ import {
     loadCorporationsOverview,
 } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
-import { ProjectName } from "@/App";
-import { FetchingLoader } from "@/Components/Loader";
-import { renderLink } from "@/Utils/general";
+import { ProjectName } from "@/constants";
 
 export interface OverviewPageProps {
     entityType: "corporation" | "alliance";
@@ -55,10 +54,10 @@ export function OverViewSection({ entityType }: OverviewPageProps) {
                         <Shield size="24" />
                     </div>
                     <div>
-                        <h1 className="text-xl sm:text-2xl tracking-wide text-white m-0">
+                        <h1 className="text-white m-0">
                             {title}
                         </h1>
-                        <p className="text-xs sm:text-sm text-zinc-400 m-0 mt-1">{subtitle}</p>
+                        <p className="m-0 mt-1">{subtitle}</p>
                     </div>
                 </div>
             </div>
@@ -81,13 +80,13 @@ export function OverViewSection({ entityType }: OverviewPageProps) {
                 </div>
             ) : error ? (
                 <div className={`mt-3 aa-panel-lg ${styles["content-error"]}`}>
-                    <p className="text-sm font-medium">
+                    <p>
                         {t("Failed to load overview data.")}
                     </p>
                 </div>
             ) : filteredEntities.length === 0 ? (
                 <div className={`mt-3 aa-panel-lg ${styles["content-empty"]}`}>
-                    <p className="text-sm">{t("No entries found.")}</p>
+                    <p>{t("No entries found.")}</p>
                 </div>
             ) : (
                 <div className={`mt-3 ${styles["content"]}`}>
@@ -106,7 +105,7 @@ export function OverViewSection({ entityType }: OverviewPageProps) {
                                         alt={item.name}
                                         loading="lazy"
                                     />
-                                    <div className="min-w-0 flex-1">
+                                    <div>
                                         <h3>{item.name}</h3>
                                         <span>ID: {item.id}</span>
                                     </div>

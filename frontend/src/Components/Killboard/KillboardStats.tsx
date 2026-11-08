@@ -1,4 +1,5 @@
 // Third Party
+import { FetchingLoader, formatCompactNumber } from 'aa-geuthur-react';
 import { AlertTriangle, Crosshair, Skull, TrendingUp, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,8 +8,6 @@ import styles from '@/Components/Killboard/KillboardStats.module.css';
 
 // AA Killstats
 import type { CombatSummaryResponse } from '@/Api/schema';
-import { FetchingLoader } from '@/Components/Loader';
-import { formatNumber } from '@/Utils/eveOnline';
 
 interface KillboardStatsProps {
     data?: CombatSummaryResponse;
@@ -36,25 +35,25 @@ export default function KillboardStats({ data, isLoading }: KillboardStatsProps)
     const stats = [
         {
             title: t('Total Kills'),
-            value: formatNumber(data.total_kills, ""),
+            value: formatCompactNumber(data.total_kills),
             icon: Crosshair,
             color: '#60a5fa',
         },
         {
             title: t('Active PvP Pilots'),
-            value: formatNumber(data.active_pvpers, ""),
+            value: formatCompactNumber(data.active_pvpers),
             icon: Users,
             color: '#c084fc',
         },
         {
             title: t('ISK Destroyed'),
-            value: formatNumber(data.destroyed_isk),
+            value: formatCompactNumber(data.destroyed_isk, "ISK"),
             icon: TrendingUp,
             color: '#34d399',
         },
         {
             title: t('ISK Lost'),
-            value: formatNumber(data.lost_isk),
+            value: formatCompactNumber(data.lost_isk, "ISK"),
             icon: AlertTriangle,
             color: '#fb7185',
         },

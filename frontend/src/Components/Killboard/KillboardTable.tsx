@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 
 // Third Party
+import { BaseTable } from 'aa-geuthur-react';
 import { useTranslation } from 'react-i18next';
 
 // Styles
@@ -9,7 +10,6 @@ import styles from '@/Components/Killboard/KillboardTable.module.css';
 
 // AA Killstats
 import type { KillmailItemSchema } from '@/Api/schema';
-import BaseTable from '@/Components/Base/BaseTable/BaseTable';
 import { getKillboardTableColumns } from '@/Components/Killboard/KillboardTableColumns';
 
 interface KillboardTableProps {

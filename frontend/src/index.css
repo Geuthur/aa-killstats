@@ -1,4 +1,12 @@
+/* The styles of the shared React base come first, so the rules below can override them. */
+@import "aa-geuthur-react/styles.css";
 @import "@/killstats.css";
+
+/* Font stack of the killstats React app */
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, sans-serif;
+}
 
 /*
  * AllianceAuth CSS not colliding with BS5

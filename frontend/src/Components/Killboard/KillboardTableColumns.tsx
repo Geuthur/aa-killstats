@@ -1,12 +1,12 @@
+// Third Party
+import { formatCompactNumber, formatRelativeTime, getSecColor, renderCharacterPortrait, renderLink, renderShipImage, renderTooltip } from 'aa-geuthur-react';
+import type { BaseColumnDef } from 'aa-geuthur-react';
+
 // Styles
 import styles from '@/Components/Killboard/KillboardTableColumns.module.css';
 
 // AA Killstats
 import type { KillmailItemSchema } from '@/Api/schema';
-import type { BaseColumnDef } from '@/Components/Base/BaseTable/tableFeatures';
-import { renderTooltip } from '@/Utils';
-import { formatNumber, getSecColor, formatRelativeTime, renderCharacterPortrait } from '@/Utils/eveOnline';
-import { renderLink, renderShipImage } from '@/Utils/general';
 
 export function getKillboardTableColumns(
     t: (key: string) => string,
@@ -136,7 +136,7 @@ export function getKillboardTableColumns(
             cell: ({ getValue }) => {
                 return (
                     <span style={{ fontWeight: 500, color: '#e4e4e7' }}>
-                        {formatNumber(getValue<number>())}
+                        {formatCompactNumber(getValue<number>(), "ISK")}
                     </span>
                 );
             },

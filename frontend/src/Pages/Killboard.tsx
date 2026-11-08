@@ -2,15 +2,12 @@
 import { useLocation, useParams } from "react-router-dom";
 
 // Third Party
-import { useQuery } from "@tanstack/react-query";
+import { FetchingLoader, useUserData } from "aa-geuthur-react";
 import { useTranslation } from "react-i18next";
 
-// AA Killstats
-import { loadUserData } from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
-import { AppName } from "@/App";
-import { FetchingLoader } from "@/Components/Loader";
 import KillboardSection from "@/Components/Sections/KillboardSection";
+// AA Killstats
+import { AppName } from "@/constants";
 
 export function KillboardPage() {
     const { t } = useTranslation();
@@ -21,11 +18,7 @@ export function KillboardPage() {
             ? document.getElementById(`${AppName}-root`)
             : null;
 
-    const { data: userData, isLoading: isLoadingUser } = useQuery({
-        queryKey: queryKeys.User,
-        queryFn: () => loadUserData(),
-        staleTime: 5 * 60 * 1000,
-    });
+    const { data: userData, isLoading: isLoadingUser } = useUserData();
 
     let entityType: "corporation" | "alliance" | "character" = "corporation";
     if (
@@ -77,7 +70,10 @@ export function KillboardPage() {
 
     if (!entityId && isLoadingUser) {
         return (
-            <div className="w-full bg-gray-800/80 rounded-xl border-killstats p-12 flex items-center justify-center min-h-[300px]">
+            <div
+                className="w-100 rounded-4 border-killstats p-5 d-flex align-items-center justify-content-center"
+                style={{ minHeight: 300 }}
+            >
                 <FetchingLoader message={t("Loading user data...")} />
             </div>
         );
