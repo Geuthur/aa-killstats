@@ -159,7 +159,7 @@ The Following Settings can be setting up in the `local.py`
 
 Help us translate this app into your language or improve existing translations. Join our team!"
 
-The shared frontend components (tables, modals, menu, loaders) come from the npm package [aa-geuthur-react](https://github.com/Geuthur/aa-geuthur-react) and are translated once in its own Weblate component.
+The texts of the app live in the namespace `translation` (`frontend/i18n/<lng>/translation.json`). The shared frontend components (tables, modals, menu, loaders) come from the npm package [aa-geuthur-react](https://github.com/Geuthur/aa-geuthur-react); their texts live in the namespace `aa-geuthur-react`, which the package bundles and registers with i18next itself, so the app neither copies nor loads them. Both are translated on Weblate, the package in its own component. Only `en` holds the English text as value; in the other languages untranslated strings are empty and fall back to English at runtime (`returnEmptyString: false`).
 
 ## Contributing <a name="contributing"></a>
 
