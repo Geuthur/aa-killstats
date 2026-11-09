@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("eve_sde", "0018_blueprintactivity_blueprintactivityproduct_and_more"),
-        ("eveonline", "0017_alliance_and_corp_names_are_not_unique"),
+        ("eveonline", "0019_v5squash"),
     ]
 
     operations = [
