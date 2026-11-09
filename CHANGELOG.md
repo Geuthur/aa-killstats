@@ -26,6 +26,10 @@ Section Order:
 ### Removed
 -->
 
+### Added
+
+- Optional extra `tests-allianceauth-development` (test packages plus the Alliance Auth 6 pre-release) and separate test settings in `testauth/settings/development/` for the tox environment `allianceauth-development` and `make tox-tests-development`; a non-blocking CI job "AA Development" runs it on Python 3.13 and 3.14
+
 ### Fixed
 
 - [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
