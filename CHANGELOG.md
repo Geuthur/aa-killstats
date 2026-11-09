@@ -32,6 +32,7 @@ Section Order:
 
 ### Fixed
 
+- [FIX] Compatibility with Alliance Auth 6 (pre-release): the `eveonline` migration dependencies of `0001_initial`, `0001_init_v2` and `0002_rename_killstatsaudit_corporationsaudit_and_more` now point to `0019_v5squash` (Alliance Auth 6 removed the older `eveonline` migrations, `0019_v5squash` exists in Alliance Auth 5 as well). Works with Alliance Auth 5 and 6.
 - [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
 - [FIX] Added the translation keys for the renamed pagination labels and other missing keys to the i18n files.
 - Fixed the total below the killmail table staying in English in every language: it passed a text as plural `count`, so i18next found no translation.
