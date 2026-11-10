@@ -14,10 +14,8 @@ from allianceauth.eveonline.models import (
     EveCharacter,
     EveCorporationInfo,
 )
-from allianceauth.services.hooks import get_extension_logger
 
 # AA Killstats
-from killstats import __title__
 from killstats.helpers.eveonline import (
     get_alliance_logo_url,
     get_character_portrait_url,
@@ -25,13 +23,10 @@ from killstats.helpers.eveonline import (
 )
 from killstats.managers.general_manager import EveEntityManager
 from killstats.managers.killboard_manager import KillmailManager
-from killstats.providers import AppLogger
 
 if TYPE_CHECKING:
     # AA Killstats
     from killstats.models import Attacker
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 class General(models.Model):

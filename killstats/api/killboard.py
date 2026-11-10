@@ -10,20 +10,13 @@ from ninja.decorators import decorate_view
 from django.db.models import Count, Sum
 from django.views.decorators.cache import cache_page
 
-# Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
-
 # Alliance Auth (External Libs)
 from eve_sde.models import SolarSystem
 
 # AA Killstats
-from killstats import __title__
 from killstats.api import schema
 from killstats.api.helpers import _build_main_name_map
 from killstats.models.killboard import Attacker, Killmail
-from killstats.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 class ApiEndpoints:
