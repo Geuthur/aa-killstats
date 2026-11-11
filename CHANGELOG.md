@@ -32,6 +32,7 @@ Section Order:
 - [FIX] Added the translation keys for the renamed pagination labels and other missing keys to the i18n files.
 - Fixed the total below the killmail table staying in English in every language: it passed a text as plural `count`, so i18next found no translation.
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
+- [FIX] Tests no longer share the Redis cache with other processes. `testauth/settings/local.py` gives each test run its own random cache `KEY_PREFIX`. Before, ESI responses cached by a running testauth instance on the same Redis were returned instead of the pook responses. Redis stays the cache backend because Alliance Auth needs `django_redis`.
 
 ### Changed
 
