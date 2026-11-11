@@ -4,16 +4,10 @@ from typing import TYPE_CHECKING, Any
 # Django
 from django.db import models
 
-# Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
-
 # AA Killstats
-from killstats import __title__
 from killstats.app_settings import KILLSTATS_BULK_BATCH_SIZE
 from killstats.errors import ObjectNotFound
-from killstats.providers import AppLogger, esi
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
+from killstats.providers import esi, logger
 
 if TYPE_CHECKING:
     # AA Killstats

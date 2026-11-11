@@ -3,16 +3,9 @@
 # Third Party
 from ninja import NinjaAPI
 
-# Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
-
 # AA Killstats
-from killstats import __title__
 from killstats.api import schema
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
-from killstats.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 class ApiEndpoints:
