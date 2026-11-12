@@ -38,6 +38,7 @@ Section Order:
 - Fixed the total below the killmail table staying in English in every language: it passed a text as plural `count`, so i18next found no translation.
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 - [FIX] Tests no longer share the Redis cache with other processes. `testauth/settings/local.py` and `testauth/settings/development/local.py` give each test run its own random cache `KEY_PREFIX`. Before, ESI responses cached by a running testauth instance on the same Redis were returned instead of the pook responses. Redis stays the cache backend because Alliance Auth needs `django_redis`.
+- [FIX] Tests no longer call `cache.clear()` on Redis. With `django_redis` it runs `flushdb` on the whole Redis database and ignores the `KEY_PREFIX`, so it deleted keys of parallel test runs and the cache of a running testauth. The `KillmailBody` and `killstats_update_solar_systems` tests delete only the keys they use; the API tests for the `cache_page` endpoints run with a `LocMemCache`, so `cache.clear()` there only empties that.
 
 ### Changed
 
