@@ -16,6 +16,7 @@ from eve_sde.models import SolarSystem
 # AA Killstats
 from killstats.api import schema
 from killstats.api.helpers import _build_main_name_map
+from killstats.models.general import General
 from killstats.models.killboard import Attacker, Killmail
 
 
@@ -43,7 +44,7 @@ class ApiEndpoints:
             entity_id: int,
             filters: schema.TopPilotsFilter = Query(...),
         ):
-            if not request.user.has_perm("killstats.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             alt_mapping = _build_main_name_map(entity_type, entity_id)
@@ -88,7 +89,7 @@ class ApiEndpoints:
             entity_id: int,
             filters: schema.TopPilotsFilter = Query(...),
         ):
-            if not request.user.has_perm("killstats.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             alt_mapping = _build_main_name_map(entity_type, entity_id)
@@ -137,7 +138,7 @@ class ApiEndpoints:
             entity_id: int,
             filters: schema.KillmailFilter = Query(...),
         ):
-            if not request.user.has_perm("killstats.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             try:

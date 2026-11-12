@@ -220,12 +220,16 @@ class KillmailQuerySet(KillmailQueryMining):
         )
 
     def visible_to(self, user):
+        # AA Killstats
+        # pylint: disable-next=import-outside-toplevel
+        from killstats.models.general import General
+
         # superusers get all visible
         if user.is_superuser:
             logger.debug("Returning all Squads for superuser %s.", user)
             return self
 
-        if user.has_perm("killstats.admin_access"):
+        if General.has_perm(user, General.Permission.ADMIN_ACCESS):
             logger.debug("Returning all Killboards for Admin %s.", user)
             return self
 

@@ -10,7 +10,7 @@ from django.utils import timezone
 # AA Killstats
 from killstats.models.general import EveEntity, General
 from killstats.tests import AuthTestCase
-from killstats.tests.testdata.killstats import EveEntityFactory
+from killstats.tests.testdata.killstats import EveEntityFactory, UserMainFactory
 
 MODULE_PATH = "killstats.models.general"
 
@@ -25,6 +25,50 @@ class TestGeneralModel(AuthTestCase):
         self.assertIn("admin_access", permissions)
         self.assertEqual(General._meta.verbose_name, "AA-Killstats")
         self.assertFalse(General._meta.managed)
+
+    def test_get_perm_should_return_full_permission_string(self):
+        # Test Action
+        result = General.get_perm(General.Permission.BASIC_ACCESS)
+        result_str = General.get_perm("admin_access")
+
+        # Expected Result
+        self.assertEqual(result, "killstats.basic_access")
+        self.assertEqual(result_str, "killstats.admin_access")
+
+    def test_has_perm_should_check_user_permission(self):
+        # Test Data
+        user = UserMainFactory(permissions__=["killstats.basic_access"])
+
+        # Expected Result
+        self.assertTrue(General.has_perm(user, General.Permission.BASIC_ACCESS))
+        self.assertFalse(General.has_perm(user, General.Permission.ADMIN_ACCESS))
+
+    def test_has_perm_should_return_false_without_user(self):
+        # Expected Result
+        self.assertFalse(General.has_perm(None, General.Permission.BASIC_ACCESS))
+        self.assertFalse(General.has_perm(object(), General.Permission.BASIC_ACCESS))
+
+    def test_has_any_perm_should_return_true_if_one_permission_matches(self):
+        # Test Data
+        user = UserMainFactory(permissions__=["killstats.admin_access"])
+
+        # Expected Result
+        self.assertTrue(
+            General.has_any_perm(
+                user, General.Permission.BASIC_ACCESS, General.Permission.ADMIN_ACCESS
+            )
+        )
+        self.assertFalse(General.has_any_perm(user, General.Permission.BASIC_ACCESS))
+        self.assertFalse(General.has_any_perm(None, General.Permission.BASIC_ACCESS))
+
+    def test_has_management_access_should_require_admin_access(self):
+        # Test Data
+        basic_user = UserMainFactory(permissions__=["killstats.basic_access"])
+        admin_user = UserMainFactory(permissions__=["killstats.admin_access"])
+
+        # Expected Result
+        self.assertFalse(General.has_management_access(basic_user))
+        self.assertTrue(General.has_management_access(admin_user))
 
 
 class TestEveEntityModel(AuthTestCase):
