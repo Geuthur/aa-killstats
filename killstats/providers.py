@@ -1,4 +1,4 @@
-"""Shared ESI client for Voices of War."""
+"""Shared ESI client for Killstats."""
 
 # Standard Library
 import logging

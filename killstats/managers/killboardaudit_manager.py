@@ -7,16 +7,12 @@ from killstats.providers import logger
 
 class CorporationsAuditQuerySet(models.QuerySet):
     def visible_to(self, user):
-        # superusers get all visible
-        if user.is_superuser:
-            logger.debug(
-                "Returning all corps for superuser %s.",
-                user,
-            )
-            return self
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models.general import General
 
-        # Admins get all visible
-        if user.has_perm("killstats.admin_access"):
+        # superusers and admins get all visible
+        if General.objects.has_management_access(user):
             logger.debug("Returning all corps for Admin %s.", user)
             return self
 
@@ -46,16 +42,12 @@ CorporationManager = CorporationsAuditManager.from_queryset(CorporationsAuditQue
 
 class AlliancesAuditQuerySet(models.QuerySet):
     def visible_to(self, user):
-        # superusers get all visible
-        if user.is_superuser:
-            logger.debug(
-                "Returning all allys for superuser %s.",
-                user,
-            )
-            return self
+        # pylint: disable=import-outside-toplevel
+        # AA Killstats
+        from killstats.models.general import General
 
-        # Admins get all visible
-        if user.has_perm("killstats.admin_access"):
+        # superusers and admins get all visible
+        if General.objects.has_management_access(user):
             logger.debug("Returning all allys for Admin %s.", user)
             return self
 

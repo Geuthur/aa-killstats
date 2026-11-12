@@ -1,4 +1,4 @@
-"""Unit tests for EveEntityManager in killstats.managers.general_manager."""
+"""Unit tests for EveEntityManager in killstats.managers.general."""
 
 # Standard Library
 from http import HTTPStatus
