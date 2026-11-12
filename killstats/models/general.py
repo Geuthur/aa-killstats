@@ -21,7 +21,7 @@ from killstats.helpers.eveonline import (
     get_character_portrait_url,
     get_corporation_logo_url,
 )
-from killstats.managers.general_manager import EveEntityManager
+from killstats.managers.general import EveEntityManager, GeneralManager
 from killstats.managers.killboard_manager import KillmailManager
 
 if TYPE_CHECKING:
@@ -30,7 +30,9 @@ if TYPE_CHECKING:
 
 
 class General(models.Model):
-    """A model defining commonly used properties and methods for Voices of War."""
+    """A model defining commonly used properties and methods for Killstats."""
+
+    objects: GeneralManager = GeneralManager()
 
     class Meta:
         managed = False
@@ -38,8 +40,8 @@ class General(models.Model):
         verbose_name_plural = "AA-Killstats"
         default_permissions = ()
         permissions = (
-            ("basic_access", "Can access this app, Killstats."),
-            ("admin_access", "Has access to all killstats."),
+            ("basic_access", _("Can access this app, Killstats.")),
+            ("admin_access", _("Has access to all killstats.")),
         )
 
 
