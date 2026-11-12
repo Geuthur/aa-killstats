@@ -17,13 +17,12 @@ from esi.decorators import token_required
 
 # AA Killstats
 from killstats import __version__
-from killstats.models.general import General
 from killstats.models.killstatsaudit import AlliancesAudit, CorporationsAudit
 from killstats.providers import logger
 
 
 @login_required
-@permission_required(General.get_perm(General.Permission.BASIC_ACCESS))
+@permission_required("killstats.basic_access")
 def react_base(request, *args, **kwargs):  # pylint: disable=unused-argument
     """React Frontend SPA Base View."""
     context = {
@@ -36,7 +35,7 @@ def react_base(request, *args, **kwargs):  # pylint: disable=unused-argument
 
 @login_required
 @token_required(scopes=("publicData"))
-@permission_required(General.get_perm(General.Permission.ADMIN_ACCESS))
+@permission_required(["killstats.admin_access"])
 def add_corp(request, token):
     char = get_object_or_404(EveCharacter, character_id=token.character_id)
 
@@ -66,7 +65,7 @@ def add_corp(request, token):
 
 @login_required
 @token_required(scopes=("publicData"))
-@permission_required(General.get_perm(General.Permission.ADMIN_ACCESS))
+@permission_required(["killstats.admin_access"])
 def add_alliance(request, token):
     char = get_object_or_404(EveCharacter, character_id=token.character_id)
 

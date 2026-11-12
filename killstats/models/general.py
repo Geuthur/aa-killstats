@@ -1,6 +1,6 @@
 # Standard Library
 import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 # Django
 from django.core.validators import MinValueValidator
@@ -30,45 +30,17 @@ if TYPE_CHECKING:
 
 
 class General(models.Model):
-    """A model defining commonly used properties, permissions, and helper methods for Killstats."""
-
-    class Permission(models.TextChoices):
-        BASIC_ACCESS = "basic_access", _("Can access this app, Killstats.")
-        ADMIN_ACCESS = "admin_access", _("Has access to all killstats.")
+    """A model defining commonly used properties and methods for Killstats."""
 
     class Meta:
         managed = False
-        default_permissions = ()  # Remove standard permissions
         verbose_name = "AA-Killstats"
         verbose_name_plural = "AA-Killstats"
-
-    # Inject dynamic permissions
-    Meta.permissions = Permission.choices
-
-    @classmethod
-    def get_perm(cls, perm: "str | Permission") -> str:
-        """Return full permission string 'killstats.<codename>'."""
-        codename = perm.value if isinstance(perm, cls.Permission) else perm
-        return f"killstats.{codename}"
-
-    @classmethod
-    def has_perm(cls, user: Any, perm: "str | General.Permission") -> bool:
-        """Check if user has permission."""
-        if not user or not hasattr(user, "has_perm"):
-            return False
-        return user.has_perm(cls.get_perm(perm))
-
-    @classmethod
-    def has_any_perm(cls, user: Any, *perms: "str | General.Permission") -> bool:
-        """Return True if user has any of the specified permissions."""
-        if not user or not hasattr(user, "has_perm"):
-            return False
-        return any(user.has_perm(cls.get_perm(p)) for p in perms)
-
-    @classmethod
-    def has_management_access(cls, user: Any) -> bool:
-        """Check if user has any management permission."""
-        return cls.has_any_perm(user, cls.Permission.ADMIN_ACCESS)
+        default_permissions = ()
+        permissions = (
+            ("basic_access", "Can access this app, Killstats."),
+            ("admin_access", "Has access to all killstats."),
+        )
 
 
 class EveEntity(models.Model):

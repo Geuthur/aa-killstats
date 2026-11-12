@@ -13,7 +13,6 @@ from django.utils.translation import gettext as _
 # AA Killstats
 from killstats.api import schema
 from killstats.helpers.eveonline import get_character_portrait_url
-from killstats.models.general import General
 
 
 class ApiEndpoints:
@@ -63,9 +62,7 @@ class ApiEndpoints:
                 )
             )
 
-            if alliance_id or General.has_perm(
-                request.user, General.Permission.ADMIN_ACCESS
-            ):
+            if alliance_id or request.user.has_perm("killstats.admin_access"):
                 left_menu.append(
                     schema.MenuLink(
                         name=_("Alliance Overview"),
@@ -74,7 +71,7 @@ class ApiEndpoints:
                 )
 
             right_menu: list[schema.MenuLink] = []
-            if General.has_perm(request.user, General.Permission.ADMIN_ACCESS):
+            if request.user.has_perm("killstats.admin_access"):
                 right_menu.append(
                     schema.MenuLink(
                         name=_("Add Corporation"),
@@ -105,7 +102,7 @@ class ApiEndpoints:
             summary="Get current user data",
         )
         def get_user(request):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not request.user.has_perm("killstats.basic_access"):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             try:
@@ -133,9 +130,7 @@ class ApiEndpoints:
                 else None
             )
 
-            is_admin = bool(
-                General.has_perm(request.user, General.Permission.ADMIN_ACCESS)
-            )
+            is_admin = bool(request.user.has_perm("killstats.admin_access"))
 
             return schema.UserData(
                 user_id=request.user.id,

@@ -14,7 +14,7 @@ from django.views.decorators.cache import cache_page
 
 # AA Killstats
 from killstats.api import schema
-from killstats.models import Attacker, General, Killmail
+from killstats.models import Attacker, Killmail
 
 
 class ApiEndpoints:
@@ -43,7 +43,7 @@ class ApiEndpoints:
             entity_id: int,
             filters: schema.HallFilter = Query(...),
         ):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not request.user.has_perm("killstats.basic_access"):
                 return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             try:
@@ -151,7 +151,7 @@ class ApiEndpoints:
             entity_id: int,
             filters: schema.DateRangeFilter = Query(...),
         ):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not request.user.has_perm("killstats.basic_access"):
                 return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             # Kills side

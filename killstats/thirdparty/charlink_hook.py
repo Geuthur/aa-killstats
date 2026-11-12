@@ -11,7 +11,6 @@ from allianceauth.eveonline.models import EveCharacter
 # AA Killstats
 from killstats import __app_name__
 from killstats.app_settings import KILLSTATS_APP_NAME
-from killstats.models.general import General
 from killstats.models.killstatsaudit import CorporationsAudit
 
 
@@ -32,8 +31,7 @@ def _is_character_added_corpaudit(character: EveCharacter):
 
 def _users_with_perms_corpaudit():
     permission = Permission.objects.get(
-        content_type__app_label=__app_name__,
-        codename=General.Permission.BASIC_ACCESS,
+        content_type__app_label=__app_name__, codename="basic_access"
     )
     # Use Alliance Auth's User model to get users with the permission, including those in groups and superusers (Fix Issue with Proxy Model)
     user_model = permission.user_set.model
@@ -60,9 +58,7 @@ app_import = AppImport(
             field_label="Corporation" + " " + KILLSTATS_APP_NAME,
             add_character=_add_corporationaudit,
             scopes=[],
-            check_permissions=lambda user: General.has_perm(
-                user, General.Permission.BASIC_ACCESS
-            ),
+            check_permissions=lambda user: user.has_perm("killstats.basic_access"),
             is_character_added=_is_character_added_corpaudit,
             is_character_added_annotation=Exists(
                 CorporationsAudit.objects.filter(
