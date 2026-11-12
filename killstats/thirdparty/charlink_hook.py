@@ -11,7 +11,12 @@ from allianceauth.eveonline.models import EveCharacter
 # AA Killstats
 from killstats import __app_name__
 from killstats.app_settings import KILLSTATS_APP_NAME
+from killstats.models.general import General
 from killstats.models.killstatsaudit import CorporationsAudit
+
+
+def _has_basic_access(user):
+    return General.objects.has_basic_access(user)
 
 
 # pylint: disable=unused-argument, duplicate-code
@@ -58,7 +63,7 @@ app_import = AppImport(
             field_label="Corporation" + " " + KILLSTATS_APP_NAME,
             add_character=_add_corporationaudit,
             scopes=[],
-            check_permissions=lambda user: user.has_perm("killstats.basic_access"),
+            check_permissions=_has_basic_access,
             is_character_added=_is_character_added_corpaudit,
             is_character_added_annotation=Exists(
                 CorporationsAudit.objects.filter(
