@@ -10,6 +10,7 @@ from ninja.testing import TestClient
 
 # Django
 from django.core.cache import cache
+from django.test import override_settings
 
 # AA Killstats
 from killstats.api import api
@@ -21,17 +22,18 @@ from killstats.tests.testdata.killstats import (
     UserMainFactory,
 )
 
+# cache_page keys cannot be rebuilt, so the endpoints run against LocMem;
+# cache.clear() then only empties LocMem, not the shared Redis DB
+LOCMEM_CACHE = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
+
+@override_settings(CACHES=LOCMEM_CACHE)
 class TestKillboardStatsApi(AuthTestCase):
     def setUp(self):
         super().setUp()
         cache.clear()
         self.client = TestClient(api)
         self.user = UserMainFactory()
-
-    def tearDown(self):
-        cache.clear()
-        super().tearDown()
 
     def test_get_hall_endpoint_should_return_hall_of_fame_and_shame(self):
         # Test Data
