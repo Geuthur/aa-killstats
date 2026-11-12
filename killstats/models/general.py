@@ -21,7 +21,7 @@ from killstats.helpers.eveonline import (
     get_character_portrait_url,
     get_corporation_logo_url,
 )
-from killstats.managers.general_manager import EveEntityManager, GeneralManager
+from killstats.managers.general import EveEntityManager, GeneralManager
 from killstats.managers.killboard_manager import KillmailManager
 
 if TYPE_CHECKING:
