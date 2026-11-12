@@ -38,8 +38,8 @@ class General(models.Model):
         verbose_name_plural = "AA-Killstats"
         default_permissions = ()
         permissions = (
-            ("basic_access", "Can access this app, Killstats."),
-            ("admin_access", "Has access to all killstats."),
+            ("basic_access", _("Can access this app, Killstats.")),
+            ("admin_access", _("Has access to all killstats.")),
         )
 
 
