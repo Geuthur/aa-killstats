@@ -14,6 +14,17 @@ if TYPE_CHECKING:
     from killstats.models.general import EveEntity as EveEntityContext
 
 
+class GeneralManager(models.Manager):
+    """Manager for General: app rules that Django cannot check itself.
+
+    General is unmanaged, so this manager never queries the database.
+    """
+
+    def has_management_access(self, user: Any) -> bool:
+        """True if the user may manage (killstats.admin_access)."""
+        return bool(user and user.has_perm("killstats.admin_access"))
+
+
 class EveEntityManager(models.Manager["EveEntityContext"]):
     def get_or_create_esi(self, *, eve_id: int) -> tuple["EveEntityContext", bool]:
         """gets or creates entity object with data fetched from ESI"""

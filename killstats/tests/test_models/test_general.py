@@ -12,7 +12,7 @@ from django.utils import timezone
 # AA Killstats
 from killstats.models.general import EveEntity, General
 from killstats.tests import AuthTestCase
-from killstats.tests.testdata.killstats import EveEntityFactory
+from killstats.tests.testdata.killstats import EveEntityFactory, UserMainFactory
 
 MODULE_PATH = "killstats.models.general"
 
@@ -27,6 +27,16 @@ class TestGeneralModel(AuthTestCase):
         self.assertIn("admin_access", permissions)
         self.assertEqual(General._meta.verbose_name, "AA-Killstats")
         self.assertFalse(General._meta.managed)
+
+    def test_has_management_access_should_require_admin_access(self):
+        # Test Data
+        basic_user = UserMainFactory(permissions__=["killstats.basic_access"])
+        admin_user = UserMainFactory(permissions__=["killstats.admin_access"])
+
+        # Expected Result
+        self.assertFalse(General.objects.has_management_access(basic_user))
+        self.assertFalse(General.objects.has_management_access(None))
+        self.assertTrue(General.objects.has_management_access(admin_user))
 
     def test_permission_strings_in_code_should_match_general_permissions(self):
         # Test Data
