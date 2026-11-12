@@ -20,6 +20,10 @@ class GeneralManager(models.Manager):
     General is unmanaged, so this manager never queries the database.
     """
 
+    def has_basic_access(self, user: Any) -> bool:
+        """True if the user may use the app (killstats.basic_access)."""
+        return bool(user and user.has_perm("killstats.basic_access"))
+
     def has_management_access(self, user: Any) -> bool:
         """True if the user may manage (killstats.admin_access)."""
         return bool(user and user.has_perm("killstats.admin_access"))

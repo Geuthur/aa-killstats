@@ -28,6 +28,16 @@ class TestGeneralModel(AuthTestCase):
         self.assertEqual(General._meta.verbose_name, "AA-Killstats")
         self.assertFalse(General._meta.managed)
 
+    def test_has_basic_access_should_require_basic_access(self):
+        # Test Data
+        basic_user = UserMainFactory(permissions__=["killstats.basic_access"])
+        no_access = UserMainFactory(permissions__=[])
+
+        # Expected Result
+        self.assertTrue(General.objects.has_basic_access(basic_user))
+        self.assertFalse(General.objects.has_basic_access(no_access))
+        self.assertFalse(General.objects.has_basic_access(None))
+
     def test_has_management_access_should_require_admin_access(self):
         # Test Data
         basic_user = UserMainFactory(permissions__=["killstats.basic_access"])
