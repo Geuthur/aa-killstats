@@ -1,4 +1,5 @@
 /* ═══ HALL OF FAME CARD ═════════════════════════════════════════════════════ */
+
 /* Note: add `group` class directly in JSX for the hover:scale child effect   */
 .ks-hof-card {
     position: relative;
@@ -14,20 +15,20 @@
     transition: all 500ms ease;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .ks-hof-card {
         height: 400px;
     }
 }
 
 .ks-hof-card:hover {
-    box-shadow: 0 25px 50px rgba(0, 0, 0, .5);
+    box-shadow: 0 25px 50px rgb(0 0 0 / 50%);
 }
 
 .ks-hof-overlay-bottom {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, .95) 0%, rgba(0, 0, 0, .45) 50%, transparent 100%);
+    background: linear-gradient(to top, rgb(0 0 0 / 95%) 0%, rgb(0 0 0 / 45%) 50%, transparent 100%);
     pointer-events: none;
 }
 
@@ -37,12 +38,12 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 16px;
-    border-bottom: 1px solid rgba(63, 63, 70, 0.8);
+    border-bottom: 1px solid rgb(63 63 70 / 80%);
     padding-bottom: 16px;
     margin-bottom: 24px;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .ks-section-header {
         flex-direction: row;
         align-items: center;
@@ -56,7 +57,7 @@
     align-items: center;
     justify-content: center;
     padding: 96px 0;
-    background-color: rgba(9, 9, 11, 0.4);
+    background-color: rgb(9 9 11 / 40%);
     border-radius: 16px;
     border: var(--aa-border);
 }
@@ -85,10 +86,10 @@
 .ks-hof-empty-icon {
     padding: 12px;
     border-radius: 9999px;
-    background-color: rgba(39, 39, 42, 0.5);
-    border: 1px solid rgba(63, 63, 70, 0.5);
+    background-color: rgb(39 39 42 / 50%);
+    border: 1px solid rgb(63 63 70 / 50%);
     margin-bottom: 12px;
-    color: #71717a;
+    color: rgb(113 113 122);
     display: inline-flex;
 }
 
@@ -99,19 +100,19 @@
     gap: 16px;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .ks-hof-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
     .ks-hof-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
     .ks-hof-grid {
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }
@@ -160,7 +161,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5));
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 50%));
 }
 
 .ks-bottom-char-link {
@@ -184,7 +185,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .3));
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 30%));
 }
 
 .ks-bottom-ship-name {
@@ -198,7 +199,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .3));
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 30%));
     margin-top: 2px;
 }
 
@@ -215,8 +216,8 @@
 .ks-bottom-damage {
     font-size: var(--aa-font-size);
     font-family: monospace;
-    color: #fcd34d;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .3));
+    color: rgb(252 211 77);
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 30%));
     margin-top: 2px;
 }
 
@@ -232,13 +233,12 @@
     height: 64px;
     border-radius: var(--aa-border-radius);
     object-fit: contain;
-    background-color: rgba(9, 9, 11, .9);
+    background-color: rgb(9 9 11 / 90%);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     transition: transform 300ms ease;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .ks-hof-ship {
         width: 80px;
         height: 80px;
@@ -259,25 +259,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #18181b;
-    color: #3f3f46;
+    background-color: rgb(24 24 27);
+    color: rgb(63 63 70);
 }
 
 .ks-pilot-card-default {
-    border: 2px solid #27272a;
+    border: 2px solid rgb(39 39 42);
 
     --aa-shadow-opacity: 0.05;
+
     box-shadow: var(--aa-shadow-dark);
 }
 
 .ks-pilot-card-default:hover {
-    border-color: #52525b;
+    border-color: rgb(82 82 91);
 }
 
 .ks-pilot-glow-default {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(39, 39, 42, 0.1), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.95));
+    background: linear-gradient(to bottom, rgb(39 39 42 / 10%), rgb(0 0 0 / 30%), rgb(0 0 0 / 95%));
 }
 
 .ks-pilot-badge-default {
@@ -293,14 +294,14 @@
 }
 
 .ks-pilot-ship-default:hover {
-    border-color: #52525b;
+    border-color: rgb(82 82 91);
 }
 
 /* ═══ PILOT 1 ════════════════════════════════════════════════════════════ */
 
 .ks-pilot-card-1 {
-    border: 2px solid #27272a;
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
+    border: 2px solid rgb(39 39 42);
+    box-shadow: 0 0 20px rgb(250 204 21 / 20%);
 }
 
 .ks-pilot-card-1:hover {
@@ -308,100 +309,100 @@
 }
 
 .ks-pilot-ship-1 {
-    box-shadow: 0 0 16px rgba(250, 204, 21, 0.7);
+    box-shadow: 0 0 16px rgb(250 204 21 / 70%);
     border-radius: var(--aa-border-radius);
-    outline: 1px solid rgba(250, 204, 21, 0.5);
+    outline: 1px solid rgb(250 204 21 / 50%);
 }
 
 .ks-pilot-ship-1:hover {
-    border: 2px solid #facc15;
+    border: 2px solid rgb(250 204 21);
 }
 
 .ks-pilot-badge-1 {
-    background: linear-gradient(to right, #facc15, #f59e0b);
-    color: #000000;
+    background: linear-gradient(to right, rgb(250 204 21), rgb(245 158 11));
+    color: rgb(0 0 0);
     font-weight: 800;
-    border: 1px solid #fde047;
-    box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+    border: 1px solid rgb(253 224 71);
+    box-shadow: 0 0 12px rgb(250 204 21 / 60%);
 }
 
 .ks-pilot-glow-1 {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(to bottom, rgba(234, 179, 8, 0.15), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.95));
+    background: linear-gradient(to bottom, rgb(234 179 8 / 15%), rgb(0 0 0 / 30%), rgb(0 0 0 / 95%));
 }
 
 /* ═══ PILOT 2 ════════════════════════════════════════════════════════════ */
 
 .ks-pilot-card-2 {
-    border: 2px solid #27272a;
-    box-shadow: 0 0 20px rgba(203, 213, 225, 0.15);
+    border: 2px solid rgb(39 39 42);
+    box-shadow: 0 0 20px rgb(203 213 225 / 15%);
 }
 
 .ks-pilot-card-2:hover {
-    border-color: #cbd5e1;
+    border-color: rgb(203 213 225);
 }
 
 .ks-pilot-ship-2 {
-    box-shadow: 0 0 16px rgba(203, 213, 225, 0.6);
+    box-shadow: 0 0 16px rgb(203 213 225 / 60%);
     border-radius: var(--aa-border-radius);
-    outline: 1px solid rgba(203, 213, 225, 0.5);
+    outline: 1px solid rgb(203 213 225 / 50%);
 }
 
 .ks-pilot-ship-2:hover {
-    border: 2px solid #cbd5e1;
+    border: 2px solid rgb(203 213 225);
 }
 
 .ks-pilot-badge-2 {
-    background: linear-gradient(to right, #e2e8f0, #94a3b8);
-    color: #000000;
+    background: linear-gradient(to right, rgb(226 232 240), rgb(148 163 184));
+    color: rgb(0 0 0);
     font-weight: 800;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 0 12px rgba(203, 213, 225, 0.5);
+    border: 1px solid rgb(226 232 240);
+    box-shadow: 0 0 12px rgb(203 213 225 / 50%);
 }
 
 .ks-pilot-glow-2 {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(to bottom, rgba(148, 163, 184, 0.15), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.95));
+    background: linear-gradient(to bottom, rgb(148 163 184 / 15%), rgb(0 0 0 / 30%), rgb(0 0 0 / 95%));
 }
 
 /* ═══ PILOT 3 ════════════════════════════════════════════════════════════ */
 
 .ks-pilot-card-3 {
-    border: 2px solid #27272a;
-    box-shadow: 0 0 20px rgba(180, 83, 9, 0.15);
+    border: 2px solid rgb(39 39 42);
+    box-shadow: 0 0 20px rgb(180 83 9 / 15%);
 }
 
 .ks-pilot-card-3:hover {
-    border-color: #d97706;
+    border-color: rgb(217 119 6);
 }
 
 .ks-pilot-ship-3 {
-    box-shadow: 0 0 16px rgba(180, 83, 9, 0.6);
+    box-shadow: 0 0 16px rgb(180 83 9 / 60%);
     border-radius: var(--aa-border-radius);
-    outline: 1px solid rgba(217, 119, 6, 0.5);
+    outline: 1px solid rgb(217 119 6 / 50%);
 }
 
 .ks-pilot-ship-3:hover {
-    border: 2px solid #d97706;
+    border: 2px solid rgb(217 119 6);
 }
 
 .ks-pilot-badge-3 {
-    background: linear-gradient(to right, #d97706, #92400e);
-    color: #fde68a;
+    background: linear-gradient(to right, rgb(217 119 6), rgb(146 64 14));
+    color: rgb(253 230 138);
     font-weight: 800;
-    border: 1px solid #f59e0b;
-    box-shadow: 0 0 12px rgba(180, 83, 9, 0.5);
+    border: 1px solid rgb(245 158 11);
+    box-shadow: 0 0 12px rgb(180 83 9 / 50%);
 }
 
 .ks-pilot-glow-3 {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(to bottom, rgba(180, 83, 9, 0.15), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.95));
+    background: linear-gradient(to bottom, rgb(180 83 9 / 15%), rgb(0 0 0 / 30%), rgb(0 0 0 / 95%));
 }
 
 /* ═══ Tab Buttons ════════════════════════════════════════════════════════════ */
