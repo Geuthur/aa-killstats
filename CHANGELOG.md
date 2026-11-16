@@ -28,6 +28,7 @@ Section Order:
 
 ### Fixed
 
+- [FIX] Dev dependencies: `minimatch` 11 (Dependabot, DoS via globparts) through `eslint` ^10.15.0 and `typescript-eslint` ^8.72.2 plus an override for `@typescript-eslint/typescript-estree`, `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5) and `aa-geuthur-react` ^1.4.0.
 - [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
 - [FIX] Added the translation keys for the renamed pagination labels and other missing keys to the i18n files.
 - Fixed the total below the killmail table staying in English in every language: it passed a text as plural `count`, so i18next found no translation.
