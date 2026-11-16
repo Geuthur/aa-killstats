@@ -9,7 +9,6 @@
     flex-direction: column;
     justify-content: space-between;
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     transition: border-color 150ms ease;
 }
 
@@ -18,7 +17,7 @@
     height: 32px;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .ks-stat-card {
         padding: 20px;
     }
@@ -37,7 +36,7 @@
     letter-spacing: .05em;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .ks-stat-label {
         font-size: var(--aa-font-size-sm);
     }
@@ -50,7 +49,7 @@
     letter-spacing: -.025em;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
     .ks-stat-value {
         font-size: var(--aa-font-size-xl);
     }
@@ -63,13 +62,13 @@
     gap: 16px;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
     .ks-stats-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
     .ks-stats-grid {
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }

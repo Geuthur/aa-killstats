@@ -8,7 +8,6 @@
     padding: 20px;
     box-shadow: var(--aa-shadow);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     flex: 1;
 }
 
@@ -38,14 +37,14 @@
     padding: 10px;
     margin: 4px;
     border-radius: 8px;
-    background-color: rgba(63, 63, 70, .6);
+    background-color: rgb(63 63 70 / 60%);
     border: var(--aa-border-solid);
     transition: background-color 150ms ease, border-color 150ms ease;
 }
 
 .ks-pilot-row:hover {
-    background-color: rgba(39, 39, 42, .6);
-    border-color: rgba(63, 63, 70, .6);
+    background-color: rgb(39 39 42 / 60%);
+    border-color: rgb(63 63 70 / 60%);
 }
 
 .ks-pilot-rank {
@@ -63,12 +62,12 @@
     border-radius: 8px;
     border: var(--aa-border-solid);
     object-fit: cover;
-    background-color: #18181b;
+    background-color: rgb(24 24 27);
     transition: border-color 150ms ease;
 }
 
 .ks-pilot-avatar:hover {
-    border-color: #52525b;
+    border-color: rgb(82 82 91);
 }
 
 .ks-pilot-name {
@@ -105,7 +104,7 @@
     gap: 16px;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
     .ks-top-pilots-layout {
         flex-direction: row;
     }
