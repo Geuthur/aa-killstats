@@ -111,6 +111,12 @@ class KillmailListResponse(Schema):
     page_size: int = 50
 
 
+class ErrorSchema(Schema):
+    """Error response of an endpoint."""
+
+    error: str
+
+
 class MenuLink(Schema):
     """A navigation link. `link` is relative to the app root unless `is_external` is set."""
 

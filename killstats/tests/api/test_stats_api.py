@@ -3,6 +3,7 @@
 # Standard Library
 from datetime import datetime, timezone
 from http import HTTPStatus
+from unittest.mock import patch
 
 # Third Party
 # Django Ninja
@@ -14,6 +15,7 @@ from django.test import override_settings
 
 # AA Killstats
 from killstats.api import api
+from killstats.models.killboard import Killmail
 from killstats.tests import AuthTestCase
 from killstats.tests.testdata.killstats import (
     AttackerFactory,
@@ -176,3 +178,45 @@ class TestKillboardStatsApi(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_get_hall_endpoint_should_return_500_without_exception_text(self):
+        # Test Data
+        secret = "relation killstats_killmail does not exist"
+
+        # Test Action
+        with (
+            patch.object(Killmail.objects, "filter", side_effect=RuntimeError(secret)),
+            self.assertLogs("extensions.killstats.providers", level="ERROR") as logs,
+        ):
+            response = self.client.get(
+                "/hall/v2/corporation/98000011/?year=2026&month=9",
+                user=self.user,
+            )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.json(), {"error": "An internal error occurred."})
+        self.assertNotIn(secret, response.content.decode())
+        self.assertIn(secret, "\n".join(logs.output))
+
+    def test_get_killmails_endpoint_should_return_500_without_exception_text(self):
+        # Test Data
+        secret = "relation killstats_killmail does not exist"
+
+        # Test Action
+        with (
+            patch.object(
+                Killmail.objects, "get_paged_ids", side_effect=RuntimeError(secret)
+            ),
+            self.assertLogs("extensions.killstats.providers", level="ERROR") as logs,
+        ):
+            response = self.client.get(
+                "/killmails/corporation/98000012/?year=2026&month=9",
+                user=self.user,
+            )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.json(), {"error": "An internal error occurred."})
+        self.assertNotIn(secret, response.content.decode())
+        self.assertIn(secret, "\n".join(logs.output))

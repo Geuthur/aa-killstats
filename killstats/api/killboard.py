@@ -8,6 +8,7 @@ from ninja.decorators import decorate_view
 
 # Django
 from django.db.models import Count, Sum
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_page
 
 # Alliance Auth (External Libs)
@@ -18,6 +19,7 @@ from killstats.api import schema
 from killstats.api.helpers import _build_main_name_map
 from killstats.models.general import General
 from killstats.models.killboard import Attacker, Killmail
+from killstats.providers import logger
 
 
 class ApiEndpoints:
@@ -126,7 +128,7 @@ class ApiEndpoints:
             response={
                 HTTPStatus.OK: schema.KillmailListResponse,
                 HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.INTERNAL_SERVER_ERROR: str,
+                HTTPStatus.INTERNAL_SERVER_ERROR: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Retrieve killmails for an entity",
@@ -226,5 +228,11 @@ class ApiEndpoints:
                     page=filters.page,
                     page_size=filters.page_size,
                 )
-            except Exception as e:  # pylint: disable=broad-except
-                return HTTPStatus.INTERNAL_SERVER_ERROR, str(e)
+            except Exception:  # pylint: disable=broad-except
+                # Log the details, never send the exception text to the client
+                logger.exception(
+                    "Failed to load killmails for %s %s", entity_type, entity_id
+                )
+                return HTTPStatus.INTERNAL_SERVER_ERROR, {
+                    "error": _("An internal error occurred.")
+                }

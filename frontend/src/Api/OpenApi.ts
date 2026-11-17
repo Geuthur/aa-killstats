@@ -301,6 +301,14 @@ export interface components {
              */
             page_size: number;
         };
+        /**
+         * ErrorSchema
+         * @description Error response of an endpoint.
+         */
+        ErrorSchema: {
+            /** Error */
+            error: string;
+        };
         /** CorporationAdmin */
         CorporationAdmin: {
             /** Corporation */
@@ -613,7 +621,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -721,7 +729,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
