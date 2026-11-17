@@ -10,12 +10,14 @@ from ninja.decorators import decorate_view
 
 # Django
 from django.db.models import Q, Sum
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_page
 
 # AA Killstats
 from killstats.api import schema
 from killstats.models import Attacker, Killmail
 from killstats.models.general import General
+from killstats.providers import logger
 
 
 class ApiEndpoints:
@@ -31,7 +33,7 @@ class ApiEndpoints:
             response={
                 HTTPStatus.OK: schema.HallResponseSchema,
                 HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.INTERNAL_SERVER_ERROR: str,
+                HTTPStatus.INTERNAL_SERVER_ERROR: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Retrieve the hall of fame for an entity",
@@ -131,8 +133,14 @@ class ApiEndpoints:
                 return HTTPStatus.OK, schema.HallResponseSchema(
                     hall_of_fame=hall_of_fame, hall_of_shame=hall_of_shame
                 )
-            except Exception as e:  # pylint: disable=broad-except
-                return HTTPStatus.INTERNAL_SERVER_ERROR, str(e)
+            except Exception:  # pylint: disable=broad-except
+                # Log the details, never send the exception text to the client
+                logger.exception(
+                    "Failed to load hall for %s %s", entity_type, entity_id
+                )
+                return HTTPStatus.INTERNAL_SERVER_ERROR, {
+                    "error": _("An internal error occurred.")
+                }
 
     def register_stats(self, api: NinjaAPI):
         @api.get(

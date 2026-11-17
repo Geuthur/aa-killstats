@@ -381,8 +381,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response",
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -593,8 +592,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response",
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -1066,6 +1064,20 @@
           "total"
         ],
         "title": "KillmailListResponse",
+        "type": "object"
+      },
+      "ErrorSchema": {
+        "description": "Error response of an endpoint.",
+        "properties": {
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorSchema",
         "type": "object"
       },
       "CorporationAdmin": {
