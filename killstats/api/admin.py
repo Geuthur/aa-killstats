@@ -24,9 +24,6 @@ class ApiEndpoints:
         def get_corporation_admin(request):
             corporations = CorporationsAudit.objects.visible_to(request.user)
 
-            if corporations is None:
-                return 403, "Permission Denied"
-
             corporation_dict = {}
 
             for corporation in corporations:
@@ -51,9 +48,6 @@ class ApiEndpoints:
         )
         def get_alliance_admin(request):
             alliances = AlliancesAudit.objects.visible_to(request.user)
-
-            if alliances is None:
-                return 403, "Permission Denied"
 
             alliance_dict = {}
 
