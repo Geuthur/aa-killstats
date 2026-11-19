@@ -16,7 +16,6 @@ from django.views.decorators.cache import cache_page
 # AA Killstats
 from killstats.api import schema
 from killstats.models import Attacker, Killmail
-from killstats.models.general import General
 from killstats.providers import logger
 
 
@@ -32,7 +31,7 @@ class ApiEndpoints:
             "hall/v2/{entity_type}/{entity_id}/",
             response={
                 HTTPStatus.OK: schema.HallResponseSchema,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
                 HTTPStatus.INTERNAL_SERVER_ERROR: schema.ErrorSchema,
             },
             tags=self.tags,
@@ -41,13 +40,11 @@ class ApiEndpoints:
         @decorate_view(cache_page(60 * 5))  # Cache the response for 5 minutes
         # pylint: disable=too-many-locals
         def get_hall_endpoint(
-            request,
+            request,  # pylint: disable=unused-argument
             entity_type: Literal["alliance", "corporation", "character"],
             entity_id: int,
             filters: schema.HallFilter = Query(...),
         ):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             try:
                 # Determine the query for the attacker's killmails based on the entity type.
@@ -147,7 +144,7 @@ class ApiEndpoints:
             "stats/v2/summary/{entity_type}/{entity_id}/",
             response={
                 HTTPStatus.OK: schema.CombatSummaryResponse,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Fast summary: total kills, ISK & active PvPers",
@@ -155,13 +152,11 @@ class ApiEndpoints:
         @decorate_view(cache_page(60 * 5))  # Cache the response for 5 minutes
         # pylint: disable=too-many-locals
         def get_combat_summary_api(
-            request,
+            request,  # pylint: disable=unused-argument
             entity_type: Literal["alliance", "corporation", "character"],
             entity_id: int,
             filters: schema.DateRangeFilter = Query(...),
         ):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             # Kills side
             kill_qs = Attacker.objects.for_entity(entity_type, entity_id).filter(

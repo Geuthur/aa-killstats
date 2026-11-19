@@ -24,6 +24,7 @@ class ApiEndpoints:
             "menu/",
             response={
                 HTTPStatus.OK: schema.MenuSchema,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Get Killstats navigation menu",
@@ -97,15 +98,12 @@ class ApiEndpoints:
             "user/",
             response={
                 HTTPStatus.OK: schema.UserData,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Get current user data",
         )
         def get_user(request):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
             try:
                 character_id = request.user.profile.main_character.character_id
                 character_name = request.user.profile.main_character.character_name

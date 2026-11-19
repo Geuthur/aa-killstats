@@ -39,6 +39,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] Every error response of the API has one format, `{"error": "<text>"}` (`ErrorSchema`): the two admin endpoints (`killboard/corporation/admin/`, `killboard/alliance/admin/`) typed their 403 as `str`, the other endpoints as `dict`. Every endpoint lists the 403 of `basic_access_required` in the OpenAPI schema (`menu/` and the two admin endpoints had none). The interface shows the message of the API instead of a fixed text when a request fails. Removed the `basic_access` checks in the endpoint bodies, which were unreachable since `basic_access_required` wraps the API URLs.
+
 > [!IMPORTANT]
 > Basic access is only granted by `basic_access`. Users with `admin_access` but without `basic_access` lose access to the API and to the pages `add_corp` and `add_alliance`. Give them `basic_access` as well.
 

@@ -1,6 +1,7 @@
 // Third Party
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// AA Killstats
 import { apiClient } from '@/Api/Api';
 import {
     fetchCombatSummary,
@@ -246,6 +247,49 @@ describe('General API client functions', () => {
             } as never);
 
             await expect(fetchKillmails(2026, 9, 'corporation', 123)).rejects.toThrow('Failed to fetch killmails');
+        });
+    });
+});
+
+/** Every call of `ApiCalls.ts`: [name, call, fixed text]. */
+const calls: [string, () => Promise<unknown>, string][] = [
+    ['loadCorporationsOverview', () => loadCorporationsOverview(), 'Failed to load corporation overview'],
+    ['loadAlliancesOverview', () => loadAlliancesOverview(), 'Failed to load alliance overview'],
+    ['fetchCombatSummary', () => fetchCombatSummary(2026, 9, 'alliance', 456), 'Failed to fetch combat summary'],
+    ['fetchTopAttackers', () => fetchTopAttackers(2026, 9, 'alliance', 456), 'Failed to fetch top attackers'],
+    ['fetchTopVictims', () => fetchTopVictims(2026, 9, 'alliance', 456), 'Failed to fetch top victims'],
+    ['fetchHallStats', () => fetchHallStats(2026, 9, 'corporation', 123), 'Failed to fetch hall stats'],
+    ['fetchKillmails', () => fetchKillmails(2026, 9, 'corporation', 123), 'Failed to fetch killmails'],
+];
+
+describe('Error messages of the API calls', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    describe.each(calls)('%s', (_name, call, fixedText) => {
+        it('should throw the message of the API when the request fails', async () => {
+            // Test Data
+            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
+                data: undefined,
+                error: { error: 'Permission Denied' },
+                response: new Response(),
+            } as never);
+
+            // Test Action & Expected Result
+            await expect(call()).rejects.toThrow('Permission Denied');
+        });
+
+        it('should throw the fixed text when the API sent no message', async () => {
+            // Test Data
+            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
+                data: undefined,
+                error: {},
+                response: new Response(),
+            } as never);
+
+            // Test Action & Expected Result
+            await expect(call()).rejects.toThrow(fixedText);
         });
     });
 });

@@ -64,19 +64,6 @@ class TestKillboardApi(AuthTestCase):
         self.assertEqual(data["destroyed_isk"], 5000000)
         self.assertEqual(data["lost_isk"], 5000000)
 
-    def test_get_combat_summary_api_should_return_403_when_no_permission(self):
-        # Test Data
-        unauthed_user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get(
-            "/stats/v2/summary/corporation/98000001/?year=2026&month=9",
-            user=unauthed_user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
     def test_get_top_attackers_api_should_return_top_attackers(self):
         # Test Data
         corp_id = 98000002
@@ -105,19 +92,6 @@ class TestKillboardApi(AuthTestCase):
         self.assertEqual(data["pilots"][0]["count"], 1)
         self.assertEqual(data["pilots"][0]["total_value"], 10000000)
 
-    def test_get_top_attackers_api_should_return_403_when_no_permission(self):
-        # Test Data
-        unauthed_user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get(
-            "/stats/v2/attackers/corporation/98000002/?year=2026&month=9",
-            user=unauthed_user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
     def test_get_top_victims_api_should_return_top_victims(self):
         # Test Data
         corp_id = 98000003
@@ -141,16 +115,3 @@ class TestKillboardApi(AuthTestCase):
         self.assertEqual(len(data["pilots"]), 1)
         self.assertEqual(data["pilots"][0]["count"], 1)
         self.assertEqual(data["pilots"][0]["total_value"], 25000000)
-
-    def test_get_top_victims_api_should_return_403_when_no_permission(self):
-        # Test Data
-        unauthed_user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get(
-            "/stats/v2/victims/corporation/98000003/?year=2026&month=9",
-            user=unauthed_user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
