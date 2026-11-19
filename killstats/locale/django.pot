@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: AA Killstats\n"
-"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-killstats/\n"
-"POT-Creation-Date: 2026-10-03 20:30+0200\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 16:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,133 +17,109 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: killstats/api/general.py:45
+msgid "Permission Denied"
+msgstr ""
+
 msgid "Corporation"
 msgstr ""
 
-#: killstats/api/general.py:53
 msgid "Alliance"
 msgstr ""
 
-#: killstats/api/general.py:60
-#: killstats/templates/killstats/navigation/navigation.html:4
 msgid "Corporation Overview"
 msgstr ""
 
-#: killstats/api/general.py:68
-#: killstats/templates/killstats/navigation/navigation.html:8
 msgid "Alliance Overview"
 msgstr ""
 
-#: killstats/api/general.py:77
-#: killstats/templates/killstats/navigation/administration.html:6
 msgid "Add Corporation"
 msgstr ""
 
-#: killstats/api/general.py:84
-#: killstats/templates/killstats/navigation/administration.html:11
 msgid "Add Alliance"
 msgstr ""
 
-#: killstats/api/general.py:106
 msgid "Permission Denied."
 msgstr ""
 
-#: killstats/models/general.py:79
+msgid "An internal error occurred."
+msgstr ""
+
+msgid "Can access this app, Killstats."
+msgstr ""
+
+msgid "Has access to all killstats."
+msgstr ""
+
 msgid "ID"
 msgstr ""
 
-#: killstats/models/general.py:82
 msgid "Category"
 msgstr ""
 
-#: killstats/models/general.py:84
 msgid "Name"
 msgstr ""
 
-#: killstats/models/killboard.py:83 killstats/models/killboard.py:91
-#: killstats/models/killboard.py:103 killstats/models/killboard.py:158
 msgid "Unknown"
 msgstr ""
 
-#: killstats/models/killstatsaudit.py:38 killstats/models/killstatsaudit.py:74
 msgid "last missing check"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:20
 msgid "January"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:20
 msgid "February"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:20
 msgid "March"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:20
 msgid "April"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:21
 msgid "May"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:21
 msgid "June"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:21
 msgid "July"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:21
 msgid "August"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:22
 msgid "September"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:22
 msgid "October"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:22
 msgid "November"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:22
 msgid "December"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:24
 msgid "Day"
 msgstr ""
 
-#: killstats/templates/killstats/bundles/killboard-js.html:25
 msgid "Month"
 msgstr ""
 
-#: killstats/views.py:47
 msgid "Cannot add NPC Corporation to Killstats"
 msgstr ""
 
-#: killstats/views.py:77
 msgid "Cannot add Alliance for a character belonging to an NPC Corporation"
 msgstr ""
 
-#: killstats/views.py:83
 msgid "Character does not belong to a valid player Alliance"
 msgstr ""
 
-#: killstats/views.py:94
 #, python-brace-format
 msgid "{alliance_name} successfully added/updated to Killstats"
 msgstr ""
 
-#: killstats/views.py:98
 #, python-brace-format
 msgid "Alliance {alliance_name} could not be found in Alliance Auth"
 msgstr ""
