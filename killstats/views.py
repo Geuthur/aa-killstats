@@ -34,8 +34,8 @@ def react_base(request, *args, **kwargs):  # pylint: disable=unused-argument
 
 
 @login_required
+@permission_required(["killstats.basic_access", "killstats.admin_access"])
 @token_required(scopes=("publicData"))
-@permission_required(["killstats.admin_access"])
 def add_corp(request, token):
     char = get_object_or_404(EveCharacter, character_id=token.character_id)
 
@@ -64,8 +64,8 @@ def add_corp(request, token):
 
 
 @login_required
+@permission_required(["killstats.basic_access", "killstats.admin_access"])
 @token_required(scopes=("publicData"))
-@permission_required(["killstats.admin_access"])
 def add_alliance(request, token):
     char = get_object_or_404(EveCharacter, character_id=token.character_id)
 

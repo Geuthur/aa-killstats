@@ -1,6 +1,6 @@
 /* The styles of the shared React base come first, so the rules below can override them. */
-@import "aa-geuthur-react/styles.css";
-@import "@/killstats.css";
+@import url("aa-geuthur-react/styles.css");
+@import url("@/killstats.css");
 
 /* Font stack of the killstats React app */
 body {
@@ -14,83 +14,31 @@ body {
 
 /* ═══ DESIGN TOKENS for AA ═══════════════════════════════════════════════════════ */
 :root {
-    --font-hud: 'Rajdhani', sans-serif;
-    --font-tech: 'Chakra Petch', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-
+    /* Tokens the package ships with the same value live in aa-geuthur-react. What stays here
+       differs from the package or is not part of it, so it keeps the look of the app. */
     --aa-body: var(--aa-color-body); /* Background for AA Container */
-    --aa-link-body: rgba(39, 39, 42, 1); /* Link Background Light */
-    --aa-link-body-light: rgb(61, 61, 66, 1); /* Link Background */
-
-    --aa-color-body: #18181b;
-    --aa-color-body-dark: #0b0e14;
-    --aa-color-grey-light: #343439;
-    --aa-panel-border: #343439;
-    --aa-table-footer-bg: #0b0e14;
-    --aa-color-light: #27272a;
-    --aa-color-white: #ffffff;
-    --aa-color-black: #000000;
-    --aa-color-secondary: #808080;
-    --aa-color-tertiary: #a1a1aa;
-    --aa-color-muted: #71717a;
-    --aa-color-emerald: #10b981;
-    --aa-color-emerald-light: #00bc7d;
-    --aa-color-emerald-dark: #047857;
-    --aa-color-amber: #f59e0b;
-    --aa-color-amber-light: #fcd34d;
-    --aa-color-amber-dark: #b45309;
-    --aa-color-rose: #f43f5e;
-    --aa-color-rose-light: #fda4af;
-    --aa-color-rose-dark: #4d0218;
-    --aa-color-green: #0ed14f;
-    --aa-color-red: #cc1130;
-    --aa-color-blue: #3b82f6;
-
-
+    --aa-color-body: rgb(24 24 27);
+    --aa-color-body-dark: rgb(11 14 20);
+    --aa-color-grey-light: rgb(52 52 57);
+    --aa-panel-border: rgb(52 52 57);
+    --aa-table-footer-bg: rgb(11 14 20);
+    --aa-color-light: rgb(39 39 42);
+    --aa-color-secondary: rgb(128 128 128);
+    --aa-color-tertiary: rgb(161 161 170);
+    --aa-color-muted: rgb(113 113 122);
+    --aa-color-emerald-dark: rgb(4 120 87);
+    --aa-color-amber-dark: rgb(180 83 9);
+    --aa-color-rose-dark: rgb(77 2 24);
+    --aa-color-blue: rgb(59 130 246);
     --aa-text-primary: var(--aa-color-white);
     --aa-text-secondary: var(--aa-color-secondary);
     --aa-text-tertiary: var(--aa-color-tertiary);
     --aa-text-muted: var(--aa-color-muted);
-    --aa-text-emerald: var(--aa-color-emerald);
-    --aa-text-emerald-light: var(--aa-color-emerald-light);
-    --aa-text-emerald-dark: var(--aa-color-emerald-dark);
-    --aa-text-amber: var(--aa-color-amber);
-    --aa-text-amber-light: var(--aa-color-amber-light);
-    --aa-text-amber-dark: var(--aa-color-amber-dark);
-    --aa-text-rose: var(--aa-color-rose);
-    --aa-text-rose-light: var(--aa-color-rose-light);
-    --aa-text-rose-dark: var(--aa-color-rose-dark);
-
-    --aa-font-size: .75rem;
-    --aa-font-size-xs: .625rem;
-    --aa-font-size-sm: .875rem;
-    --aa-font-size-md: 1rem;
-    --aa-font-size-lg: 1.25rem;
-    --aa-font-size-xl: 1.5rem;
-    --aa-font-size-2xl: 2rem;
-
-    --aa-font-weight: 600;
-    --aa-font-weight-bold: 700;
-    --aa-font-weight-medium: 500;
-    --aa-font-weight-light: 400;
-
-    --aa-blue-active: #2563eb;
-    --aa-blue-focus: #3b82f6;
-
     --aa-border: var(--aa-color-body);
     --aa-border-light: var(--aa-color-light);
-    --aa-border-rose: var(--aa-color-rose);
-    --aa-border-amber: var(--aa-color-amber);
-    --aa-border-emerald: var(--aa-color-emerald);
-    --aa-border-green: var(--aa-color-green);
-    --aa-border-red: var(--aa-color-red);
-
     --aa-border-solid: 2px solid var(--aa-border);
     --aa-border-solid-lg: 3px solid var(--aa-border);
     --aa-border-solid-xl: 5px solid var(--aa-border);
-    --aa-border-radius: 12px;
-
     --aa-bg-emerald: color-mix(in srgb, var(--aa-color-emerald) 100%, var(--aa-color-black) 50%);
     --aa-bg-emerald-light: color-mix(in srgb, var(--aa-color-emerald-light) 50%, var(--aa-color-black) 50%);
     --aa-bg-emerald-dark: color-mix(in srgb, var(--aa-color-emerald-dark) 100%, var(--aa-color-black) 50%);
@@ -102,9 +50,6 @@ body {
     --aa-bg-rose-dark: color-mix(in srgb, var(--aa-color-rose-dark) 100%, var(--aa-color-black) 50%);
     --aa-bg-dark: color-mix(in srgb, var(--aa-color-black) 100%, var(--aa-color-black) 50%);
     --aa-bg-light: color-mix(in srgb, var(--aa-color-white) 100%, var(--aa-color-black) 50%);
-
-    --aa-shadow: 0 4px 6px rgba(0, 0, 0, var(--aa-shadow-opacity));
-    --aa-shadow-dark: 0 1px 2px rgba(0, 0, 0, var(--aa-shadow-opacity));
     --aa-shadow-opacity: 0.1;
 }
 
@@ -166,16 +111,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #0c0d11;
+    background: rgb(12 13 17);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #27272a;
+    background: rgb(39 39 42);
     border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #52525b;
+    background: rgb(82 82 91);
 }
 
 /* ═══ Border ═══════════════════════════════════════════════════════════════ */
@@ -202,7 +147,6 @@ body {
     box-shadow: var(--aa-shadow);
     min-height: 120px;
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
 /* ═══ HEADINGS ══════════════════════════════════════════════════════════════ */
@@ -230,7 +174,6 @@ body {
     padding: 16px;
     box-shadow: var(--aa-shadow);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
 .aa-panel-lg {
@@ -241,10 +184,9 @@ body {
     padding: 20px;
     box-shadow: var(--aa-shadow);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
     .aa-panel-lg {
         padding: 24px;
     }
@@ -281,8 +223,8 @@ body {
 }
 
 .aa-tab-btn:not(.active):hover {
-    color: #e4e4e7;
-    background-color: rgba(39, 39, 42, .5);
+    color: rgb(228 228 231);
+    background-color: rgb(39 39 42 / 50%);
 }
 
 /* ═══ Portrait ═══════════════════════════════════════════════════════════════ */

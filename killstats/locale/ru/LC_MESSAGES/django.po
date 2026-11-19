@@ -7,9 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AA Killstats\n"
-"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-"
-"killstats/\n"
-"POT-Creation-Date: 2026-10-03 20:30+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 16:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +20,9 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+msgid "Permission Denied"
+msgstr ""
 
 msgid "Corporation"
 msgstr ""
@@ -41,6 +43,15 @@ msgid "Add Alliance"
 msgstr ""
 
 msgid "Permission Denied."
+msgstr ""
+
+msgid "An internal error occurred."
+msgstr ""
+
+msgid "Can access this app, Killstats."
+msgstr ""
+
+msgid "Has access to all killstats."
 msgstr ""
 
 msgid "ID"

@@ -1,3 +1,7 @@
+// Third Party
+import { apiErrorMessage } from "aa-geuthur-react";
+
+// AA Killstats
 import { apiClient } from "@/Api/Api";
 import type { CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse  } from "@/Api/schema";
 import { ProjectName } from "@/constants";
@@ -11,7 +15,7 @@ export interface OverviewEntity {
 export async function loadCorporationsOverview(): Promise<OverviewEntity[]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/killboard/corporation/admin/`);
   if (error || !data) {
-    throw new Error("Failed to load corporation overview");
+    throw new Error(apiErrorMessage(error, "Failed to load corporation overview"));
   }
 
   const entities: OverviewEntity[] = [];
@@ -35,7 +39,7 @@ export async function loadCorporationsOverview(): Promise<OverviewEntity[]> {
 export async function loadAlliancesOverview(): Promise<OverviewEntity[]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/killboard/alliance/admin/`);
   if (error || !data) {
-    throw new Error("Failed to load alliance overview");
+    throw new Error(apiErrorMessage(error, "Failed to load alliance overview"));
   }
 
   const entities: OverviewEntity[] = [];
@@ -83,7 +87,7 @@ export async function fetchCombatSummary(
     }
   );
   if (error || !data) {
-    throw new Error("Failed to fetch combat summary");
+    throw new Error(apiErrorMessage(error, "Failed to fetch combat summary"));
   }
   return data as unknown as CombatSummaryResponse;
 }
@@ -111,7 +115,7 @@ export async function fetchTopAttackers(
     }
   );
   if (error || !data) {
-    throw new Error("Failed to fetch top attackers");
+    throw new Error(apiErrorMessage(error, "Failed to fetch top attackers"));
   }
   return data as unknown as TopPilotsResponse;
 }
@@ -139,7 +143,7 @@ export async function fetchTopVictims(
     }
   );
   if (error || !data) {
-    throw new Error("Failed to fetch top victims");
+    throw new Error(apiErrorMessage(error, "Failed to fetch top victims"));
   }
   return data as unknown as TopPilotsResponse;
 }
@@ -167,7 +171,7 @@ export async function fetchHallStats(
     }
   );
   if (error || !data) {
-    throw new Error("Failed to fetch hall stats");
+    throw new Error(apiErrorMessage(error, "Failed to fetch hall stats"));
   }
   return data as unknown as HallResponse;
 }
@@ -206,7 +210,7 @@ export async function fetchKillmails(
     }
   );
   if (error || !data) {
-    throw new Error("Failed to fetch killmails");
+    throw new Error(apiErrorMessage(error, "Failed to fetch killmails"));
   }
   return data as unknown as KillmailListResponse;
 }

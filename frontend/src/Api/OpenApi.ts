@@ -201,6 +201,14 @@ export interface components {
             /** Pilots */
             pilots: components["schemas"]["TopPilotSchema"][];
         };
+        /**
+         * ErrorSchema
+         * @description Error response of an endpoint.
+         */
+        ErrorSchema: {
+            /** Error */
+            error: string;
+        };
         /** KillmailFilter */
         KillmailFilter: {
             /**
@@ -516,9 +524,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -557,9 +563,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -602,9 +606,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
             /** @description Internal Server Error */
@@ -613,7 +615,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -642,7 +644,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -671,7 +673,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -710,9 +712,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
             /** @description Internal Server Error */
@@ -721,7 +721,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -758,9 +758,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -781,6 +779,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MenuSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
@@ -809,9 +816,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ErrorSchema"];
                 };
             };
         };
