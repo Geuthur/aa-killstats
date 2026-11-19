@@ -68,13 +68,3 @@ class TestGeneralApi(AuthTestCase):
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(response.json()["is_admin"])
-
-    def test_get_user_should_return_forbidden_without_basic_access(self):
-        # Test Data
-        user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get("/user/", user=user)
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)

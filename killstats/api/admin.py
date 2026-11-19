@@ -1,5 +1,8 @@
 """API"""
 
+# Standard Library
+from http import HTTPStatus
+
 # Third Party
 from ninja import NinjaAPI
 
@@ -18,7 +21,10 @@ class ApiEndpoints:
     def register_endpoints(self, api: NinjaAPI):
         @api.get(
             "killboard/corporation/admin/",
-            response={200: list[schema.CorporationAdmin], 403: str},
+            response={
+                HTTPStatus.OK: list[schema.CorporationAdmin],
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+            },
             tags=self.tags,
         )
         def get_corporation_admin(request):
@@ -43,7 +49,10 @@ class ApiEndpoints:
 
         @api.get(
             "killboard/alliance/admin/",
-            response={200: list[schema.AllianceAdmin], 403: str},
+            response={
+                HTTPStatus.OK: list[schema.AllianceAdmin],
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+            },
             tags=self.tags,
         )
         def get_alliance_admin(request):

@@ -17,7 +17,6 @@ from eve_sde.models import SolarSystem
 # AA Killstats
 from killstats.api import schema
 from killstats.api.helpers import _build_main_name_map
-from killstats.models.general import General
 from killstats.models.killboard import Attacker, Killmail
 from killstats.providers import logger
 
@@ -34,20 +33,18 @@ class ApiEndpoints:
             "stats/v2/attackers/{entity_type}/{entity_id}/",
             response={
                 HTTPStatus.OK: schema.TopPilotsResponse,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Top-10 attackers for an entity",
         )
         @decorate_view(cache_page(60 * 5))  # Cache the response for 5 minutes
         def get_top_attackers_api(
-            request,
+            request,  # pylint: disable=unused-argument
             entity_type: Literal["alliance", "corporation", "character"],
             entity_id: int,
             filters: schema.TopPilotsFilter = Query(...),
         ):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             alt_mapping = _build_main_name_map(entity_type, entity_id)
 
@@ -79,20 +76,18 @@ class ApiEndpoints:
             "stats/v2/victims/{entity_type}/{entity_id}/",
             response={
                 HTTPStatus.OK: schema.TopPilotsResponse,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Top-10 victims for an entity",
         )
         @decorate_view(cache_page(60 * 5))  # Cache the response for 5 minutes
         def get_top_victims_api(
-            request,
+            request,  # pylint: disable=unused-argument
             entity_type: Literal["alliance", "corporation", "character"],
             entity_id: int,
             filters: schema.TopPilotsFilter = Query(...),
         ):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             alt_mapping = _build_main_name_map(entity_type, entity_id)
 
@@ -127,7 +122,7 @@ class ApiEndpoints:
             "killmails/{entity_type}/{entity_id}/",
             response={
                 HTTPStatus.OK: schema.KillmailListResponse,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
                 HTTPStatus.INTERNAL_SERVER_ERROR: schema.ErrorSchema,
             },
             tags=self.tags,
@@ -135,13 +130,11 @@ class ApiEndpoints:
         )
         @decorate_view(cache_page(60 * 5))  # Cache the response for 5 minutes
         def get_killmails_endpoint(
-            request,
+            request,  # pylint: disable=unused-argument
             entity_type: Literal["alliance", "corporation", "character"],
             entity_id: int,
             filters: schema.KillmailFilter = Query(...),
         ):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": "Permission denied."}
 
             try:
                 # 1. Fetch paged IDs and total count across kills, losses or both

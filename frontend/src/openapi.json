@@ -105,9 +105,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -222,9 +220,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -369,9 +365,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -422,8 +416,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response",
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -464,8 +457,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response",
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -580,9 +572,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -693,9 +683,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -723,6 +711,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MenuSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -759,9 +757,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ErrorSchema"
                 }
               }
             }
@@ -883,6 +879,20 @@
           "pilots"
         ],
         "title": "TopPilotsResponse",
+        "type": "object"
+      },
+      "ErrorSchema": {
+        "description": "Error response of an endpoint.",
+        "properties": {
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorSchema",
         "type": "object"
       },
       "KillmailFilter": {
@@ -1064,20 +1074,6 @@
           "total"
         ],
         "title": "KillmailListResponse",
-        "type": "object"
-      },
-      "ErrorSchema": {
-        "description": "Error response of an endpoint.",
-        "properties": {
-          "error": {
-            "title": "Error",
-            "type": "string"
-          }
-        },
-        "required": [
-          "error"
-        ],
-        "title": "ErrorSchema",
         "type": "object"
       },
       "CorporationAdmin": {

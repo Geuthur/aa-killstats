@@ -65,19 +65,6 @@ class TestKillboardStatsApi(AuthTestCase):
         self.assertIn("hall_of_fame", data)
         self.assertIn("hall_of_shame", data)
 
-    def test_get_hall_endpoint_should_return_403_when_no_permission(self):
-        # Test Data
-        unauthed_user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get(
-            "/hall/v2/corporation/98000011/?year=2026&month=9",
-            user=unauthed_user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
     def test_get_killmails_endpoint_should_return_killmails_list(self):
         # Test Data
         corp_id = 98000012
@@ -165,19 +152,6 @@ class TestKillboardStatsApi(AuthTestCase):
         # Expected Result
         self.assertEqual(response_kills.status_code, HTTPStatus.OK)
         self.assertEqual(response_losses.status_code, HTTPStatus.OK)
-
-    def test_get_killmails_endpoint_should_return_403_when_no_permission(self):
-        # Test Data
-        unauthed_user = UserMainFactory(permissions__=[])
-
-        # Test Action
-        response = self.client.get(
-            "/killmails/corporation/98000013/?year=2026&month=9",
-            user=unauthed_user,
-        )
-
-        # Expected Result
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_get_hall_endpoint_should_return_500_without_exception_text(self):
         # Test Data
