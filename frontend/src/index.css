@@ -14,73 +14,31 @@ body {
 
 /* ═══ DESIGN TOKENS for AA ═══════════════════════════════════════════════════════ */
 :root {
-    --font-hud: 'Rajdhani', sans-serif;
-    --font-tech: 'Chakra Petch', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    /* Tokens the package ships with the same value live in aa-geuthur-react. What stays here
+       differs from the package or is not part of it, so it keeps the look of the app. */
     --aa-body: var(--aa-color-body); /* Background for AA Container */
-    --aa-link-body: rgb(39 39 42 / 100%); /* Link Background Light */
-    --aa-link-body-light: rgb(61 61 66 / 100%); /* Link Background */
     --aa-color-body: rgb(24 24 27);
     --aa-color-body-dark: rgb(11 14 20);
     --aa-color-grey-light: rgb(52 52 57);
     --aa-panel-border: rgb(52 52 57);
     --aa-table-footer-bg: rgb(11 14 20);
     --aa-color-light: rgb(39 39 42);
-    --aa-color-white: rgb(255 255 255);
-    --aa-color-black: rgb(0 0 0);
     --aa-color-secondary: rgb(128 128 128);
     --aa-color-tertiary: rgb(161 161 170);
     --aa-color-muted: rgb(113 113 122);
-    --aa-color-emerald: rgb(16 185 129);
-    --aa-color-emerald-light: rgb(0 188 125);
     --aa-color-emerald-dark: rgb(4 120 87);
-    --aa-color-amber: rgb(245 158 11);
-    --aa-color-amber-light: rgb(252 211 77);
     --aa-color-amber-dark: rgb(180 83 9);
-    --aa-color-rose: rgb(244 63 94);
-    --aa-color-rose-light: rgb(253 164 175);
     --aa-color-rose-dark: rgb(77 2 24);
-    --aa-color-green: rgb(14 209 79);
-    --aa-color-red: rgb(204 17 48);
     --aa-color-blue: rgb(59 130 246);
     --aa-text-primary: var(--aa-color-white);
     --aa-text-secondary: var(--aa-color-secondary);
     --aa-text-tertiary: var(--aa-color-tertiary);
     --aa-text-muted: var(--aa-color-muted);
-    --aa-text-emerald: var(--aa-color-emerald);
-    --aa-text-emerald-light: var(--aa-color-emerald-light);
-    --aa-text-emerald-dark: var(--aa-color-emerald-dark);
-    --aa-text-amber: var(--aa-color-amber);
-    --aa-text-amber-light: var(--aa-color-amber-light);
-    --aa-text-amber-dark: var(--aa-color-amber-dark);
-    --aa-text-rose: var(--aa-color-rose);
-    --aa-text-rose-light: var(--aa-color-rose-light);
-    --aa-text-rose-dark: var(--aa-color-rose-dark);
-    --aa-font-size: .75rem;
-    --aa-font-size-xs: .625rem;
-    --aa-font-size-sm: .875rem;
-    --aa-font-size-md: 1rem;
-    --aa-font-size-lg: 1.25rem;
-    --aa-font-size-xl: 1.5rem;
-    --aa-font-size-2xl: 2rem;
-    --aa-font-weight: 600;
-    --aa-font-weight-bold: 700;
-    --aa-font-weight-medium: 500;
-    --aa-font-weight-light: 400;
-    --aa-blue-active: rgb(37 99 235);
-    --aa-blue-focus: rgb(59 130 246);
     --aa-border: var(--aa-color-body);
     --aa-border-light: var(--aa-color-light);
-    --aa-border-rose: var(--aa-color-rose);
-    --aa-border-amber: var(--aa-color-amber);
-    --aa-border-emerald: var(--aa-color-emerald);
-    --aa-border-green: var(--aa-color-green);
-    --aa-border-red: var(--aa-color-red);
     --aa-border-solid: 2px solid var(--aa-border);
     --aa-border-solid-lg: 3px solid var(--aa-border);
     --aa-border-solid-xl: 5px solid var(--aa-border);
-    --aa-border-radius: 12px;
     --aa-bg-emerald: color-mix(in srgb, var(--aa-color-emerald) 100%, var(--aa-color-black) 50%);
     --aa-bg-emerald-light: color-mix(in srgb, var(--aa-color-emerald-light) 50%, var(--aa-color-black) 50%);
     --aa-bg-emerald-dark: color-mix(in srgb, var(--aa-color-emerald-dark) 100%, var(--aa-color-black) 50%);
@@ -92,8 +50,6 @@ body {
     --aa-bg-rose-dark: color-mix(in srgb, var(--aa-color-rose-dark) 100%, var(--aa-color-black) 50%);
     --aa-bg-dark: color-mix(in srgb, var(--aa-color-black) 100%, var(--aa-color-black) 50%);
     --aa-bg-light: color-mix(in srgb, var(--aa-color-white) 100%, var(--aa-color-black) 50%);
-    --aa-shadow: 0 4px 6px rgb(0 0 0 / var(--aa-shadow-opacity));
-    --aa-shadow-dark: 0 1px 2px rgb(0 0 0 / var(--aa-shadow-opacity));
     --aa-shadow-opacity: 0.1;
 }
 
