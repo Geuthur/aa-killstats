@@ -39,6 +39,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The admin uses the public `alliance_logo_url` and `corporation_logo_url` of Alliance Auth instead of the private `_eve_entity_image_url`; the display stays the same.
+- [CHANGE] `killstats/helpers/eveonline.py` matches the template again: all helper functions have the parameter `display_name` (default `False`, callers unchanged).
 - [CHANGE] Every error response of the API has one format, `{"error": "<text>"}` (`ErrorSchema`): the two admin endpoints (`killboard/corporation/admin/`, `killboard/alliance/admin/`) typed their 403 as `str`, the other endpoints as `dict`. Every endpoint lists the 403 of `basic_access_required` in the OpenAPI schema (`menu/` and the two admin endpoints had none). The interface shows the message of the API instead of a fixed text when a request fails. Removed the `basic_access` checks in the endpoint bodies, which were unreachable since `basic_access_required` wraps the API URLs.
 
 > [!IMPORTANT]
