@@ -3,66 +3,44 @@ import { apiErrorMessage } from "aa-geuthur-react";
 
 // AA Killstats
 import { apiClient } from "@/Api/Api";
-import type { CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse  } from "@/Api/schema";
-import { ProjectName } from "@/constants";
+import type { CombatSummaryResponse, HallResponse, KillmailListResponse, TopPilotsResponse } from "@/Api/schema";
 
-
-export interface OverviewEntity {
-  id: number;
-  name: string;
-}
-
-export async function loadCorporationsOverview(): Promise<OverviewEntity[]> {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/killboard/corporation/admin/`);
-  if (error || !data) {
-    throw new Error(apiErrorMessage(error, "Failed to load corporation overview"));
-  }
-
-  const entities: OverviewEntity[] = [];
-  for (const item of data) {
-    if (item.corporation) {
-      for (const val of Object.values(item.corporation)) {
-        const corp = val as { corporation_id?: number; corporation_name?: string };
-        if (corp?.corporation_id && corp?.corporation_name) {
-          entities.push({
-            id: corp.corporation_id,
-            name: corp.corporation_name,
-          });
-        }
-      }
-    }
-  }
-
-  return entities.sort((a, b) => a.name.localeCompare(b.name));
-}
-
-export async function loadAlliancesOverview(): Promise<OverviewEntity[]> {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/killboard/alliance/admin/`);
-  if (error || !data) {
-    throw new Error(apiErrorMessage(error, "Failed to load alliance overview"));
-  }
-
-  const entities: OverviewEntity[] = [];
-  for (const item of data) {
-    if (item.alliance) {
-      for (const val of Object.values(item.alliance)) {
-        const alliance = val as { alliance_id?: number; alliance_name?: string };
-        if (alliance?.alliance_id && alliance?.alliance_name) {
-          entities.push({
-            id: alliance.alliance_id,
-            name: alliance.alliance_name,
-          });
-        }
-      }
-    }
-  }
-
-  return entities.sort((a, b) => a.name.localeCompare(b.name));
-}
-
-// ---------------------------------------------------------------------------
-// Killboard Combat Stats & Summaries (OpenAPI)
-// ---------------------------------------------------------------------------
+/** Query keys of the killboard area: combat summary, top pilots, hall of fame/shame and killmails of one entity. */
+export const killboardQueryKeys = {
+  combatSummary: (
+    year: number | "all",
+    month: number | "all",
+    entityType: string,
+    entityId: number
+  ) => ["combatSummary", year, month, entityType, entityId] as const,
+  topAttackers: (
+    year: number | "all",
+    month: number | "all",
+    entityType: string,
+    entityId: number
+  ) => ["topAttackers", year, month, entityType, entityId] as const,
+  topVictims: (
+    year: number | "all",
+    month: number | "all",
+    entityType: string,
+    entityId: number
+  ) => ["topVictims", year, month, entityType, entityId] as const,
+  hallStats: (
+    year: number | "all",
+    month: number | "all",
+    entityType: string,
+    entityId: number
+  ) => ["hallStats", year, month, entityType, entityId] as const,
+  killmails: (
+    year: number | "all",
+    month: number | "all",
+    entityType: string,
+    entityId: number,
+    mode: "all" | "kills" | "losses" = "all",
+    page: number = 1,
+    pageSize: number = 25
+  ) => ["killmails", year, month, entityType, entityId, mode, page, pageSize] as const,
+};
 
 export async function fetchCombatSummary(
   year: number | "all",
