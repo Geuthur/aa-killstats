@@ -28,6 +28,7 @@ Section Order:
 
 ### Fixed
 
+- [CHANGE] Removed the empty `killstats/hooks.py`, renamed the API URL namespace `killstats:new_api` to `killstats:api` and moved the four frontend tests next to the code into `frontend/src/__tests__/`. Behavior is unchanged.
 - [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
 - [FIX] The API no longer sends the text of an exception to the client: `killmails/{entity_type}/{entity_id}/` and `hall/v2/{entity_type}/{entity_id}/` log it and answer 500 with `{"error": "An internal error occurred."}` (`ErrorSchema`) instead of the plain exception string. Renamed the app config class `KillstatsrConfig` to `KillstatsConfig` (typo).
 - [FIX] Dev dependencies: `minimatch` 11 (Dependabot, DoS via globparts) through `eslint` ^10.15.0 and `typescript-eslint` ^8.72.2 plus an override for `@typescript-eslint/typescript-estree`, `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5) and `aa-geuthur-react` ^1.4.0.
