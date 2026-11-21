@@ -37,8 +37,8 @@ export default defineConfig([
             { heading: '// Third Party', pattern: '^@?\\w' },
 
             // 3. AA Killstats (Eigene Komponenten, Helpers, API)
-            //{ heading: '// AA Killstats', pattern: '^@/' },
-            //{ heading: '// AA Killstats', pattern: '^\\.(?!.*\\.s?css$)' },
+            { heading: '// AA Killstats', pattern: '^@/(?!.*\\.s?css$)' },
+            { heading: '// AA Killstats', pattern: '^\\.(?!.*\\.s?css$)' },
 
             // 4. Stylesheets & CSS-Module
             { heading: '// Styles', pattern: '\\.s?css$' },

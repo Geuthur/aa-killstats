@@ -6,11 +6,11 @@ import { FetchingLoader, formatCompactNumber, renderTooltip, zKillboardLink } fr
 import { Flame, ShieldAlert, Skull, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// Styles
-import styles from '@/Components/Killboard/KillboardHallOfFame.module.css';
-
 // AA Killstats
 import type { HallEntrySchema, HallResponse } from '@/Api/schema';
+
+// Styles
+import styles from '@/Components/Killboard/KillboardHallOfFame.module.css';
 
 export interface KillboardHallOfFameProps {
     data?: HallResponse;

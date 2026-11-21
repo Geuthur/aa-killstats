@@ -8,9 +8,6 @@ import { Trophy, Users } from 'lucide-react';
 import { createParser, useQueryState } from 'nuqs';
 import { useTranslation } from 'react-i18next';
 
-// Styles
-import styles from '@/Components/Sections/KillboardSection.module.css';
-
 // AA Killstats
 import {
     fetchCombatSummary,
@@ -23,6 +20,9 @@ import KillboardHallOfFame from '@/Components/Killboard/KillboardHallOfFame';
 import KillboardStats from '@/Components/Killboard/KillboardStats';
 import KillboardTable from '@/Components/Killboard/KillboardTable';
 import TopPilotsSection from '@/Components/Sections/TopPilotsSection';
+
+// Styles
+import styles from '@/Components/Sections/KillboardSection.module.css';
 
 export interface KillboardSectionProps {
     entityType: string;
