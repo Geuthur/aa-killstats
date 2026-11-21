@@ -2,11 +2,11 @@
 import { formatCompactNumber, formatRelativeTime, getSecColor, renderCharacterPortrait, renderLink, renderShipImage, renderTooltip } from 'aa-geuthur-react';
 import type { BaseColumnDef } from 'aa-geuthur-react';
 
-// Styles
-import styles from '@/Components/Killboard/KillboardTableColumns.module.css';
-
 // AA Killstats
 import type { KillmailItemSchema } from '@/Api/schema';
+
+// Styles
+import styles from '@/Components/Killboard/KillboardTableColumns.module.css';
 
 export function getKillboardTableColumns(
     t: (key: string) => string,

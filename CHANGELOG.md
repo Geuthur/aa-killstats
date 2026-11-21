@@ -40,6 +40,7 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] Imports in the frontend follow the order React, third party, `@/`, styles: the ESLint group for `@/` imports is active (CSS excluded); `Main.tsx` keeps the global `index.css` first.
 - Internal: The frontend API calls are split by area into `Api/calls/{overview,killboard}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts`, `Api/query.ts` and `Api/index.ts`; their tests are under `__tests__/Api/calls/`.
 - [CHANGE] The admin uses the public `alliance_logo_url` and `corporation_logo_url` of Alliance Auth instead of the private `_eve_entity_image_url`; the display stays the same.
 - [CHANGE] `killstats/helpers/eveonline.py` matches the template again: all helper functions have the parameter `display_name` (default `False`, callers unchanged).

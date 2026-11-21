@@ -7,9 +7,6 @@ import { FetchingLoader, renderLink } from "aa-geuthur-react";
 import { Search, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-// Styles
-import styles from "@/Components/Sections/OverViewSection.module.css";
-
 // AA Killstats
 import {
     loadAlliancesOverview,
@@ -17,6 +14,9 @@ import {
     overviewQueryKeys,
 } from "@/Api/calls/overview";
 import { ProjectName } from "@/constants";
+
+// Styles
+import styles from "@/Components/Sections/OverViewSection.module.css";
 
 export interface OverviewPageProps {
     entityType: "corporation" | "alliance";
