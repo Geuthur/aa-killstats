@@ -7,8 +7,7 @@ import { useTranslation } from 'react-i18next';
 import styles from '@/Components/Sections/TopPilotSection.module.css';
 
 // AA Killstats
-import { fetchTopAttackers, fetchTopVictims } from '@/Api/ApiCalls';
-import { queryKeys } from '@/Api/query';
+import { fetchTopAttackers, fetchTopVictims, killboardQueryKeys } from '@/Api/calls/killboard';
 import type { TopPilotSchema } from '@/Api/schema';
 
 export interface TopPilotsSectionProps {
@@ -130,13 +129,13 @@ export function TopPilotsSection({
     const shouldFetch = asModal ? isModalOpen : true;
 
     const { data: attackersData, isLoading: isLoadingAttackers } = useQuery({
-        queryKey: queryKeys.TopAttackers(year, month, entityType, entityId),
+        queryKey: killboardQueryKeys.topAttackers(year, month, entityType, entityId),
         queryFn: () => fetchTopAttackers(year, month, entityType, entityId),
         enabled: shouldFetch,
     });
 
     const { data: victimsData, isLoading: isLoadingVictims } = useQuery({
-        queryKey: queryKeys.TopVictims(year, month, entityType, entityId),
+        queryKey: killboardQueryKeys.topVictims(year, month, entityType, entityId),
         queryFn: () => fetchTopVictims(year, month, entityType, entityId),
         enabled: shouldFetch,
     });

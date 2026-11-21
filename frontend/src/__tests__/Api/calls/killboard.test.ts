@@ -9,96 +9,65 @@ import {
     fetchKillmails,
     fetchTopAttackers,
     fetchTopVictims,
-    loadAlliancesOverview,
-    loadCorporationsOverview,
-} from '@/Api/ApiCalls';
-import { ProjectName } from '@/constants';
+    killboardQueryKeys,
+} from '@/Api/calls/killboard';
 
-describe('General API client functions', () => {
+describe('killboardQueryKeys', () => {
+    it('provides the parameterized keys', () => {
+        expect(killboardQueryKeys.combatSummary(2026, 9, 'corporation', 123)).toEqual([
+            'combatSummary',
+            2026,
+            9,
+            'corporation',
+            123,
+        ]);
+        expect(killboardQueryKeys.topAttackers(2026, 9, 'corporation', 123)).toEqual([
+            'topAttackers',
+            2026,
+            9,
+            'corporation',
+            123,
+        ]);
+        expect(killboardQueryKeys.topVictims(2026, 9, 'corporation', 123)).toEqual([
+            'topVictims',
+            2026,
+            9,
+            'corporation',
+            123,
+        ]);
+        expect(killboardQueryKeys.hallStats(2026, 9, 'corporation', 123)).toEqual([
+            'hallStats',
+            2026,
+            9,
+            'corporation',
+            123,
+        ]);
+        expect(killboardQueryKeys.killmails(2026, 9, 'corporation', 123, 'kills')).toEqual([
+            'killmails',
+            2026,
+            9,
+            'corporation',
+            123,
+            'kills',
+            1,
+            25,
+        ]);
+        expect(killboardQueryKeys.killmails(2026, 9, 'corporation', 123, 'kills', 3, 50)).toEqual([
+            'killmails',
+            2026,
+            9,
+            'corporation',
+            123,
+            'kills',
+            3,
+            50,
+        ]);
+    });
+});
+
+describe('Killboard API calls', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
-    });
-
-    describe('loadCorporationsOverview', () => {
-        it('returns sorted corporations array on success', async () => {
-            // Test Data
-            const mockResponse = [
-                {
-                    corporation: {
-                        '2': { corporation_id: 2, corporation_name: 'Beta Corp' },
-                        '1': { corporation_id: 1, corporation_name: 'Alpha Corp' },
-                    },
-                },
-            ];
-            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
-                data: mockResponse,
-                error: undefined,
-                response: new Response(),
-            } as never);
-
-            // Test Action
-            const result = await loadCorporationsOverview();
-
-            // Expected Result
-            expect(result).toEqual([
-                { id: 1, name: 'Alpha Corp' },
-                { id: 2, name: 'Beta Corp' },
-            ]);
-            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/killboard/corporation/admin/`);
-        });
-
-        it('throws error when GET fails', async () => {
-            // Test Data
-            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
-                data: undefined,
-                error: { status: 500 },
-                response: new Response(),
-            } as never);
-
-            // Test Action & Expected Result
-            await expect(loadCorporationsOverview()).rejects.toThrow('Failed to load corporation overview');
-        });
-    });
-
-    describe('loadAlliancesOverview', () => {
-        it('returns sorted alliances array on success', async () => {
-            // Test Data
-            const mockResponse = [
-                {
-                    alliance: {
-                        '10': { alliance_id: 10, alliance_name: 'Zenith Alliance' },
-                        '9': { alliance_id: 9, alliance_name: 'Apex Alliance' },
-                    },
-                },
-            ];
-            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
-                data: mockResponse,
-                error: undefined,
-                response: new Response(),
-            } as never);
-
-            // Test Action
-            const result = await loadAlliancesOverview();
-
-            // Expected Result
-            expect(result).toEqual([
-                { id: 9, name: 'Apex Alliance' },
-                { id: 10, name: 'Zenith Alliance' },
-            ]);
-            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/killboard/alliance/admin/`);
-        });
-
-        it('throws error when GET fails', async () => {
-            // Test Data
-            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
-                data: undefined,
-                error: { status: 500 },
-                response: new Response(),
-            } as never);
-
-            // Test Action & Expected Result
-            await expect(loadAlliancesOverview()).rejects.toThrow('Failed to load alliance overview');
-        });
     });
 
     describe('fetchCombatSummary', () => {
@@ -251,10 +220,8 @@ describe('General API client functions', () => {
     });
 });
 
-/** Every call of `ApiCalls.ts`: [name, call, fixed text]. */
+/** Every call of `Api/calls/killboard.ts`: [name, call, fixed text]. */
 const calls: [string, () => Promise<unknown>, string][] = [
-    ['loadCorporationsOverview', () => loadCorporationsOverview(), 'Failed to load corporation overview'],
-    ['loadAlliancesOverview', () => loadAlliancesOverview(), 'Failed to load alliance overview'],
     ['fetchCombatSummary', () => fetchCombatSummary(2026, 9, 'alliance', 456), 'Failed to fetch combat summary'],
     ['fetchTopAttackers', () => fetchTopAttackers(2026, 9, 'alliance', 456), 'Failed to fetch top attackers'],
     ['fetchTopVictims', () => fetchTopVictims(2026, 9, 'alliance', 456), 'Failed to fetch top victims'],

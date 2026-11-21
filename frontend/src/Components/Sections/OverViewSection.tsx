@@ -14,8 +14,8 @@ import styles from "@/Components/Sections/OverViewSection.module.css";
 import {
     loadAlliancesOverview,
     loadCorporationsOverview,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+    overviewQueryKeys,
+} from "@/Api/calls/overview";
 import { ProjectName } from "@/constants";
 
 export interface OverviewPageProps {
@@ -31,7 +31,7 @@ export function OverViewSection({ entityType }: OverviewPageProps) {
 
     // Load entities
     const { data: entities = [], isLoading, error } = useQuery({
-        queryKey: queryKeys.Overview(entityType),
+        queryKey: overviewQueryKeys.entities(entityType),
         queryFn: () =>
             isCorp ? loadCorporationsOverview() : loadAlliancesOverview(),
     });
