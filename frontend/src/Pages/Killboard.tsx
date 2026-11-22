@@ -5,8 +5,8 @@ import { useLocation, useParams } from "react-router-dom";
 import { FetchingLoader, useUserData } from "aa-geuthur-react";
 import { useTranslation } from "react-i18next";
 
-import KillboardSection from "@/Components/Sections/KillboardSection";
 // AA Killstats
+import KillboardSection from "@/Components/Sections/KillboardSection";
 import { AppName } from "@/constants";
 
 export function KillboardPage() {

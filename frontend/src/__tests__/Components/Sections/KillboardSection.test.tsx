@@ -9,12 +9,13 @@ import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import { describe, expect, it, vi } from 'vitest';
 
 // AA Killstats
-import { fetchKillmails } from '@/Api/ApiCalls';
+import { fetchKillmails } from '@/Api/calls/killboard';
 import KillboardSection from '@/Components/Sections/KillboardSection';
 
-vi.mock('@/Api/ApiCalls', () => {
+vi.mock('@/Api/calls/killboard', async (importOriginal) => {
     const pending = () => new Promise(() => undefined);
     return {
+        ...await importOriginal<typeof import('@/Api/calls/killboard')>(),
         fetchKillmails: vi.fn(),
         fetchCombatSummary: pending,
         fetchHallStats: pending,

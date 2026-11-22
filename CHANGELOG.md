@@ -33,6 +33,8 @@ Section Order:
 ### Fixed
 
 - [FIX] Compatibility with Alliance Auth 6 (pre-release): the `eveonline` migration dependencies of `0001_initial`, `0001_init_v2` and `0002_rename_killstatsaudit_corporationsaudit_and_more` now point to `0019_v5squash` (Alliance Auth 6 removed the older `eveonline` migrations, `0019_v5squash` exists in Alliance Auth 5 as well). Works with Alliance Auth 5 and 6.
+- [CHANGE] Removed the empty `killstats/hooks.py`, renamed the API URL namespace `killstats:new_api` to `killstats:api` and moved the four frontend tests next to the code into `frontend/src/__tests__/`. Behavior is unchanged.
+- [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
 - [FIX] The API no longer sends the text of an exception to the client: `killmails/{entity_type}/{entity_id}/` and `hall/v2/{entity_type}/{entity_id}/` log it and answer 500 with `{"error": "An internal error occurred."}` (`ErrorSchema`) instead of the plain exception string. Renamed the app config class `KillstatsrConfig` to `KillstatsConfig` (typo).
 - [FIX] Dev dependencies: `minimatch` 11 (Dependabot, DoS via globparts) through `eslint` ^10.15.0 and `typescript-eslint` ^8.72.2 plus an override for `@typescript-eslint/typescript-estree`, `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5) and `aa-geuthur-react` ^1.4.0.
 - [FIX] Unified the capitalization of the pagination labels: "First Page", "Previous Page", "Next Page" and "Last Page".
@@ -44,6 +46,13 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] `stylelint` 18 and `stylelint-config-standard` 41; the pre-commit hook starts stylelint with `--config-basedir "$NODE_PATH"`, because stylelint 18 no longer loads `extends` from global node_modules (needed on pre-commit.ci).
+- [CHANGE] `i18next` 27 and `react-i18next` 18. If a plural form is missing or empty in a language file (Weblate writes empty forms for pl, ru, uk), `t()` now uses the `_other` text of the same language before falling back to English.
+- [CHANGE] Node 26 in the CI workflow and pre-commit; npm packages updated within their major versions, plus jsdom 31 and `@testing-library/jest-dom` 8 (dev only).
+- [CHANGE] Imports in the frontend follow the order React, third party, `@/`, styles: the ESLint group for `@/` imports is active (CSS excluded); `Main.tsx` keeps the global `index.css` first.
+- Internal: The frontend API calls are split by area into `Api/calls/{overview,killboard}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts`, `Api/query.ts` and `Api/index.ts`; their tests are under `__tests__/Api/calls/`.
+- [CHANGE] The admin uses the public `alliance_logo_url` and `corporation_logo_url` of Alliance Auth instead of the private `_eve_entity_image_url`; the display stays the same.
+- [CHANGE] `killstats/helpers/eveonline.py` matches the template again: all helper functions have the parameter `display_name` (default `False`, callers unchanged).
 - [CHANGE] Every error response of the API has one format, `{"error": "<text>"}` (`ErrorSchema`): the two admin endpoints (`killboard/corporation/admin/`, `killboard/alliance/admin/`) typed their 403 as `str`, the other endpoints as `dict`. Every endpoint lists the 403 of `basic_access_required` in the OpenAPI schema (`menu/` and the two admin endpoints had none). The interface shows the message of the API instead of a fixed text when a request fails. Removed the `basic_access` checks in the endpoint bodies, which were unreachable since `basic_access_required` wraps the API URLs.
 
 > [!IMPORTANT]

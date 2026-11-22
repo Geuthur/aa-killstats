@@ -8,21 +8,21 @@ import { Trophy, Users } from 'lucide-react';
 import { createParser, useQueryState } from 'nuqs';
 import { useTranslation } from 'react-i18next';
 
-// Styles
-import styles from '@/Components/Sections/KillboardSection.module.css';
-
 // AA Killstats
 import {
     fetchCombatSummary,
     fetchHallStats,
     fetchKillmails,
-} from '@/Api/ApiCalls';
-import { queryKeys } from '@/Api/query';
+    killboardQueryKeys,
+} from '@/Api/calls/killboard';
 import KillboardFilterBar from '@/Components/Killboard/KillboardFilterBar';
 import KillboardHallOfFame from '@/Components/Killboard/KillboardHallOfFame';
 import KillboardStats from '@/Components/Killboard/KillboardStats';
 import KillboardTable from '@/Components/Killboard/KillboardTable';
 import TopPilotsSection from '@/Components/Sections/TopPilotsSection';
+
+// Styles
+import styles from '@/Components/Sections/KillboardSection.module.css';
 
 export interface KillboardSectionProps {
     entityType: string;
@@ -61,12 +61,12 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
     const { openModal } = useModalQueryState();
 
     const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
-        queryKey: queryKeys.CombatSummary(year, month, entityType, entityId),
+        queryKey: killboardQueryKeys.combatSummary(year, month, entityType, entityId),
         queryFn: () => fetchCombatSummary(year, month, entityType, entityId),
     });
 
     const { data: hallData, isLoading: isLoadingHall } = useQuery({
-        queryKey: queryKeys.HallStats(year, month, entityType, entityId),
+        queryKey: killboardQueryKeys.hallStats(year, month, entityType, entityId),
         queryFn: () => fetchHallStats(year, month, entityType, entityId),
     });
 
@@ -76,7 +76,7 @@ export default function KillboardSection({ entityType, entityId }: KillboardSect
         isFetching: isFetchingKillmails,
         isPlaceholderData: isKeepingOldKillmails,
     } = useQuery({
-        queryKey: queryKeys.Killmails(year, month, entityType, entityId, killmailMode, page, pageSize),
+        queryKey: killboardQueryKeys.killmails(year, month, entityType, entityId, killmailMode, page, pageSize),
         queryFn: () => fetchKillmails(year, month, entityType, entityId, killmailMode, page, pageSize),
         placeholderData: keepPreviousData,
         refetchInterval: 60_000,

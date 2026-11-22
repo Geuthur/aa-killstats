@@ -7,16 +7,16 @@ import { FetchingLoader, renderLink } from "aa-geuthur-react";
 import { Search, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-// Styles
-import styles from "@/Components/Sections/OverViewSection.module.css";
-
 // AA Killstats
 import {
     loadAlliancesOverview,
     loadCorporationsOverview,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+    overviewQueryKeys,
+} from "@/Api/calls/overview";
 import { ProjectName } from "@/constants";
+
+// Styles
+import styles from "@/Components/Sections/OverViewSection.module.css";
 
 export interface OverviewPageProps {
     entityType: "corporation" | "alliance";
@@ -31,7 +31,7 @@ export function OverViewSection({ entityType }: OverviewPageProps) {
 
     // Load entities
     const { data: entities = [], isLoading, error } = useQuery({
-        queryKey: queryKeys.Overview(entityType),
+        queryKey: overviewQueryKeys.entities(entityType),
         queryFn: () =>
             isCorp ? loadCorporationsOverview() : loadAlliancesOverview(),
     });

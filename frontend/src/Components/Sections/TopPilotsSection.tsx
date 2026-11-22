@@ -3,13 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { BaseModal, FetchingLoader, ModalSize, formatCompactNumber, useModalQueryState } from 'aa-geuthur-react';
 import { useTranslation } from 'react-i18next';
 
+// AA Killstats
+import { fetchTopAttackers, fetchTopVictims, killboardQueryKeys } from '@/Api/calls/killboard';
+import type { TopPilotSchema } from '@/Api/schema';
+
 // Styles
 import styles from '@/Components/Sections/TopPilotSection.module.css';
-
-// AA Killstats
-import { fetchTopAttackers, fetchTopVictims } from '@/Api/ApiCalls';
-import { queryKeys } from '@/Api/query';
-import type { TopPilotSchema } from '@/Api/schema';
 
 export interface TopPilotsSectionProps {
     year: number | 'all';
@@ -130,13 +129,13 @@ export function TopPilotsSection({
     const shouldFetch = asModal ? isModalOpen : true;
 
     const { data: attackersData, isLoading: isLoadingAttackers } = useQuery({
-        queryKey: queryKeys.TopAttackers(year, month, entityType, entityId),
+        queryKey: killboardQueryKeys.topAttackers(year, month, entityType, entityId),
         queryFn: () => fetchTopAttackers(year, month, entityType, entityId),
         enabled: shouldFetch,
     });
 
     const { data: victimsData, isLoading: isLoadingVictims } = useQuery({
-        queryKey: queryKeys.TopVictims(year, month, entityType, entityId),
+        queryKey: killboardQueryKeys.topVictims(year, month, entityType, entityId),
         queryFn: () => fetchTopVictims(year, month, entityType, entityId),
         enabled: shouldFetch,
     });
