@@ -41,6 +41,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] `stylelint` 18 and `stylelint-config-standard` 41; the pre-commit hook starts stylelint with `--config-basedir "$NODE_PATH"`, because stylelint 18 no longer loads `extends` from global node_modules (needed on pre-commit.ci).
+- [CHANGE] `i18next` 27 and `react-i18next` 18. If a plural form is missing or empty in a language file (Weblate writes empty forms for pl, ru, uk), `t()` now uses the `_other` text of the same language before falling back to English.
 - [CHANGE] Node 26 in the CI workflow and pre-commit; npm packages updated within their major versions, plus jsdom 31 and `@testing-library/jest-dom` 8 (dev only).
 - [CHANGE] Imports in the frontend follow the order React, third party, `@/`, styles: the ESLint group for `@/` imports is active (CSS excluded); `Main.tsx` keeps the global `index.css` first.
 - Internal: The frontend API calls are split by area into `Api/calls/{overview,killboard}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts`, `Api/query.ts` and `Api/index.ts`; their tests are under `__tests__/Api/calls/`.
