@@ -26,9 +26,15 @@ Section Order:
 ### Removed
 -->
 
+<!-- Your changes go here -->
+
+## [5.0.0] - 2026-11-24
+
+> [!IMPORTANT]
+> Basic access is only granted by `basic_access`. Users with `admin_access` but without `basic_access` lose access to the API and to the pages `add_corp` and `add_alliance`. Give them `basic_access` as well.
+
 ### Fixed
 
-- [CHANGE] Removed the empty `killstats/hooks.py`, renamed the API URL namespace `killstats:new_api` to `killstats:api` and moved the four frontend tests next to the code into `frontend/src/__tests__/`. Behavior is unchanged.
 - [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
 - [FIX] The API no longer sends the text of an exception to the client: `killmails/{entity_type}/{entity_id}/` and `hall/v2/{entity_type}/{entity_id}/` log it and answer 500 with `{"error": "An internal error occurred."}` (`ErrorSchema`) instead of the plain exception string. Renamed the app config class `KillstatsrConfig` to `KillstatsConfig` (typo).
 - [FIX] Dev dependencies: `minimatch` 11 (Dependabot, DoS via globparts) through `eslint` ^10.15.0 and `typescript-eslint` ^8.72.2 plus an override for `@typescript-eslint/typescript-estree`, `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5) and `aa-geuthur-react` ^1.4.0.
@@ -41,48 +47,80 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] Removed the empty `killstats/hooks.py`, renamed the API URL namespace `killstats:new_api` to `killstats:api` and moved the four frontend tests next to the code into `frontend/src/__tests__/`. Behavior is unchanged.
+
+- [CHANGE] The tables use TanStack Table v9 (`@tanstack/react-table` 9); also `apexcharts` 8 in the frontend.
+
+- [CHANGE] Dev dependencies: `vitest` and `@vitest/coverage-v8` 5.0.5 (security fix in `@vitest/mocker` first through 4.1.12).
+
+- [CHANGE] Dependabot also updates the npm packages in `frontend/` and collects npm major updates in their own group; pre-commit hooks are only updated by pre-commit.ci.
+
 - [CHANGE] `stylelint` 18 and `stylelint-config-standard` 41; the pre-commit hook starts stylelint with `--config-basedir "$NODE_PATH"`, because stylelint 18 no longer loads `extends` from global node_modules (needed on pre-commit.ci).
+
 - [CHANGE] `i18next` 27 and `react-i18next` 18. If a plural form is missing or empty in a language file (Weblate writes empty forms for pl, ru, uk), `t()` now uses the `_other` text of the same language before falling back to English.
+
 - [CHANGE] Node 26 in the CI workflow and pre-commit; npm packages updated within their major versions, plus jsdom 31 and `@testing-library/jest-dom` 8 (dev only).
+
 - [CHANGE] Imports in the frontend follow the order React, third party, `@/`, styles: the ESLint group for `@/` imports is active (CSS excluded); `Main.tsx` keeps the global `index.css` first.
+
 - Internal: The frontend API calls are split by area into `Api/calls/{overview,killboard}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts`, `Api/query.ts` and `Api/index.ts`; their tests are under `__tests__/Api/calls/`.
+
 - [CHANGE] The admin uses the public `alliance_logo_url` and `corporation_logo_url` of Alliance Auth instead of the private `_eve_entity_image_url`; the display stays the same.
+
 - [CHANGE] `killstats/helpers/eveonline.py` matches the template again: all helper functions have the parameter `display_name` (default `False`, callers unchanged).
+
 - [CHANGE] Every error response of the API has one format, `{"error": "<text>"}` (`ErrorSchema`): the two admin endpoints (`killboard/corporation/admin/`, `killboard/alliance/admin/`) typed their 403 as `str`, the other endpoints as `dict`. Every endpoint lists the 403 of `basic_access_required` in the OpenAPI schema (`menu/` and the two admin endpoints had none). The interface shows the message of the API instead of a fixed text when a request fails. Removed the `basic_access` checks in the endpoint bodies, which were unreachable since `basic_access_required` wraps the API URLs.
 
-> [!IMPORTANT]
-> Basic access is only granted by `basic_access`. Users with `admin_access` but without `basic_access` lose access to the API and to the pages `add_corp` and `add_alliance`. Give them `basic_access` as well.
-
 - [CHANGE] Every URL of the API requires `basic_access` and answers 403 `{"error": "Permission Denied"}` without it, also for users with `admin_access`: `urls.py` wraps the API URLs in `basic_access_required` (`api/auth.py`). Before, `menu/`, `killboard/corporation/admin/` and `killboard/alliance/admin/` answered without it. `add_corp` and `add_alliance` require `basic_access` and `admin_access`, checked before the SSO redirect. Removed the check `is None` in the two admin endpoints, which never applied because `visible_to` always returns a queryset.
+
 - [CHANGE] The stylelint pre-commit hook now checks the source CSS in `frontend/src/` (built bundles stay excluded); its 292 findings are fixed without visual change (hex colors as equivalent `rgb()`), except that the bundle now also carries unprefixed `backdrop-filter` where it had only `-webkit-backdrop-filter`
+
 - [CHANGE] The frontend uses `aa-geuthur-react` ^1.5.0: `Main.tsx` starts i18next with `initI18n(ProjectName, ...)` from the package, and `index.css` no longer repeats the 46 design variables the package ships with the same value. Variables with another value in the app stay as overrides; no visible change.
+
 - [CHANGE] The charlink hook (`thirdparty/charlink_hook.py`) checks `basic_access` through `General.objects.has_basic_access` instead of `user.has_perm("killstats.basic_access")`, like the API and the menu hook. Behavior is unchanged.
+
 - [CHANGE] The API (`api/general.py`, `api/killboard.py`, `api/stats.py`) and the menu hook (`auth_hooks.py`) check permissions only through `General.objects` (`GeneralManager`), no longer with `user.has_perm(...)`. `GeneralManager` has the new `has_basic_access` (`basic_access`) next to `has_management_access`. The `visible_to` querysets of `managers/killboard_manager.py` and `managers/killboardaudit_manager.py` no longer check permissions or `is_superuser` themselves; they ask `General.objects.has_management_access` and only filter rows. The Django views keep `@permission_required`. Permission codenames and behavior are unchanged.
+
 - [CHANGE] Added a test that compares every permission string used in the code (`has_perm`, `permission_required`) with `General.Meta.permissions`, so a typo or a copied permission of another app fails the tests. The docstrings of `models/general.py` and `providers.py` no longer say "Voices of War". The permission texts in `General.Meta.permissions` are now translatable, and `General.objects` is a new `GeneralManager` with `has_management_access` (`admin_access`) for app rules that Django cannot check itself; it never queries the database. Permission codenames and checks are unchanged.
+
 - [CHANGE] Tasks that call ESI retry on ESI outages and limits instead of failing, as in the other apps: `store_killmail`, `check_and_import_corporation_killmails_task` and `check_and_import_alliance_killmails_task` run with `bind=True` inside `retry_task_on_esi_error` from `killstats/providers.py`. They retry on the ESI error limit, bucket limits, HTTP 502/503/504, network errors and during the daily downtime (11:00 to 11:15 UTC, skipped with `DISABLE_DAILY_DOWNTIME_CHECK = True`), at most 3 times. Other ESI errors (for example 404 or 500) still fail the task. `fetch_solar_system_id_for_killmail` keeps its behavior: it skips ESI when the killmail bucket is low and returns `None` on errors, because `run_tracker_missing_data` picks up killmails without solar system again every 15 minutes. `killstats/errors.py` has the new `DownTimeError`.
+
 - [CHANGE] The `AppLogger` is created only once in `killstats/providers.py`. `admin.py`, `signals.py`, `views.py`, the management commands `killstats_migrate_eveentity`, `killstats_sync_killmails` and `killstats_update_solar_systems`, `managers/general.py` and `managers/killboardaudit_manager.py` import it with `from killstats.providers import logger` instead of building their own. `api/admin.py`, `api/killboard.py`, `killstats_delete_npc_killmails`, `models/general.py`, `models/killboard.py` and `models/killstatsaudit.py` created a logger they never used; it is removed there. Log records now carry the logger name `killstats.providers` instead of the module name; the `[Killstats]` prefix is unchanged.
+
 - [CHANGE] `aa-geuthur-react` raised to `^1.3.0`. The package bundles its own translations and registers them with i18next through `AaReactProvider`, so `Main.tsx` lists only the namespace `translation`, the copies under `killstats/static/killstats/i18n/<lng>/aa-geuthur-react.json` are removed and `make react-copy-translations` no longer copies them. Translate on Weblate as before.
+
 - [CHANGE] The language files in `frontend/i18n/<lng>/translation.json` hold only real translations as Weblate writes them, missing keys fall back to English. `i18next-scanner` now maintains only `en`; empty placeholders (including empty plural forms) were removed from all other languages.
+
 - The GitHub workflows follow the template of the other apps: `autotester.yml` no longer tests Python 3.10 (end of life) and uses `actions-setup-redis@v1.60.0`; `pypi.yml`, `release.yml` and `dependabot.yml` are identical to the template.
+
 - The minimum Python version is now 3.11 (`requires-python`, classifiers and the tox matrix).
+
 - The frontend uses the shared React base from the npm package [`aa-geuthur-react`](https://github.com/Geuthur/aa-geuthur-react) 1.2.0 instead of its own copies of the BaseTable stack, `BaseModal`, loaders, menu, utils, table styles and ESLint rule. The killmail table keeps the server-side pagination, the `keepPreviousData` dimming and the row colors. The table footer follows the layout of the package (page size, status and paging next to each other, stacked on phones).
+
 - The entry files follow the template of the other apps: `App.tsx` and `main.tsx` became `Routing.tsx` and `Main.tsx` with `constants.ts` for `AppName` and `ProjectName`. `Routing.tsx` wraps the app in `AaReactProvider`, and `index.css` imports `aa-geuthur-react/styles.css` first, so the styles land in the CSS file the template loads. The pages use `AuthBase` of the package with `fluidOnSmallScreens`, so the container is 640 px to 1280 px wide and shrinks with the screen on phones.
+
 - `apiClient` is `createApiClient<paths>()`, the query keys extend the `queryKeys` of the package, and the killboard page reads the user with `useUserData()`. The tests load `setupTests.ts` and no longer mock `useTranslation` or import `jest-dom` themselves.
+
 - The API schemas `MenuLink`, `MenuSchema` and `UserData` follow the types of `aa-geuthur-react`: `MenuLink` has the optional `badge` and `has_errors`. The `menu/` and `user/` responses stay the same.
+
 - Large ISK and kill numbers use `formatCompactNumber` of the package instead of the own `formatNumber`. The display stays the same.
+
 - The killmail table now uses the shared `BaseTable` with server-side pagination, the `aa-table` styles and the shared footer. Kill and loss row colors, the total count and the page size of 250 stay.
+
 - The killmail table keeps the current rows dimmed and locked while the next page or filter loads, instead of showing the loader each time.
+
 - Replaced `pook` with `pookx` in the test dependencies and removed the custom `httpx2` pook interceptor, which `pookx` now provides.
+
 - Renamed the package constant `__killmail_operations__` to `__operations__` in `killstats/__init__.py`, so it matches the other apps. The operations stay the same.
+
 - Aligned `killstats/tests/__init__.py` with the shared test case class of the other apps. `AuthTestCase` no longer sets the unused `self.request`, and the type hints and extra docstring were dropped. No test changes were needed.
 
 ### Removed
 
+- CI: removed the obsolete `libbz2-dev` install step.
 - Removed the unused dependencies `tailwindcss` and `@tailwindcss/vite`. The plugin was never enabled, so the Tailwind classes in the components had no effect. They were removed or replaced by Bootstrap utilities.
 - Removed the copies of the shared components, utils, table styles and the ESLint rule from `frontend/`, and the unused `MenuCategory`, `MenuModalSchema` and `ModalSchema` API schemas together with the unused `modals` field of the menu.
 - Removed 31 translation keys the frontend no longer uses, including some with German source text.
-
-<!-- Your changes go here -->
 
 ## [4.0.1] - 01.10.2026
 
@@ -692,4 +730,5 @@ As of August 2025 zKB redis has changed their request limitations [see here](htt
 [3.0.1]: https://github.com/Geuthur/aa-killstats/compare/v3.0.0...v3.0.1 "3.0.1"
 [4.0.0]: https://github.com/Geuthur/aa-killstats/compare/v3.0.1...v4.0.0 "v4.0.0"
 [4.0.1]: https://github.com/Geuthur/aa-killstats/compare/v4.0.0...v4.0.1 "v4.0.1"
-[in development]: https://github.com/Geuthur/aa-killstats/compare/v4.0.1...HEAD "In Development"
+[5.0.0]: https://github.com/Geuthur/aa-killstats/compare/v4.0.1...v5.0.0 "v5.0.0"
+[in development]: https://github.com/Geuthur/aa-killstats/compare/v5.0.0...HEAD "In Development"
