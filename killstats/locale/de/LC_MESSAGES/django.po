@@ -5,8 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 16:22+0000\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-"
+"killstats/\n"
+"POT-Creation-Date: 2026-11-24 09:54+0100\n"
 "PO-Revision-Date: 2026-11-23 06:20+0000\n"
 "Last-Translator: Geuthur <devgeuthur@gmail.com>\n"
 "Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-"
@@ -38,9 +39,6 @@ msgstr "Corporation hinzufügen"
 
 msgid "Add Alliance"
 msgstr "Allianz hinzufügen"
-
-msgid "Permission Denied."
-msgstr "Zugriff verweigert."
 
 msgid "An internal error occurred."
 msgstr "Ein interner Fehler ist aufgetreten."
@@ -126,6 +124,9 @@ msgstr "{alliance_name} erfolgreich zu Killstats hinzugefügt/aktualisiert"
 #, python-brace-format
 msgid "Alliance {alliance_name} could not be found in Alliance Auth"
 msgstr "Allianz {alliance_name} wurde in Alliance Auth nicht gefunden"
+
+#~ msgid "Permission Denied."
+#~ msgstr "Zugriff verweigert."
 
 #~ msgid "Killstats Corporation Overview"
 #~ msgstr "Killstats Corporation Übersicht"
