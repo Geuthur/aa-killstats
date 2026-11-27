@@ -40,6 +40,7 @@ UNIVERSE_NAMES_URL = "https://esi.evetech.net/universe/names"
 MODULE_PATH = "killstats.tasks"
 
 
+@override_settings(DISABLE_DAILY_DOWNTIME_CHECK=True)
 class TestMissingKillmailsTasks(AuthTestCase):
     @patch(f"{MODULE_PATH}.Killmail.objects.create_from_killmail")
     @patch(f"{MODULE_PATH}.Killmail.objects.check_missing_killmails")
