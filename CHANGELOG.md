@@ -28,6 +28,10 @@ Section Order:
 
 <!-- Your changes go here -->
 
+### Fixed
+
+- [FIX] The task tests in `TestMissingKillmailsTasks` no longer fail during the daily ESI downtime (11:00 to 11:15 UTC): they turn off the downtime check with `DISABLE_DAILY_DOWNTIME_CHECK`.
+
 ## [5.0.0] - 2026-11-24
 
 > [!IMPORTANT]
